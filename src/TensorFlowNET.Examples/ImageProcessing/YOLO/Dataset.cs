@@ -18,6 +18,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         bool data_aug;
         int train_input_size;
         int[] train_input_sizes;
+        NDArray train_output_sizes;
         NDArray strides;
         NDArray anchors;
         Dictionary<int, string> classes;
@@ -60,7 +61,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         public NDArray Items()
         {
             train_input_size = 448;// train_input_sizes[new Random().Next(0, train_input_sizes.Length - 1)];
-            var train_output_sizes = train_input_size / strides;
+            train_output_sizes = train_input_size / strides;
             var batch_image = np.zeros((batch_size, train_input_size, train_input_size, 3));
             var batch_label_sbbox = np.zeros((batch_size, train_output_sizes[0], train_output_sizes[0],
                                           anchor_per_scale, 5 + num_classes));
@@ -123,6 +124,28 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         private(NDArray, NDArray, NDArray, NDArray, NDArray, NDArray) preprocess_true_boxes(NDArray bboxes)
         {
+            bboxes = np.array(new int[] { 56, 23, 376, 304, 18 }).reshape(1, 5);
+            var label = range(3).Select(i => np.zeros(train_output_sizes[i], train_output_sizes[i], anchor_per_scale, 5 + num_classes)).ToArray();
+            var bboxes_xywh = range(3).Select(x => np.zeros(max_bbox_per_scale, 4)).ToArray();
+            var bbox_count = np.zeros(3);
+
+            foreach(var bbox in bboxes.GetNDArrays())
+            {
+                var bbox_coor = bbox[":4"];
+                int bbox_class_ind = bbox[4];
+
+                var onehot = np.zeros(new Shape(num_classes), dtype: np.float32);
+                onehot[bbox_class_ind] = 1.0f;
+                var uniform_distribution = np.full(new Shape(num_classes), 1.0 / num_classes);
+                var deta = 0.01f;
+                var smooth_onehot = onehot * (1 - deta) + deta * uniform_distribution;
+
+                var bbox_xywh = np.concatenate(((bbox_coor["2:"] + bbox_coor[":2"]) * 0.5, bbox_coor["2:"] - bbox_coor[":2"]), axis: -1);
+                // bbox_xywh_scaled = 1.0 * bbox_xywh[np.newaxis, :] / self.strides[:, np.newaxis]
+                var bbox_xywh_scaled = 1.0 * bbox_xywh.reshape(1, bbox_xywh.shape[0]) / strides.reshape(strides.shape[0], 1);
+                var iou = new int[0];
+            }
+
             throw new NotImplementedException("");
         }
     }

@@ -8,6 +8,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,8 @@
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowDatasets\TensorFlowDatasets.csproj" />
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowHub\TensorFlowHub.csproj" />
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Core\TensorFlowNET.Core.csproj" />
+    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Datasets\TensorFlowNET.Datasets.csproj" />
+    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Hub\TensorFlowNET.Hub.csproj" />
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Models\TensorFlowNET.Models.csproj" />
   </ItemGroup>
 </Project>

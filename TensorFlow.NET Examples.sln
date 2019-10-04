@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Benchmark", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Core", "..\TensorFlow.NET\src\TensorFlowNET.Core\TensorFlowNET.Core.csproj", "{26D5C95D-D78C-4CA3-ADF4-E675A51BE5BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowHub", "..\TensorFlow.NET\src\TensorFlowHub\TensorFlowHub.csproj", "{FA739C88-4C62-40A7-B885-3ACA04293E1D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Models", "..\TensorFlow.NET\src\TensorFlowNET.Models\TensorFlowNET.Models.csproj", "{D6129F32-6DD9-45C8-80EA-C7896114C0D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowDatasets", "..\TensorFlow.NET\src\TensorFlowDatasets\TensorFlowDatasets.csproj", "{2689F182-A47B-49DC-BEDE-160713956299}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Hub", "..\TensorFlow.NET\src\TensorFlowNET.Hub\TensorFlowNET.Hub.csproj", "{C8AF7053-C72F-4C04-B01E-85ADA3B0D1BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Datasets", "..\TensorFlow.NET\src\TensorFlowNET.Datasets\TensorFlowNET.Datasets.csproj", "{09B6B592-E8FF-4BB3-9017-475DEE84BCFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,18 +39,18 @@ Global
 		{26D5C95D-D78C-4CA3-ADF4-E675A51BE5BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26D5C95D-D78C-4CA3-ADF4-E675A51BE5BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26D5C95D-D78C-4CA3-ADF4-E675A51BE5BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA739C88-4C62-40A7-B885-3ACA04293E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA739C88-4C62-40A7-B885-3ACA04293E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA739C88-4C62-40A7-B885-3ACA04293E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA739C88-4C62-40A7-B885-3ACA04293E1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6129F32-6DD9-45C8-80EA-C7896114C0D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6129F32-6DD9-45C8-80EA-C7896114C0D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6129F32-6DD9-45C8-80EA-C7896114C0D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6129F32-6DD9-45C8-80EA-C7896114C0D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2689F182-A47B-49DC-BEDE-160713956299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2689F182-A47B-49DC-BEDE-160713956299}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2689F182-A47B-49DC-BEDE-160713956299}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2689F182-A47B-49DC-BEDE-160713956299}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8AF7053-C72F-4C04-B01E-85ADA3B0D1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8AF7053-C72F-4C04-B01E-85ADA3B0D1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8AF7053-C72F-4C04-B01E-85ADA3B0D1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8AF7053-C72F-4C04-B01E-85ADA3B0D1BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09B6B592-E8FF-4BB3-9017-475DEE84BCFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09B6B592-E8FF-4BB3-9017-475DEE84BCFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09B6B592-E8FF-4BB3-9017-475DEE84BCFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09B6B592-E8FF-4BB3-9017-475DEE84BCFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
