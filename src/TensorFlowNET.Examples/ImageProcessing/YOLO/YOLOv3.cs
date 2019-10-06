@@ -124,11 +124,11 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var conv_raw_conf = conv_output[":", ":", ":", ":", "4:5"];
             var conv_raw_prob = conv_output[":", ":", ":", ":", "5:"];
 
-            var y = tf.tile(tf.range(output_size, dtype: tf.int32)[":", tf.newaxis], new object[] { 1, output_size });
-            var x = tf.tile(tf.range(output_size, dtype: tf.int32)[tf.newaxis, ":"], new object[] { output_size, 1 });
+            var y = tf.tile(tf.range(output_size, dtype: tf.int32)[Slice.All, tf.newaxis], new object[] { 1, output_size });
+            var x = tf.tile(tf.range(output_size, dtype: tf.int32)[tf.newaxis, Slice.All], new object[] { output_size, 1 });
 
-            var xy_grid = tf.concat(new[] { x[":", ":", tf.newaxis], y[":", ":", tf.newaxis] }, axis: -1);
-            xy_grid = tf.tile(xy_grid[tf.newaxis, ":", ":", tf.newaxis, ":"], new object[] { batch_size, 1, 1, anchor_per_scale, 1 });
+            var xy_grid = tf.concat(new[] { x[Slice.All, Slice.All, tf.newaxis], y[Slice.All, Slice.All, tf.newaxis] }, axis: -1);
+            xy_grid = tf.tile(xy_grid[tf.newaxis, Slice.All, Slice.All, tf.newaxis, Slice.All], new object[] { batch_size, 1, 1, anchor_per_scale, 1 });
             xy_grid = tf.cast(xy_grid, tf.float32);
 
             var pred_xy = (tf.sigmoid(conv_raw_dxdy) + xy_grid) * stride;
@@ -209,7 +209,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var bbox_loss_scale = 2.0 - 1.0 * label_xywh[":", ":", ":", ":", "2:3"] * label_xywh[":", ":", ":", ":", "3:4"] / (tf.sqrt(input_size));
             var giou_loss = respond_bbox * bbox_loss_scale * (1 - giou);
 
-            var iou = bbox_iou(pred_xywh[":", ":", ":", ":", tf.newaxis, ":"], bboxes[":", tf.newaxis, tf.newaxis, tf.newaxis, ":", ":"]);
+            var iou = bbox_iou(pred_xywh[Slice.All, Slice.All, Slice.All, Slice.All, tf.newaxis, Slice.All], bboxes[Slice.All, tf.newaxis, tf.newaxis, tf.newaxis, Slice.All, Slice.All]);
             var max_iou = tf.expand_dims(tf.reduce_max(iou, axis: new[] { -1 }), axis: -1);
 
             var respond_bgd = (1.0 - respond_bbox) * tf.cast(max_iou < iou_loss_thresh, tf.float32);

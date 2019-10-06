@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NumSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -80,7 +81,8 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             sess.run(tf.global_variables_initializer());
             print($"=> Restoring weights from: {cfg.TRAIN.INITIAL_WEIGHT} ... ");
             loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
-            foreach(var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
+
+            foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
             {
                 if (epoch <= first_stage_epochs)
                     train_op = train_op_with_frozen_variables;
@@ -89,7 +91,34 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
                 foreach(var train_data in trainset.Items())
                 {
+                   var results = sess.run((train_op, loss, global_step),
+                        (input_data,   train_data[0]),
+                        (label_sbbox,  train_data[1]),
+                        (label_mbbox,  train_data[2]),
+                        (label_lbbox,  train_data[3]),
+                        (true_sbboxes, train_data[4]),
+                        (true_mbboxes, train_data[5]),
+                        (true_lbboxes, train_data[6]),
+                        (trainable,    true));
 
+                    train_epoch_loss.append(train_step_loss);
+                    // summary_writer.add_summary(summary, global_step_val)
+                    print($"train loss: {train_step_loss}");
+                }
+
+                foreach (var test_data in testset.Items())
+                {
+                    var test_step_loss = sess.run(loss,
+                        (input_data, test_data[0]),
+                        (label_sbbox, test_data[1]),
+                        (label_mbbox, test_data[2]),
+                        (label_lbbox, test_data[3]),
+                        (true_sbboxes, test_data[4]),
+                        (true_mbboxes, test_data[5]),
+                        (true_lbboxes, test_data[6]),
+                        (trainable, false));
+
+                    test_epoch_loss.append(test_step_loss);
                 }
             }
         }

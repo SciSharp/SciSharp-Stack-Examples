@@ -35,14 +35,14 @@ namespace TensorFlowNET.Examples
     /// 
     /// https://www.tensorflow.org/hub/tutorials/image_retraining
     /// </summary>
-    public class RetrainImageClassifier : IExample
+    public class RetrainClassifierWithInceptionV3 : IExample
     {
         public int Priority => 16;
 
         public bool Enabled { get; set; } = true;
         public bool IsImportingGraph { get; set; } = true;
 
-        public string Name => "Retrain Image Classifier";
+        public string Name => "Retrain Classifier With InceptionV3";
 
         const string data_dir = "retrain_images";
         string summaries_dir = Path.Join(data_dir, "retrain_logs");
