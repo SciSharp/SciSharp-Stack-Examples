@@ -1,4 +1,5 @@
-﻿using NumSharp;
+﻿using Newtonsoft.Json;
+using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
     public class Main : IExample
     {
         public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
+        public bool IsImportingGraph { get; set; } = true;
         public string Name => "YOLOv3";
 
         #region args
@@ -45,18 +46,20 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         Tensor true_lbboxes;
         Tensor trainable;
 
-        Session sess;
         YOLOv3 model;
         VariableV1[] net_var;
         Tensor giou_loss, conf_loss, prob_loss;
-        RefVariable global_step;
+        Tensor global_step;
         Tensor learn_rate;
         Tensor loss;
         List<RefVariable> first_stage_trainable_var_list;
         Operation train_op_with_frozen_variables;
         Operation train_op_with_all_variables;
+        Operation train_op;
         Saver loader;
         Saver saver;
+        float train_step_loss;
+        int global_step_val;
         #endregion
 
         public bool Run()
@@ -77,10 +80,11 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         public void Train(Session sess)
         {
-            Operation train_op = null;
             sess.run(tf.global_variables_initializer());
             print($"=> Restoring weights from: {cfg.TRAIN.INITIAL_WEIGHT} ... ");
-            loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
+            //loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
+
+            var graph = tf.get_default_graph();
 
             foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
             {
@@ -89,9 +93,9 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 else
                     train_op = train_op_with_all_variables;
 
-                foreach(var train_data in trainset.Items())
+                foreach (var train_data in trainset.Items())
                 {
-                   var results = sess.run((train_op, loss, global_step),
+                   var results = sess.run(new object[] { train_op, loss, global_step },
                         (input_data,   train_data[0]),
                         (label_sbbox,  train_data[1]),
                         (label_mbbox,  train_data[2]),
@@ -101,7 +105,9 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                         (true_lbboxes, train_data[6]),
                         (trainable,    true));
 
-                    train_epoch_loss.append(train_step_loss);
+                    train_step_loss = results[1];
+                    global_step_val = results[2];
+                    //train_epoch_loss.append(train_step_loss);
                     // summary_writer.add_summary(summary, global_step_val)
                     print($"train loss: {train_step_loss}");
                 }
@@ -118,7 +124,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                         (true_lbboxes, test_data[6]),
                         (trainable, false));
 
-                    test_epoch_loss.append(test_step_loss);
+                    //test_epoch_loss.append(test_step_loss);
                 }
             }
         }
@@ -245,12 +251,36 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 tf.summary.scalar("total_loss", loss);
             });
 
+            //var json = JsonConvert.SerializeObject(graph._nodes_by_name, Formatting.Indented);
+            //File.WriteAllText("YOLOv3/nodes-wrong.txt", json);
+            
             return graph;
         }
 
         public Graph ImportGraph()
         {
-            throw new NotImplementedException();
+            tf.train.import_meta_graph("YOLOv3/yolov3.meta");
+            var graph = tf.get_default_graph();
+
+            var json = JsonConvert.SerializeObject(graph._nodes_by_name, Formatting.Indented);
+            File.WriteAllText("YOLOv3/nodes-right.txt", json);
+
+            train_op_with_frozen_variables = graph.OperationByName("define_first_stage_train/NoOp");
+            train_op_with_all_variables = graph.OperationByName("define_second_stage_train/NoOp");
+            loss = graph.OperationByName("define_loss/add_1").output;
+
+            input_data = graph.OperationByName("define_input/input_data").output;
+            label_sbbox = graph.OperationByName("define_input/label_sbbox").output;
+            label_mbbox = graph.OperationByName("define_input/label_mbbox").output;
+            label_lbbox = graph.OperationByName("define_input/label_lbbox").output;
+            true_sbboxes = graph.OperationByName("define_input/sbboxes").output;
+            true_mbboxes = graph.OperationByName("define_input/mbboxes").output;
+            true_lbboxes = graph.OperationByName("define_input/lbboxes").output;
+            trainable = graph.OperationByName("define_input/training").output;
+
+            global_step = graph.OperationByName("learn_rate/global_step").output;
+
+            return graph;
         }
 
         public void Predict(Session sess)

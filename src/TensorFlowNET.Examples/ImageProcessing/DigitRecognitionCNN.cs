@@ -85,7 +85,7 @@ namespace TensorFlowNET.Examples
                 Test(sess);
             }
 
-            return loss_test < 0.05 && accuracy_test > 0.98;
+            return loss_test < 0.055 && accuracy_test > 0.98;
         }
 
         public Graph BuildGraph()

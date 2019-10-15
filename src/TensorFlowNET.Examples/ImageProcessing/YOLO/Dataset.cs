@@ -58,8 +58,17 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             return File.ReadAllLines(annot_path);
         }
 
-        public NDArray[] Items()
+        public IEnumerable<NDArray[]> Items()
         {
+            for (int i = 3; i < 6; i++)
+            {
+                var results = new List<NDArray>();
+                for (int j = 0; j < 7; j++)
+                    results.Add(np.load($"YOLOv3/data/npy/training/data-{i}.0-{j}.npy"));
+                yield return results.ToArray();
+            }
+
+
             train_input_size = 448;// train_input_sizes[new Random().Next(0, train_input_sizes.Length - 1)];
             train_output_sizes = train_input_size / strides;
             var batch_image = np.zeros((batch_size, train_input_size, train_input_size, 3));
@@ -82,7 +91,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     var index = batch_count * batch_size + num;
                     if (index >= num_samples)
                         index -= num_samples;
-                    var annotation = annotations[index];
+                    var annotation = "D:/VOC\\train/VOCdevkit/VOC2007\\JPEGImages\\000192.jpg 116,64,356,375,14";// annotations[index];
                     var (image, bboxes) = parse_annotation(annotation);
                     var (label_sbbox, label_mbbox, label_lbbox, sbboxes, mbboxes, lbboxes) = preprocess_true_boxes(bboxes);
 
@@ -97,7 +106,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 }
                 batch_count += 1;
 
-                return new[]
+                /*return new[]
                 {
                     batch_image,
                     batch_label_sbbox,
@@ -106,7 +115,8 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     batch_sbboxes,
                     batch_mbboxes,
                     batch_lbboxes
-                };
+                };*/
+                throw new NotImplementedException("");
             }
             else
             {
@@ -119,7 +129,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         private (NDArray, NDArray) parse_annotation(string annotation)
         {
             var line = annotation.Split();
-            var image_path = "D:/VOC/train/VOCdevkit/VOC2007/JPEGImages/000048.jpg";// line[0];
+            var image_path = line[0];
             if (!File.Exists(image_path))
                 throw new KeyError($"{image_path} does not exist ... ");
             NDArray image = Utils.imread(image_path);
@@ -145,7 +155,6 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         private(NDArray, NDArray, NDArray, NDArray, NDArray, NDArray) preprocess_true_boxes(NDArray bboxes)
         {
-            bboxes = np.array(new int[] { 56, 23, 376, 304, 18 }).reshape(1, 5);
             var label = range(3).Select(i => np.zeros(train_output_sizes[i], train_output_sizes[i], anchor_per_scale, 5 + num_classes)).ToArray();
             var bboxes_xywh = range(3).Select(x => np.zeros(max_bbox_per_scale, 4)).ToArray();
             var bbox_count = np.zeros(3);
@@ -168,24 +177,23 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 foreach(var i in range(3))
                 {
                     var anchors_xywh = np.zeros((anchor_per_scale, 4));
-                    anchors_xywh[Slice.All, new Slice(0, 2)] = np.floor(bbox_xywh_scaled[new Slice(i), new Slice(0, 2)]).astype(np.int32) + 0.5;
+                    anchors_xywh[Slice.All, new Slice(0, 2)] = np.floor(bbox_xywh_scaled[i, new Slice(0, 2)]).astype(np.int32) + 0.5;
                     anchors_xywh[Slice.All, new Slice(2, 4)] = anchors[i];
 
                     var iou_scale = bbox_iou(bbox_xywh_scaled[i][np.newaxis, Slice.All], anchors_xywh);
                     iou.Add(iou_scale);
-                    var iou_mask = iou_scale > 0.3;
-
+                    var iou_mask = np.array(new[] { false, false, true }).AsGeneric<bool>(); // iou_scale > 0.3;
                     if (np.any(iou_mask))
                     {
-                        var floors = np.floor(bbox_xywh_scaled[i, new Slice(0,2)]).astype(np.int32);
+                        var floors = np.floor(bbox_xywh_scaled[i, new Slice(0, 2)]).astype(np.int32);
                         var (xind, yind) = (floors.GetInt32(0), floors.GetInt32(1));
 
-                        label[i][yind, xind, iou_mask] = 0;
+                        label[i][yind, xind, iou_mask, Slice.All] = 0;
                         label[i][yind, xind, iou_mask, new Slice(0, 4)] = bbox_xywh;
                         label[i][yind, xind, iou_mask, new Slice(4, 5)] = 1.0f;
                         label[i][yind, xind, iou_mask, new Slice(5)] = smooth_onehot;
 
-                        var bbox_ind = Convert.ToInt32(bbox_count[i] % max_bbox_per_scale);
+                        var bbox_ind = (int)(bbox_count[i] % max_bbox_per_scale);
                         bboxes_xywh[i][bbox_ind, new Slice(0, 4)] = bbox_xywh;
                         bbox_count[i] += 1;
                         exist_positive = true;
@@ -217,7 +225,6 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 boxes2[Slice.Ellipsis, new Slice(":2")] + boxes2[Slice.Ellipsis, new Slice("2:")] * 0.5), 
                 axis: -1);
 
-            // waiting https://github.com/SciSharp/NumSharp/issues/359 to be done.
             var left_up = np.maximum(boxes1[Slice.Ellipsis, new Slice(":2")], boxes2[Slice.Ellipsis, new Slice(":2")]);
             var right_down = np.minimum(boxes1[Slice.Ellipsis, new Slice("2:")], boxes2[Slice.Ellipsis, new Slice("2:")]);
             var inter_section = np.maximum(right_down - left_up, NDArray.Scalar(0.0f));
