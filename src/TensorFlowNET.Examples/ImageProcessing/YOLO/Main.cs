@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using NumSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +15,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
     public class Main : IExample
     {
         public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = true;
+        public bool IsImportingGraph { get; set; } = false;
         public string Name => "YOLOv3";
 
         #region args
@@ -49,7 +47,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         YOLOv3 model;
         VariableV1[] net_var;
         Tensor giou_loss, conf_loss, prob_loss;
-        Tensor global_step;
+        RefVariable global_step;
         Tensor learn_rate;
         Tensor loss;
         List<RefVariable> first_stage_trainable_var_list;
@@ -80,11 +78,13 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         public void Train(Session sess)
         {
+            var graph = tf.get_default_graph();
+            //var json = JsonConvert.SerializeObject(graph._nodes_by_name, Formatting.Indented);
+            //File.WriteAllText($"YOLOv3/nodes-{(IsImportingGraph ? "right" : "wrong")}.txt", json);
+
             sess.run(tf.global_variables_initializer());
             print($"=> Restoring weights from: {cfg.TRAIN.INITIAL_WEIGHT} ... ");
-            //loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
-
-            var graph = tf.get_default_graph();
+            loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
 
             foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
             {
@@ -251,9 +251,6 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 tf.summary.scalar("total_loss", loss);
             });
 
-            //var json = JsonConvert.SerializeObject(graph._nodes_by_name, Formatting.Indented);
-            //File.WriteAllText("YOLOv3/nodes-wrong.txt", json);
-            
             return graph;
         }
 
@@ -261,9 +258,6 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         {
             tf.train.import_meta_graph("YOLOv3/yolov3.meta");
             var graph = tf.get_default_graph();
-
-            var json = JsonConvert.SerializeObject(graph._nodes_by_name, Formatting.Indented);
-            File.WriteAllText("YOLOv3/nodes-right.txt", json);
 
             train_op_with_frozen_variables = graph.OperationByName("define_first_stage_train/NoOp");
             train_op_with_all_variables = graph.OperationByName("define_second_stage_train/NoOp");

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Tensorflow;
-using Newtonsoft.Json;
 using System.Linq;
 using NumSharp;
+using Newtonsoft.Json;
 
 namespace TensorFlowNET.Examples
 {

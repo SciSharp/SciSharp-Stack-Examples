@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tensorflow;
-using TensorFlowDatasets;
 
 namespace TensorFlowNET.Examples
 {
@@ -56,8 +55,8 @@ namespace TensorFlowNET.Examples
 
         public void PrepareData()
         {
-            var tfds = new DatasetBuilder();
-            tfds.download_and_prepare();
+            //var tfds = new DatasetBuilder();
+            //tfds.download_and_prepare();
         }
 
         public void Test(Session sess)

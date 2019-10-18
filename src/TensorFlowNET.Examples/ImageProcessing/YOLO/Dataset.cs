@@ -183,15 +183,15 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     var iou_scale = bbox_iou(bbox_xywh_scaled[i][np.newaxis, Slice.All], anchors_xywh);
                     iou.Add(iou_scale);
                     var iou_mask = np.array(new[] { false, false, true }).AsGeneric<bool>(); // iou_scale > 0.3;
-                    if (np.any(iou_mask))
+                    //if (np.any(iou_mask))
                     {
                         var floors = np.floor(bbox_xywh_scaled[i, new Slice(0, 2)]).astype(np.int32);
                         var (xind, yind) = (floors.GetInt32(0), floors.GetInt32(1));
 
-                        label[i][yind, xind, iou_mask, Slice.All] = 0;
+                        /*label[i][yind, xind, iou_mask, Slice.All] = 0;
                         label[i][yind, xind, iou_mask, new Slice(0, 4)] = bbox_xywh;
                         label[i][yind, xind, iou_mask, new Slice(4, 5)] = 1.0f;
-                        label[i][yind, xind, iou_mask, new Slice(5)] = smooth_onehot;
+                        label[i][yind, xind, iou_mask, new Slice(5)] = smooth_onehot;*/
 
                         var bbox_ind = (int)(bbox_count[i] % max_bbox_per_scale);
                         bboxes_xywh[i][bbox_ind, new Slice(0, 4)] = bbox_xywh;
@@ -225,13 +225,14 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 boxes2[Slice.Ellipsis, new Slice(":2")] + boxes2[Slice.Ellipsis, new Slice("2:")] * 0.5), 
                 axis: -1);
 
-            var left_up = np.maximum(boxes1[Slice.Ellipsis, new Slice(":2")], boxes2[Slice.Ellipsis, new Slice(":2")]);
+            /*var left_up = np.maximum(boxes1[Slice.Ellipsis, new Slice(":2")], boxes2[Slice.Ellipsis, new Slice(":2")]);
             var right_down = np.minimum(boxes1[Slice.Ellipsis, new Slice("2:")], boxes2[Slice.Ellipsis, new Slice("2:")]);
             var inter_section = np.maximum(right_down - left_up, NDArray.Scalar(0.0f));
             var inter_area = inter_section[Slice.Ellipsis, 0] * inter_section[Slice.Ellipsis, 1];
             var union_area = boxes1_area + boxes2_area - inter_area;
 
-            return inter_area / union_area;
+            return inter_area / union_area;*/
+            throw new NotImplementedException("");
         }
     }
 }

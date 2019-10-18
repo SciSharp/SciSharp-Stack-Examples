@@ -29,7 +29,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.ObjectDetection
         {
             var config = tf.estimator.RunConfig(model_dir: model_dir);
 
-            var train_and_eval_dict = model_lib.create_estimator_and_inputs(run_config: config,
+            /*var train_and_eval_dict = model_lib.create_estimator_and_inputs(run_config: config,
                 hparams: new HParams(true),
                 pipeline_config_path: pipeline_config_path,
                 train_steps: num_train_steps,
@@ -48,10 +48,10 @@ namespace TensorFlowNET.Examples.ImageProcessing.ObjectDetection
                 eval_on_train_input_fn,
                 predict_input_fn,
                 train_steps,
-                eval_on_train_data: false);
+                eval_on_train_data: false);*/
 
             // Currently only a single Eval Spec is allowed.
-            tf.estimator.train_and_evaluate(estimator, train_spec, eval_specs[0]);
+            // tf.estimator.train_and_evaluate(estimator, train_spec, eval_specs[0]);
 
             return true;
         }
