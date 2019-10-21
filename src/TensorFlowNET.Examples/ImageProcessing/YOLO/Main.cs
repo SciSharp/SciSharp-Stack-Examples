@@ -66,9 +66,8 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
             var graph = IsImportingGraph ? ImportGraph() : BuildGraph();
 
-            var options = new SessionOptions();
-            options.SetConfig(new ConfigProto { AllowSoftPlacement = true });
-            using (var sess = tf.Session(graph, opts: options))
+            var config = new ConfigProto { AllowSoftPlacement = true };
+            using (var sess = tf.Session(graph, config: config))
             {
                 Train(sess);
             }

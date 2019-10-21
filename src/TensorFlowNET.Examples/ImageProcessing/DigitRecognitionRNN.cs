@@ -28,7 +28,7 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class DigitRecognitionRNN : IExample
     {
-        public bool Enabled { get; set; } = false;
+        public bool Enabled { get; set; } = true;
         public bool IsImportingGraph { get; set; } = false;
 
         public string Name => "MNIST RNN";

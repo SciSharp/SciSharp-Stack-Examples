@@ -110,7 +110,12 @@ namespace TensorFlowNET.Examples
         {
             PrepareData();
             var g = BuildGraph();
-            using (var sess = tf.Session())
+            var config = new ConfigProto
+            {
+                IntraOpParallelismThreads = 1,
+                InterOpParallelismThreads = 1
+            };
+            using (var sess = tf.Session(config))
                 Train(sess);
             return true;
         }
