@@ -113,7 +113,8 @@ namespace TensorFlowNET.Examples
             var config = new ConfigProto
             {
                 IntraOpParallelismThreads = 1,
-                InterOpParallelismThreads = 1
+                InterOpParallelismThreads = 1,
+                LogDevicePlacement = true
             };
             using (var sess = tf.Session(config))
                 Train(sess);

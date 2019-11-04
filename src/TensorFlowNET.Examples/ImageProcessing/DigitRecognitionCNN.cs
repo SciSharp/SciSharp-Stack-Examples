@@ -85,7 +85,7 @@ namespace TensorFlowNET.Examples
                 Test(sess);
             }
 
-            return loss_test < 0.055 && accuracy_test > 0.98;
+            return accuracy_test > 0.98;
         }
 
         public Graph BuildGraph()
@@ -165,9 +165,7 @@ namespace TensorFlowNET.Examples
                     if (iteration % display_freq == 0)
                     {
                         // Calculate and display the batch loss and accuracy
-                        var result = sess.run(new[] { loss, accuracy }, new FeedItem(x, x_batch), new FeedItem(y, y_batch));
-                        loss_val = result[0];
-                        accuracy_val = result[1];
+                        (loss_val, accuracy_val) = sess.run((loss, accuracy), new FeedItem(x, x_batch), new FeedItem(y, y_batch));
                         print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
                         sw.Restart();
                     }

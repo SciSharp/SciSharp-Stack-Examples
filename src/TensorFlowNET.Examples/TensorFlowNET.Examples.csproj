@@ -12,21 +12,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ImageProcessing\ObjectDetection\Main.cs" />
     <Compile Remove="Keras.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.9" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.1.1.20191017" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.1.1.20191026" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="1.14.1" />
+    <PackageReference Include="SciSharp.TensorFlowHub" Version="0.0.3" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
-    <PackageReference Include="TensorFlow.NET" Version="0.11.8" />
+    <PackageReference Include="TensorFlow.NET" Version="0.12.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Hub\TensorFlowNET.Hub.csproj" />
-    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Models\TensorFlowNET.Models.csproj" />
+    <Folder Include="ImageProcessing\ObjectDetection\" />
   </ItemGroup>
 </Project>
