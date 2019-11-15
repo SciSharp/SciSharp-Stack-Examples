@@ -12,15 +12,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ImageProcessing\ObjectDetection\Main.cs" />
+    <Compile Remove="ImageProcessing\ObjectDetection\**" />
+    <EmbeddedResource Remove="ImageProcessing\ObjectDetection\**" />
+    <None Remove="ImageProcessing\ObjectDetection\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Keras.cs" />
+    <Compile Remove="TextProcessing\NER\LstmCrfNer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.1.1.20191026" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="1.14.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="1.15.0" />
     <PackageReference Include="SciSharp.TensorFlowHub" Version="0.0.3" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
@@ -28,6 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ImageProcessing\ObjectDetection\" />
+    <Folder Include="TextProcessing\NER\" />
   </ItemGroup>
 </Project>

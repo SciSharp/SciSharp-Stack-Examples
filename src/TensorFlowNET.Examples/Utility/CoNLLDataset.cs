@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Tensorflow.Estimators;
 
 namespace TensorFlowNET.Examples.Utility
 {
@@ -11,19 +10,18 @@ namespace TensorFlowNET.Examples.Utility
         static Dictionary<string, int> vocab_words;
         static Dictionary<string, int> vocab_tags;
 
-        HyperParams _hp;
         string _path;
 
-        public CoNLLDataset(string path, HyperParams hp)
+        public CoNLLDataset(string path)
         {
             if (vocab_chars == null)
-                vocab_chars = load_vocab(hp.filepath_chars);
+                vocab_chars = load_vocab("filepath_chars");
 
             if (vocab_words == null)
-                vocab_words = load_vocab(hp.filepath_words);
+                vocab_words = load_vocab("filepath_words");
 
             if (vocab_tags == null)
-                vocab_tags = load_vocab(hp.filepath_tags);
+                vocab_tags = load_vocab("filepath_tags");
 
             _path = path;
         }
