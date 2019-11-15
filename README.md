@@ -25,6 +25,7 @@ Example runner will download all the required files like training data and model
 * [Text Classification](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
 * [CNN Text Classification](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
 * [MNIST CNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs)
+* [MNIST RNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
 * [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
 * [Transfer Learning for Image Classification in InceptionV3](src/TensorFlowNET.Examples/ImageProcessing/RetrainImageClassifier.cs)
 
