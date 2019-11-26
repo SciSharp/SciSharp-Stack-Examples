@@ -71,6 +71,8 @@ namespace TensorFlowNET.Examples
             // Initialize the variables (i.e. assign their default value)
             var init = tf.global_variables_initializer();
 
+            var total_batch = mnist.Train.NumOfExamples / batch_size;
+
             var sw = new Stopwatch();
 
             using (var sess = tf.Session())
@@ -82,9 +84,8 @@ namespace TensorFlowNET.Examples
                 foreach (var epoch in range(training_epochs))
                 {
                     sw.Start();
-
                     var avg_cost = 0.0f;
-                    var total_batch = mnist.Train.NumOfExamples / batch_size;
+                    
                     // Loop over all batches
                     foreach (var i in range(total_batch))
                     {
