@@ -315,19 +315,21 @@ test(sess)
 # https://medium.com/@prasadpal107/saving-freezing-optimizing-for-inference-restoring-of-tensorflow-models-b4146deb21b5
 saver = tf.train.Saver()
 saver.save(sess,'./tensorflowModel.ckpt')
-"""
-tf.train.write_graph(sess.graph.as_graph_def(), '.', 'tensorflowModel.pbtxt', as_text=True)
-freeze_graph(input_graph = 'tensorflowModel.pbtxt', 
-             input_saver = '', 
-             input_binary = False, 
-             input_checkpoint = './tensorflowModel.ckpt', 
-             output_node_names = "Train/Prediction/predictions",
-             restore_op_name = '', 
-             filename_tensor_name = '',
-             output_graph = 'frozentensorflowModel.pb', 
-             clear_devices = True, 
-             initializer_nodes = '')
-"""
+
+def freeze_model(sess):
+    tf.train.write_graph(sess.graph.as_graph_def(), '.', 'tensorflowModel.pbtxt', as_text=True)
+    freeze_graph(input_graph = 'tensorflowModel.pbtxt', 
+                 input_saver = '', 
+                 input_binary = False, 
+                 input_checkpoint = './tensorflowModel.ckpt', 
+                 output_node_names = 'Train/Prediction/predictions',
+                 restore_op_name = '', 
+                 filename_tensor_name = '',
+                 output_graph = 'frozentensorflowModel.pb', 
+                 clear_devices = True, 
+                 initializer_nodes = '')
+
+# freeze_model(sess)
 # close the session after you are done with testing and freezing
 sess.close()
 
