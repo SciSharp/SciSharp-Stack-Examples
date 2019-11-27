@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from tensorflow.examples.tutorials.mnist import input_data
+from tensorflow.python.tools.freeze_graph import freeze_graph 
 
 img_h = img_w = 28  # MNIST images are 28x28
 img_size_flat = img_h * img_w  # 28x28=784, the total number of pixels
@@ -58,7 +59,7 @@ print("- Validation-set:\t{}".format(len(y_valid)))
 
 logs_path = "./logs"  # path to the folder that we want to save the logs for Tensorboard
 lr = 0.001  # The optimization initial learning rate
-epochs = 10  # Total number of training epochs
+epochs = 1  # Total number of training epochs
 batch_size = 100  # Training batch size
 display_freq = 100  # Frequency of displaying the training results
 
@@ -202,9 +203,8 @@ with tf.variable_scope('Train'):
 init = tf.global_variables_initializer()
 # Merge all summaries
 merged = tf.summary.merge_all()
- 
 
-sess = tf.InteractiveSession()
+sess = tf.Session()
 sess.run(init)
 global_step = 0
 summary_writer = tf.summary.FileWriter(logs_path, sess.graph)
@@ -239,7 +239,6 @@ for epoch in range(epochs):
     print("Epoch: {0}, validation loss: {1:.2f}, validation accuracy: {2:.01%}".
           format(epoch + 1, loss_valid, acc_valid))
     print('---------------------------------------------------------')
- 
 
 def plot_images(images, cls_true, cls_pred=None, title=None):
     """
@@ -293,22 +292,67 @@ def plot_example_errors(images, cls_true, cls_pred, title=None):
                 cls_true=cls_true[0:9],
                 cls_pred=cls_pred[0:9],
                 title=title)
- 
+
+def test(sess):
+    x_test, y_test = load_data(mode='test')
+    feed_dict_test = {x: x_test, y: y_test}
+    loss_test, acc_test = sess.run([loss, accuracy], feed_dict=feed_dict_test)
+    print('---------------------------------------------------------')
+    print("Test loss: {0:.2f}, test accuracy: {1:.01%}".format(loss_test, acc_test))
+    print('---------------------------------------------------------')
+
+    # Plot some of the correct and misclassified examples
+    cls_pred = sess.run(cls_prediction, feed_dict=feed_dict_test)
+    cls_true = np.argmax(y_test, axis=1)
+    plot_images(x_test, cls_true, cls_pred, title='Correct Examples')
+    plot_example_errors(x_test, cls_true, cls_pred, title='Misclassified Examples')
+    plt.show()
 
 # Test the network when training is done
-x_test, y_test = load_data(mode='test')
-feed_dict_test = {x: x_test, y: y_test}
-loss_test, acc_test = sess.run([loss, accuracy], feed_dict=feed_dict_test)
-print('---------------------------------------------------------')
-print("Test loss: {0:.2f}, test accuracy: {1:.01%}".format(loss_test, acc_test))
-print('---------------------------------------------------------')
+test(sess)
 
-# Plot some of the correct and misclassified examples
-cls_pred = sess.run(cls_prediction, feed_dict=feed_dict_test)
-cls_true = np.argmax(y_test, axis=1)
-plot_images(x_test, cls_true, cls_pred, title='Correct Examples')
-plot_example_errors(x_test, cls_true, cls_pred, title='Misclassified Examples')
-plt.show()
-
-# close the session after you are done with testing
+# freeze graph
+# https://medium.com/@prasadpal107/saving-freezing-optimizing-for-inference-restoring-of-tensorflow-models-b4146deb21b5
+saver = tf.train.Saver()
+saver.save(sess,'./tensorflowModel.ckpt')
+"""
+tf.train.write_graph(sess.graph.as_graph_def(), '.', 'tensorflowModel.pbtxt', as_text=True)
+freeze_graph(input_graph = 'tensorflowModel.pbtxt', 
+             input_saver = '', 
+             input_binary = False, 
+             input_checkpoint = './tensorflowModel.ckpt', 
+             output_node_names = "Train/Prediction/predictions",
+             restore_op_name = '', 
+             filename_tensor_name = '',
+             output_graph = 'frozentensorflowModel.pb', 
+             clear_devices = True, 
+             initializer_nodes = '')
+"""
+# close the session after you are done with testing and freezing
 sess.close()
+
+# import freezing model
+def load_pb(frozen_graph_filename):
+    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        return graph_def
+
+graph = tf.Graph()
+sess = tf.Session(graph = graph)
+
+with graph.as_default():
+    with sess.as_default():
+        # restoring the model
+        saver = tf.train.import_meta_graph('tensorflowModel.ckpt.meta')
+        saver.restore(sess,tf.train.latest_checkpoint('./'))
+        # tf.import_graph_def(load_pb('frozentensorflowModel.pb'), name = '')
+
+        x = graph.get_tensor_by_name("Input/X:0")
+        y = graph.get_tensor_by_name("Input/Y:0")
+        loss = graph.get_tensor_by_name("Train/Loss/loss:0")
+        accuracy = graph.get_tensor_by_name("Train/Accuracy/accuracy:0")
+        cls_prediction = graph.get_tensor_by_name("Train/Prediction/predictions:0")
+
+        test(sess)
+
