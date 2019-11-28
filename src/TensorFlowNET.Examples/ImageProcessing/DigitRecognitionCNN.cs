@@ -17,6 +17,7 @@
 using NumSharp;
 using System;
 using System.Diagnostics;
+using System.IO;
 using Tensorflow;
 using Tensorflow.Hub;
 using static Tensorflow.Binding;
@@ -84,6 +85,8 @@ namespace TensorFlowNET.Examples
                 Train(sess);
                 Test(sess);
             }
+
+            ValidateSavedModel();
 
             return accuracy_test > 0.98;
         }
@@ -177,6 +180,8 @@ namespace TensorFlowNET.Examples
                 print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
                 print("---------------------------------------------------------");
             }
+
+            SaveCheckpoint(sess);
         }
 
         public void Test(Session sess)
@@ -304,6 +309,8 @@ namespace TensorFlowNET.Examples
             
         public void PrepareData()
         {
+            Directory.CreateDirectory(Name);
+
             mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
             (x_train, y_train) = Reformat(mnist.Train.Data, mnist.Train.Labels);
             (x_valid, y_valid) = Reformat(mnist.Validation.Data, mnist.Validation.Labels);
@@ -332,5 +339,35 @@ namespace TensorFlowNET.Examples
         public Graph ImportGraph() => throw new NotImplementedException();
 
         public void Predict(Session sess) => throw new NotImplementedException();
+
+        public void SaveCheckpoint(Session sess)
+        {
+            var saver = tf.train.Saver();
+            saver.save(sess, Path.Combine(Name, "mnist_cnn.ckpt"));
+        }
+
+        public void ValidateSavedModel()
+        {
+            var graph = tf.Graph().as_default();
+            using (var sess = tf.Session(graph))
+            {
+                LoadModel(sess);
+                Test(sess);
+            }
+        }
+
+        public void LoadModel(Session sess)
+        {
+            Console.WriteLine($"Import graph meta");
+            var saver = tf.train.import_meta_graph(Path.Combine(Name, "mnist_cnn.ckpt.meta"));
+            // Restore variables from checkpoint
+            saver.restore(sess, tf.train.latest_checkpoint(Name));
+
+            var graph = tf.get_default_graph();
+            loss = graph.get_tensor_by_name("Train/Loss/loss:0");
+            accuracy = graph.get_tensor_by_name("Train/Accuracy/accuracy:0");
+            x = graph.get_tensor_by_name("Input/X:0");
+            y = graph.get_tensor_by_name("Input/Y:0");
+        }
     }
 }

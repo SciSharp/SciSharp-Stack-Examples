@@ -13,8 +13,11 @@
 
   <ItemGroup>
     <Compile Remove="ImageProcessing\ObjectDetection\**" />
+    <Compile Remove="python\**" />
     <EmbeddedResource Remove="ImageProcessing\ObjectDetection\**" />
+    <EmbeddedResource Remove="python\**" />
     <None Remove="ImageProcessing\ObjectDetection\**" />
+    <None Remove="python\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\TensorFlow.Hub\TensorFlow.Hub\TensorFlow.Hub.csproj" />
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Core\TensorFlow.Binding.csproj" />
   </ItemGroup>
 </Project>
