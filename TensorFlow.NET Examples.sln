@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Examples", "src\TensorFlowNET.Examples\TensorFlowNET.Examples.csproj", "{3AC62662-7861-4C21-A402-82864F2A8AF7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlow.Binding", "..\TensorFlow.NET\src\TensorFlowNET.Core\TensorFlow.Binding.csproj", "{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TensorFlowNET.Examples.FSharp", "src\TensorFlowNET.Examples.FSharp\TensorFlowNET.Examples.FSharp.fsproj", "{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{3AC62662-7861-4C21-A402-82864F2A8AF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3AC62662-7861-4C21-A402-82864F2A8AF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{3AC62662-7861-4C21-A402-82864F2A8AF7}.Release|x64.Build.0 = Release|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Debug|x64.Build.0 = Debug|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Release|x64.ActiveCfg = Release|Any CPU
-		{688FD0A0-D2A7-4222-8A47-91F4C561FEE8}.Release|x64.Build.0 = Release|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Debug|x64.Build.0 = Debug|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Release|x64.ActiveCfg = Release|Any CPU
+		{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

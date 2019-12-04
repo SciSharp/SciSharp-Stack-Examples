@@ -3,11 +3,23 @@ TensorFlow.NET Examples contains many practical examples written in C#. If you s
 
 [![Join the chat at https://gitter.im/publiclab/publiclab](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sci-sharp/community)
 
+
+
+Requirements:
+
+* .NET Core 3.1
+
+* Visual Studio 2019 (v16.4)
+
+  
+
 Run specific example in shell:
 
 ```cs
 dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN"
 ```
+
+
 
 Example runner will download all the required files like training data and model pb files.
 
@@ -26,6 +38,7 @@ Example runner will download all the required files like training data and model
 * [CNN Text Classification](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
 * [MNIST CNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs)
 * [MNIST RNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
+* [MNIST LSTM](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
 * [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
 * [Transfer Learning for Image Classification in InceptionV3](src/TensorFlowNET.Examples/ImageProcessing/RetrainClassifierWithInceptionV3.cs)
 
