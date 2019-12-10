@@ -89,7 +89,9 @@ namespace TensorFlowNET.Examples
                     // Loop over all batches
                     foreach (var i in range(total_batch))
                     {
-                        var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(batch_size);
+                        var start = i * batch_size;
+                        var end = (i + 1) * batch_size;
+                        var (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, end);
                         // Run optimization op (backprop) and cost op (to get loss value)
                         (_, float c) = sess.run((optimizer, cost), 
                             (x, batch_xs), 
