@@ -41,6 +41,7 @@ Example runner will download all the required files like training data and model
 * [MNIST LSTM](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
 * [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
 * [Transfer Learning for Image Classification in InceptionV3](src/TensorFlowNET.Examples/ImageProcessing/RetrainClassifierWithInceptionV3.cs)
+* [Cnn In Your Own Data](src/TensorFlowNET.Examples/CnnInYourOwnData/CnnInYourOwnData.cs)
 
 
 
