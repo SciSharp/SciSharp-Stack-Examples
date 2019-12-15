@@ -16,6 +16,8 @@
 
 
 using NumSharp;
+using NumSharp.Backends;
+using NumSharp.Backends.Unmanaged;
 using OpenCvSharp;
 using System;
 using System.Collections;
@@ -23,6 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Tensorflow;
 using Tensorflow.Hub;
 using static Tensorflow.Binding;
@@ -66,7 +69,7 @@ namespace TensorFlowNET.Examples
         Tensor normalized;
         Tensor decodeJpeg;
 
-        int display_freq = 10;
+        int display_freq = 2;
         float accuracy_test = 0f;
         float loss_test = 1f;
 
@@ -547,22 +550,14 @@ namespace TensorFlowNET.Examples
             var y_batch = y[slice];
             return (x_batch, y_batch);
         }
-        private (NDArray, NDArray) GetNextBatch(Session sess, string[] x, NDArray y, int start, int end)
+        private unsafe (NDArray, NDArray) GetNextBatch(Session sess, string[] x, NDArray y, int start, int end)
         {
             NDArray x_batch = np.zeros(end - start, img_h, img_w, n_channels);
             int n = 0;
             for (int i = start; i < end; i++)
             {
                 Mat img1 = Cv2.ImRead(x[i], ImreadModes.Grayscale);
-
-                //some bugs here
-                byte[] img2 = img1.ToBytes();
-                // byte[,] img2 = new byte[img1.Rows, img1.Cols];
-                // byte[] img2 = new byte[img1.Rows* img1.Cols];
-                // img1.GetArray(img1.Rows, img1.Cols, img2);
-
-                NDArray img3 = new NDArray(img2);
-                NDArray img4 = img3.reshape(img1.Height, img1.Width, n_channels);
+                NDArray img4 = WrapWithNDArray(img1);
                 x_batch[n] = sess.run(normalized, (decodeJpeg, img4));
                 n++;
             }
@@ -570,7 +565,19 @@ namespace TensorFlowNET.Examples
             var y_batch = y[slice];
             return (x_batch, y_batch);
         }
+        //this method wraps without copying Mat.
+        private unsafe NDArray WrapWithNDArray(Mat src)
+        {
+            Shape shape = (src.Height, src.Width, src.Type().Channels);
+            var storage = new UnmanagedStorage(new ArraySlice<byte>(new UnmanagedMemoryBlock<byte>(src.DataPointer, shape.Size, () => Donothing(src))), shape); //we pass donothing as it keeps reference to src preventing its disposal by GC
+            return new NDArray(storage);
+        }
 
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        private void Donothing(Mat m)
+        {
+            var a = m;
+        }
         #endregion               
 
         public void Test(Session sess)
@@ -594,8 +601,8 @@ namespace TensorFlowNET.Examples
                 string fileName = ArrayFileName_Test[i];
                 string real_str = Dict_Label[real];
                 string predict_str = Dict_Label[predict];
-                print((i + 1) + "|" + "result:" + result + "|" + "real_str:" + real_str + "|"
-                    + "predict_str:" + predict_str + "|" + "probability:" + probability + "|"
+                print((i + 1).ToString() + "|" + "result:" + result + "|" + "real_str:" + real_str + "|"
+                    + "predict_str:" + predict_str + "|" + "probability:" + probability.GetSingle().ToString() + "|"
                     + "fileName:" + fileName);
             }
         }
