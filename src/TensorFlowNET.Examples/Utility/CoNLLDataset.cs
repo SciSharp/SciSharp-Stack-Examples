@@ -33,8 +33,8 @@ namespace TensorFlowNET.Examples.Utility
             // 1. preprocess word
             if (true) // lowercase
                 word = word.ToLower();
-            if (false) // isdigit
-                word = "$NUM$";
+            //if (false) // isdigit
+                //word = "$NUM$";
 
             // 2. get id of word
             int id = vocab_words.GetValueOrDefault(word, vocab_words["$UNK$"]);
@@ -45,10 +45,10 @@ namespace TensorFlowNET.Examples.Utility
         private int processing_tag(string word)
         {
             // 1. preprocess word
-            if (false) // lowercase
-                word = word.ToLower();
-            if (false) // isdigit
-                word = "$NUM$";
+            //if (false) // lowercase
+                //word = word.ToLower();
+            //if (false) // isdigit
+                //word = "$NUM$";
 
             // 2. get id of word
             int id = vocab_tags.GetValueOrDefault(word, -1);
