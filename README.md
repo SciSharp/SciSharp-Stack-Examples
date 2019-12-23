@@ -7,15 +7,22 @@ TensorFlow.NET Examples contains many practical examples written in C#. If you s
 
 Requirements:
 
-* .NET Core 3.1
+* [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
-* Visual Studio 2019 (v16.4)
+* [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) or [Visual Studio Code](https://code.visualstudio.com/)
 
-  
+
 
 Run specific example in shell:
 
 ```cs
+// run all examples
+dotnet run --project src/TensorFlowNET.Examples
+
+// run specific example
+dotnet run --project src/TensorFlowNET.Examples -ex "Linear Regression"
+
+// run in compiled library
 dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN"
 ```
 
@@ -41,9 +48,11 @@ Example runner will download all the required files like training data and model
 * [MNIST LSTM](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
 * [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
 * [Transfer Learning for Image Classification in InceptionV3](src/TensorFlowNET.Examples/ImageProcessing/RetrainClassifierWithInceptionV3.cs)
-* [Cnn In Your Own Data](src/TensorFlowNET.Examples/CnnInYourOwnData/CnnInYourOwnData.cs)
+* [CNN In Your Own Dataset](src/TensorFlowNET.Examples/CnnInYourOwnData/CnnInYourOwnData.cs)
 
 
+### Welcome to PR your example to us.
+Your contribution will make .NET community better than ever.
 
 TensorFlow.NET is a part of [SciSharp STACK](https://scisharp.github.io/SciSharp/)
 <br>
