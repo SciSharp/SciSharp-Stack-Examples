@@ -18,7 +18,7 @@
 using NumSharp;
 using NumSharp.Backends;
 using NumSharp.Backends.Unmanaged;
-using OpenCvSharp;
+using SharpCV;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,8 +27,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Tensorflow;
-using Tensorflow.Hub;
 using static Tensorflow.Binding;
+using static SharpCV.Binding;
 
 
 namespace TensorFlowNET.Examples
@@ -557,27 +557,13 @@ namespace TensorFlowNET.Examples
             int n = 0;
             for (int i = start; i < end; i++)
             {
-                Mat img1 = Cv2.ImRead(x[i], ImreadModes.Grayscale);
-                NDArray img4 = WrapWithNDArray(img1);
+                NDArray img4 = cv2.imread(x[i], IMREAD_COLOR.IMREAD_GRAYSCALE);
                 x_batch[n] = sess.run(normalized, (decodeJpeg, img4));
                 n++;
             }
             var slice = new Slice(start, end);
             var y_batch = y[slice];
             return (x_batch, y_batch);
-        }
-        //this method wraps without copying Mat.
-        private unsafe NDArray WrapWithNDArray(Mat src)
-        {
-            Shape shape = (src.Height, src.Width, src.Type().Channels);
-            var storage = new UnmanagedStorage(new ArraySlice<byte>(new UnmanagedMemoryBlock<byte>(src.DataPointer, shape.Size, () => Donothing(src))), shape); //we pass donothing as it keeps reference to src preventing its disposal by GC
-            return new NDArray(storage);
-        }
-
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        private void Donothing(Mat m)
-        {
-            var a = m;
         }
         #endregion               
 
