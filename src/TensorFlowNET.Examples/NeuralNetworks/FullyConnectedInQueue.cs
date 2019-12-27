@@ -47,8 +47,6 @@ namespace TensorFlowNET.Examples
         {
             var g = tf.get_default_graph();
 
-            Tensor z = null;
-
             // We build our small model: a basic two layers neural net with ReLU
             tf_with(tf.variable_scope("queue"), delegate
             {
@@ -56,7 +54,7 @@ namespace TensorFlowNET.Examples
                 var q = tf.FIFOQueue(capacity: 5, dtype: tf.float32);
                 // We use the "enqueue" operation so 1 element of the queue is the full batch
                 var enqueue_op = q.enqueue(x_inputs_data);
-                var numberOfThreads = 1;
+                // var numberOfThreads = 1;
                 // var qr = tf.train.QueueRunner(q, [enqueue_op] * numberOfThreads);
             });
 

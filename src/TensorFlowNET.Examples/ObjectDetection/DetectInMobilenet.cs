@@ -26,7 +26,7 @@ using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
-    public class ObjectDetection : IExample
+    public class DetectInMobilenet : IExample
     {
         public bool Enabled { get; set; } = true;
         public string Name => "Object Detection";
