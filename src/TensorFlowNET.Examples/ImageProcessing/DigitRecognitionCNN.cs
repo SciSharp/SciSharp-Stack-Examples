@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************************/
 
+using Google.Protobuf;
 using NumSharp;
 using System;
 using System.Diagnostics;
@@ -182,6 +183,7 @@ namespace TensorFlowNET.Examples
             }
 
             SaveCheckpoint(sess);
+            // ExportModel(sess);
         }
 
         public void Test(Session sess)
@@ -344,6 +346,14 @@ namespace TensorFlowNET.Examples
         {
             var saver = tf.train.Saver();
             saver.save(sess, Path.Combine(Name, "mnist_cnn.ckpt"));
+        }
+
+        public void ExportModel(Session sess)
+        {
+            var graph = sess.graph;
+            var output_graph_def = tf.graph_util.convert_variables_to_constants(
+                sess, graph.as_graph_def(), new string[] { "Train/Loss/loss:0" });
+            File.WriteAllBytes(Path.Combine(Name, "model.pb"), output_graph_def.ToByteArray());
         }
 
         public void ValidateSavedModel()

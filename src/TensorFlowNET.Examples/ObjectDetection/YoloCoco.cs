@@ -29,10 +29,10 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// https://github.com/shimat/opencvsharp/wiki/Capturing-Video
     /// </summary>
-    public class DetectFromVideo : IExample
+    public class YoloCoco : IExample
     {
         public bool Enabled { get; set; } = true;
-        public string Name => "Detect From Video";
+        public string Name => "YoloCoco";
         public bool IsImportingGraph { get; set; } = true;
 
         int input_size = 416;
@@ -113,8 +113,8 @@ namespace TensorFlowNET.Examples
 
                 var bboxes = postprocess_boxes(pred_bbox, frame_size, input_size, 0.3f);
 
-                cv2.imshow("result", frame);
-                cv2.waitKey(sleepTime);
+                // cv2.imshow("result", frame);
+                // cv2.waitKey(sleepTime);
 
                 (loaded, frame) = vid.read();
             }
@@ -159,13 +159,31 @@ namespace TensorFlowNET.Examples
             pred_coor[Slice.All, new Slice(1, step: 2)] = 1.0 * (pred_coor[Slice.All, new Slice(1, step: 2)] - dh) / resize_ratio;
 
             // (3) clip some boxes those are out of range
-            // pred_coor = np.concatenate((np.maximum(pred_coor[Slice.All, new Slice(stop: 2)], np.array(new[] { 0, 0 })),
-            // np.minimum(pred_coor[Slice.All, new Slice(2)], np.array(new[] { org_w - 1, org_h - 1 }))), axis: -1);
+            /*pred_coor = np.concatenate((np.maximum(pred_coor[Slice.All, new Slice(stop: 2)], np.array(new[] { 0, 0 })),
+             np.minimum(pred_coor[Slice.All, new Slice(2)], np.array(new[] { org_w - 1, org_h - 1 }))), axis: -1);
 
-            // var invalid_mask = np.logical_or((pred_coor[Slice.All, 0] > pred_coor[Slice.All, 2]), (pred_coor[Slice.All, 1] > pred_coor[Slice.All, 3]));
-            // pred_coor[invalid_mask] = 0;
+            var invalid_mask = np.arange(1);// np.logical_or(pred_coor[Slice.All, 0] > pred_coor[Slice.All, 2], pred_coor[Slice.All, 1] > pred_coor[Slice.All, 3]);
+            pred_coor[invalid_mask] = 0;
 
+            // (4) discard some invalid boxes
+            var bboxes_scale = np.sqrt(np.multiply.reduce(pred_coor[Slice.All, new Slice(2, 4)] - pred_coor[Slice.All, new Slice(0, 2)], axis: -1));
+            var scale_mask = np.logical_and((valid_scale[0] < bboxes_scale), (bboxes_scale < valid_scale[1]));
+
+            // (5) discard some boxes with low scores
+            NDArray coors;
+            var classes = np.argmax(pred_prob, axis: -1);
+            var scores = pred_conf * pred_prob[np.arange(len(pred_coor)), classes];
+            var score_mask = scores > score_threshold;
+            var mask = np.logical_and(scale_mask, score_mask);
+            (coors, scores, classes) = (pred_coor[mask], scores[mask], classes[mask]);
+
+            return np.concatenate(new[] { coors, scores[Slice.All, np.newaxis], classes[Slice.All, np.newaxis] }, axis: -1);*/
             return pred_bbox;
+        }
+
+        private NDArray nms(NDArray bboxes, float iou_threshold, float sigma = 0.3f, string method = "nms")
+        {
+            return bboxes;
         }
 
         public void Test(Session sess)
