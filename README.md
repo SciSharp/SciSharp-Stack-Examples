@@ -1,5 +1,5 @@
-# TensorFlow.NET Examples
-TensorFlow.NET Examples contains many practical examples written in C#. If you still don't know how to use .NET for deep learning, getting started from this Repo is your best choice.
+# SciSharp STACK Examples
+This repo contains many practical examples written in SciSharp's machine learning libraries. If you still don't know how to use .NET for deep learning, getting started from here is your best choice.
 
 [![Join the chat at https://gitter.im/publiclab/publiclab](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sci-sharp/community)
 
@@ -16,7 +16,7 @@ Requirements:
 Run specific example in shell:
 
 ```cs
-// run all examples
+// run all examples from source code
 dotnet run --project src/TensorFlowNET.Examples
 
 // run specific example
