@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Tensorflow;
 using static Tensorflow.Binding;
 
@@ -29,8 +30,9 @@ namespace TensorFlowNET.Examples
             {
                 // Run the op
                 var result = sess.run(hello);
-                Console.WriteLine(result.ToString());
-                return result.ToString().Equals(str);
+                var output = UTF8Encoding.UTF8.GetString((byte[])result);
+                Console.WriteLine(output);
+                return output.Equals(str);
             }
         }
 
