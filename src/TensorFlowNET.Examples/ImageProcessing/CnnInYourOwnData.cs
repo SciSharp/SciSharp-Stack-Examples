@@ -29,7 +29,8 @@ using System.Runtime.CompilerServices;
 using Tensorflow;
 using static Tensorflow.Binding;
 using static SharpCV.Binding;
-
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace TensorFlowNET.Examples
 {
@@ -104,6 +105,7 @@ namespace TensorFlowNET.Examples
         double max_accuracy = 0;
 
         string path_model;
+        int TrainQueueCapa = 3;
 
 
         public bool Run()
@@ -127,7 +129,7 @@ namespace TensorFlowNET.Examples
         public void PrepareData()
         {
 
-            string url = "https://github.com/SciSharp/TensorFlow.NET-Examples/tree/master/data/data_CnnInYourOwnData.zip";
+            string url = "https://github.com/SciSharp/SciSharp-Stack-Examples/blob/master/data/data_CnnInYourOwnData.zip";
             Directory.CreateDirectory(Name);
             Utility.Web.Download(url, Name, "data_CnnInYourOwnData.zip");
             Utility.Compress.UnZip(Name + "\\data_CnnInYourOwnData.zip", Name);
@@ -449,7 +451,6 @@ namespace TensorFlowNET.Examples
         #endregion
 
         #region Train
-        //TODO: Thread Queue will add later
         public void Train(Session sess)
         {
             // Number of training iterations in each epoch
@@ -486,24 +487,34 @@ namespace TensorFlowNET.Examples
                     }
                 }
 
-                foreach (var iteration in range(num_tr_iter))
+                //Load local images asynchronously,use queue,improve train efficiency
+                BlockingCollection<(NDArray c_x, NDArray c_y, int iter)> BlockC = new BlockingCollection<(NDArray C1, NDArray C2, int iter)>(TrainQueueCapa);
+                Task.Run(() =>
                 {
-                    var start = iteration * batch_size;
-                    var end = (iteration + 1) * batch_size;
-                    var (x_batch, y_batch) = GetNextBatch(sess, ArrayFileName_Train, y_train, start, end);
+                    foreach (var iteration in range(num_tr_iter))
+                    {
+                        var start = iteration * batch_size;
+                        var end = (iteration + 1) * batch_size;
+                        (NDArray x_batch, NDArray y_batch) = GetNextBatch(sess, ArrayFileName_Train, y_train, start, end);
+                        BlockC.Add((x_batch, y_batch, iteration));
+                    }
+                    BlockC.CompleteAdding();
+                });
 
-                    sess.run(optimizer, (x, x_batch), (y, y_batch));
+                foreach (var item in BlockC.GetConsumingEnumerable())
+                {
+                    sess.run(optimizer, (x, item.c_x), (y, item.c_y));
 
-                    if (iteration % display_freq == 0)
+                    if (item.iter % display_freq == 0)
                     {
                         // Calculate and display the batch loss and accuracy
-                        var result = sess.run(new[] { loss, accuracy }, new FeedItem(x, x_batch), new FeedItem(y, y_batch));
+                        var result = sess.run(new[] { loss, accuracy }, new FeedItem(x, item.c_x), new FeedItem(y, item.c_y));
                         loss_val = result[0];
                         accuracy_val = result[1];
-                        print("CNN：" + ($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms"));
+                        print("CNN：" + ($"iter {item.iter.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms"));
                         sw.Restart();
                     }
-                }
+                }               
 
                 // Run validation after every epoch
                 (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
