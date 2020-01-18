@@ -129,7 +129,7 @@ namespace TensorFlowNET.Examples
         public void PrepareData()
         {
 
-            string url = "https://github.com/SciSharp/SciSharp-Stack-Examples/blob/master/data/data_CnnInYourOwnData.zip";
+            string url = "https://github.com/SciSharp/SciSharp-Stack-Examples/raw/master/data/data_CnnInYourOwnData.zip";
             Directory.CreateDirectory(Name);
             Utility.Web.Download(url, Name, "data_CnnInYourOwnData.zip");
             Utility.Compress.UnZip(Name + "\\data_CnnInYourOwnData.zip", Name);
