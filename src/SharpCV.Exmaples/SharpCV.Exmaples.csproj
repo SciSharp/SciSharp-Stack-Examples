@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.2.0.20200108" />
-    <PackageReference Include="SharpCV" Version="0.2.0" />
+    <PackageReference Include="SharpCV" Version="0.3.0" />
   </ItemGroup>
 
 </Project>
