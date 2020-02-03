@@ -569,6 +569,7 @@ namespace TensorFlowNET.Examples
             for (int i = start; i < end; i++)
             {
                 NDArray img4 = cv2.imread(x[i], IMREAD_COLOR.IMREAD_GRAYSCALE);
+                img4 = img4.reshape(img4.shape[0], img4.shape[1], 1);
                 x_batch[n] = sess.run(normalized, (decodeJpeg, img4));
                 n++;
             }

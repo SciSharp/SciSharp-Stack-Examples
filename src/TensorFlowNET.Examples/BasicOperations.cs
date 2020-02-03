@@ -37,8 +37,8 @@ namespace TensorFlowNET.Examples
             // The value returned by the constructor represents the output
             // of the Variable op. (define as input when running session)
             // tf Graph input
-            a = tf.placeholder(tf.int16);
-            b = tf.placeholder(tf.int16);
+            a = tf.placeholder(tf.int32);
+            b = tf.placeholder(tf.int32);
 
             // Define some operations
             var add = tf.add(a, b);
@@ -49,8 +49,8 @@ namespace TensorFlowNET.Examples
             {
                 var feed_dict = new FeedItem[]
                 {
-                    new FeedItem(a, (short)2),
-                    new FeedItem(b, (short)3)
+                    new FeedItem(a, 2),
+                    new FeedItem(b, 3)
                 };
                 // Run every operation with variable input
                 Console.WriteLine($"Addition with variables: {sess.run(add, feed_dict)}");
@@ -93,7 +93,7 @@ namespace TensorFlowNET.Examples
             {
                 var result = sess.run(product);
                 Console.WriteLine(result.ToString()); // ==> [[ 12.]]
-            };
+            }
 
             // `BatchMatMul` is actually embedded into the `MatMul` operation on the tf.dll side. Every time we ask
             // for a multiplication between matrices with rank > 2, the first rank - 2 dimensions are checked to be consistent
