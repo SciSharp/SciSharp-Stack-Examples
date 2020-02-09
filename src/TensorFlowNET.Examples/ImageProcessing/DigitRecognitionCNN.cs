@@ -31,13 +31,8 @@ namespace TensorFlowNET.Examples
     /// Use Stochastic Gradient Descent (SGD) optimizer. 
     /// https://www.easy-tensorflow.com/tf-tutorials/convolutional-neural-nets-cnns/cnn1
     /// </summary>
-    public class DigitRecognitionCNN : IExample
+    public class DigitRecognitionCNN : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-
-        public string Name => "MNIST CNN";
-
         string logs_path = "logs";
 
         const int img_h = 28, img_w = 28; // MNIST images are 28x28
@@ -76,23 +71,26 @@ namespace TensorFlowNET.Examples
         NDArray x_valid, y_valid;
         NDArray x_test, y_test;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "MNIST CNN",
+
+                Enabled = true,
+                IsImportingGraph = false
+            };
+
         public bool Run()
         {
             PrepareData();
-            BuildGraph();
 
-            using (var sess = tf.Session())
-            {
-                Train(sess);
-                Test(sess);
-            }
-
-            ValidateSavedModel();
-
+            Train();
+            Test();
+            
             return accuracy_test > 0.98;
         }
 
-        public Graph BuildGraph()
+        public override Graph BuildGraph()
         {
             var graph = new Graph().as_default();
 
@@ -138,60 +136,68 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public void Train(Session sess)
+        public override void Train()
         {
-            // Number of training iterations in each epoch
-            var num_tr_iter = y_train.shape[0] / batch_size;
-
-            var init = tf.global_variables_initializer();
-            sess.run(init);
-
-            float loss_val = 100.0f;
-            float accuracy_val = 0f;
-
-            var sw = new Stopwatch();
-            sw.Start();
-            foreach (var epoch in range(epochs))
+            var graph = BuildGraph();
+            using (var sess = tf.Session(graph))
             {
-                print($"Training epoch: {epoch + 1}");
-                // Randomly shuffle the training data at the beginning of each epoch 
-                (x_train, y_train) = mnist.Randomize(x_train, y_train);
 
-                foreach (var iteration in range(num_tr_iter))
+                // Number of training iterations in each epoch
+                var num_tr_iter = y_train.shape[0] / batch_size;
+
+                var init = tf.global_variables_initializer();
+                sess.run(init);
+
+                float loss_val = 100.0f;
+                float accuracy_val = 0f;
+
+                var sw = new Stopwatch();
+                sw.Start();
+                foreach (var epoch in range(epochs))
                 {
-                    var start = iteration * batch_size;
-                    var end = (iteration + 1) * batch_size;
-                    var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
+                    print($"Training epoch: {epoch + 1}");
+                    // Randomly shuffle the training data at the beginning of each epoch 
+                    (x_train, y_train) = mnist.Randomize(x_train, y_train);
 
-                    // Run optimization op (backprop)
-                    sess.run(optimizer, (x, x_batch), (y, y_batch));
-
-                    if (iteration % display_freq == 0)
+                    foreach (var iteration in range(num_tr_iter))
                     {
-                        // Calculate and display the batch loss and accuracy
-                        (loss_val, accuracy_val) = sess.run((loss, accuracy), new FeedItem(x, x_batch), new FeedItem(y, y_batch));
-                        print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
-                        sw.Restart();
+                        var start = iteration * batch_size;
+                        var end = (iteration + 1) * batch_size;
+                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
+
+                        // Run optimization op (backprop)
+                        sess.run(optimizer, (x, x_batch), (y, y_batch));
+
+                        if (iteration % display_freq == 0)
+                        {
+                            // Calculate and display the batch loss and accuracy
+                            (loss_val, accuracy_val) = sess.run((loss, accuracy), new FeedItem(x, x_batch), new FeedItem(y, y_batch));
+                            print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
+                            sw.Restart();
+                        }
                     }
+
+                    // Run validation after every epoch
+                    (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
+                    print("---------------------------------------------------------");
+                    print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
+                    print("---------------------------------------------------------");
                 }
 
-                // Run validation after every epoch
-                (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
-                print("---------------------------------------------------------");
-                print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
-                print("---------------------------------------------------------");
+                SaveCheckpoint(sess);
+                // ExportModel(sess);
             }
-
-            SaveCheckpoint(sess);
-            // ExportModel(sess);
         }
 
-        public void Test(Session sess)
+        public override void Test()
         {
-            (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
-            print("---------------------------------------------------------");
-            print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
-            print("---------------------------------------------------------");
+            using(var sess = tf.Session())
+            {
+                (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
+                print("---------------------------------------------------------");
+                print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
+                print("---------------------------------------------------------");
+            }
         }
 
         /// <summary>
@@ -309,9 +315,9 @@ namespace TensorFlowNET.Examples
             });
         } 
             
-        public void PrepareData()
+        public override void PrepareData()
         {
-            Directory.CreateDirectory(Name);
+            Directory.CreateDirectory(Config.Name);
 
             mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
             (x_train, y_train) = Reformat(mnist.Train.Data, mnist.Train.Labels);
@@ -338,14 +344,10 @@ namespace TensorFlowNET.Examples
             return (dataset, y);
         }
 
-        public Graph ImportGraph() => throw new NotImplementedException();
-
-        public void Predict(Session sess) => throw new NotImplementedException();
-
         public void SaveCheckpoint(Session sess)
         {
             var saver = tf.train.Saver();
-            saver.save(sess, Path.Combine(Name, "mnist_cnn.ckpt"));
+            saver.save(sess, Path.Combine(Config.Name, "mnist_cnn.ckpt"));
         }
 
         public void ExportModel(Session sess)
@@ -353,25 +355,15 @@ namespace TensorFlowNET.Examples
             var graph = sess.graph;
             var output_graph_def = tf.graph_util.convert_variables_to_constants(
                 sess, graph.as_graph_def(), new string[] { "Train/Loss/loss:0" });
-            File.WriteAllBytes(Path.Combine(Name, "model.pb"), output_graph_def.ToByteArray());
-        }
-
-        public void ValidateSavedModel()
-        {
-            var graph = tf.Graph().as_default();
-            using (var sess = tf.Session(graph))
-            {
-                LoadModel(sess);
-                Test(sess);
-            }
+            File.WriteAllBytes(Path.Combine(Config.Name, "model.pb"), output_graph_def.ToByteArray());
         }
 
         public void LoadModel(Session sess)
         {
             Console.WriteLine($"Import graph meta");
-            var saver = tf.train.import_meta_graph(Path.Combine(Name, "mnist_cnn.ckpt.meta"));
+            var saver = tf.train.import_meta_graph(Path.Combine(Config.Name, "mnist_cnn.ckpt.meta"));
             // Restore variables from checkpoint
-            saver.restore(sess, tf.train.latest_checkpoint(Name));
+            saver.restore(sess, tf.train.latest_checkpoint(Config.Name));
 
             var graph = tf.get_default_graph();
             loss = graph.get_tensor_by_name("Train/Loss/loss:0");

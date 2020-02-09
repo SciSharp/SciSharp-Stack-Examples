@@ -28,13 +28,8 @@ namespace TensorFlowNET.Examples
     /// How to optimise your input pipeline with queues and multi-threading
     /// https://blog.metaflow.fr/tensorflow-how-to-optimise-your-input-pipeline-with-queues-and-multi-threading-e7c3874157e0
     /// </summary>
-    public class FullyConnectedInQueue : IExample
+    public class FullyConnectedInQueue : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public bool IsImportingGraph { get; set; }
-
-        public string Name => "Fully Connected Neural Network In Queue";
-
         Tensor input = null;
         Tensor x_inputs_data = null;
         Tensor y_inputs_data = null;
@@ -43,7 +38,15 @@ namespace TensorFlowNET.Examples
         Tensor loss_op = null;
         Operation train_op = null;
 
-        public Graph BuildGraph()
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Fully Connected Neural Network In Queue",
+                Enabled = false,
+                IsImportingGraph = false
+            };
+
+        public override Graph BuildGraph()
         {
             var g = tf.get_default_graph();
 
@@ -61,17 +64,7 @@ namespace TensorFlowNET.Examples
             return g;
         }
 
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PrepareData()
+        public override void PrepareData()
         {
             // batches of 128 samples, each containing 1024 data points
             x_inputs_data = tf.random_normal(new[] { 128, 1024 }, mean: 0, stddev: 1);
@@ -83,44 +76,42 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             PrepareData();
-            var g = BuildGraph();
-            using (var sess = tf.Session())
-                Train(sess);
+            BuildGraph();
+            Train();
             return true;
         }
 
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
+        public override void Train()
         {
             var sw = new Stopwatch();
             sw.Start();
-            // init variables
-            sess.run(tf.global_variables_initializer());
 
-            // check the accuracy before training
-            var (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-            sess.run(accuracy, (input, x_input), (y_true, y_input));
-
-            // training
-            foreach (var i in range(5000))
+            using (var sess = tf.Session())
             {
-                // by sampling some input data (fetching)
+                // init variables
+                sess.run(tf.global_variables_initializer());
+
+                // check the accuracy before training
+                var (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
+                sess.run(accuracy, (input, x_input), (y_true, y_input));
+
+                // training
+                foreach (var i in range(5000))
+                {
+                    // by sampling some input data (fetching)
+                    (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
+                    var (_, loss) = sess.run((train_op, loss_op), (input, x_input), (y_true, y_input));
+
+                    // We regularly check the loss
+                    if (i % 500 == 0)
+                        print($"iter:{i} - loss:{loss}");
+                }
+
+                // Finally, we check our final accuracy
                 (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-                var (_, loss) = sess.run((train_op, loss_op), (input, x_input), (y_true, y_input));
-
-                // We regularly check the loss
-                if (i % 500 == 0)
-                    print($"iter:{i} - loss:{loss}");
+                sess.run(accuracy, (input, x_input), (y_true, y_input));
             }
-
-            // Finally, we check our final accuracy
-            (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-            sess.run(accuracy, (input, x_input), (y_true, y_input));
-
+                
             print($"Time taken: {sw.Elapsed.TotalSeconds}s");
         }
     }

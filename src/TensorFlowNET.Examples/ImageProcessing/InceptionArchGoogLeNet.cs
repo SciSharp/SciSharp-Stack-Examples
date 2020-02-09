@@ -11,13 +11,8 @@ namespace TensorFlowNET.Examples
     /// Inception Architecture for Computer Vision
     /// Port from tensorflow\examples\label_image\label_image.py
     /// </summary>
-    public class InceptionArchGoogLeNet : IExample
+    public class InceptionArchGoogLeNet : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public string Name => "Inception Arch GoogLeNet";
-        public bool IsImportingGraph { get; set; } = false;
-
-
         string dir = "label_image_data";
         string pbFile = "inception_v3_2016_08_28_frozen.pb";
         string labelFile = "imagenet_slim_labels.txt";
@@ -28,6 +23,14 @@ namespace TensorFlowNET.Examples
         int input_std = 255;
         string input_name = "import/input";
         string output_name = "import/InceptionV3/Predictions/Reshape_1";
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Inception Arch GoogLeNet",
+                Enabled = false,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
@@ -88,7 +91,7 @@ namespace TensorFlowNET.Examples
                 return sess.run(normalized);
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             Directory.CreateDirectory(dir);
 
@@ -103,31 +106,6 @@ namespace TensorFlowNET.Examples
             string pic = "grace_hopper.jpg";
             url = $"https://raw.githubusercontent.com/tensorflow/tensorflow/master/tensorflow/examples/label_image/data/{pic}";
             Utility.Web.Download(url, dir, pic);
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

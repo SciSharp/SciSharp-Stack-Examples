@@ -35,15 +35,8 @@ namespace TensorFlowNET.Examples
     /// 
     /// https://www.tensorflow.org/hub/tutorials/image_retraining
     /// </summary>
-    public class RetrainClassifierWithInceptionV3 : IExample
+    public class RetrainClassifierWithInceptionV3 : SciSharpExample, IExample
     {
-        public int Priority => 16;
-
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = true;
-
-        public string Name => "Retrain Classifier With InceptionV3";
-
         const string data_dir = "retrain_images";
         string summaries_dir = Path.Join(data_dir, "retrain_logs");
         string image_dir = Path.Join(data_dir, "flower_photos");
@@ -78,6 +71,14 @@ namespace TensorFlowNET.Examples
         float test_accuracy;
         NDArray predictions;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Retrain Classifier With InceptionV3",
+                Enabled = true,
+                IsImportingGraph = true
+            };
+
         public bool Run()
         {
             PrepareData();
@@ -92,12 +93,7 @@ namespace TensorFlowNET.Examples
 
             #endregion
 
-            var graph = IsImportingGraph ? ImportGraph() : BuildGraph();
-
-            using (var sess = tf.Session(graph))
-            {
-                Train(sess);
-            }
+            Train();
 
             return test_accuracy > 0.75f;
         }
@@ -607,111 +603,110 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
+        public override void Train()
         {
             var sw = new Stopwatch();
+            var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
 
-            // Initialize all weights: for the module to their pretrained values,
-            // and for the newly added retraining layer to random initial values.
-            var init = tf.global_variables_initializer();
-            sess.run(init);
-
-            var (jpeg_data_tensor, decoded_image_tensor) = add_jpeg_decoding();
-
-            // We'll make sure we've calculated the 'bottleneck' image summaries and
-            // cached them on disk.
-            cache_bottlenecks(sess, image_lists, image_dir,
-                    bottleneck_dir, jpeg_data_tensor,
-                    decoded_image_tensor, resized_image_tensor,
-                    bottleneck_tensor, tfhub_module);
-
-            // Create the operations we need to evaluate the accuracy of our new layer.
-            var (evaluation_step, _) = add_evaluation_step(final_tensor, ground_truth_input);
-
-            // Merge all the summaries and write them out to the summaries_dir
-            var merged = tf.summary.merge_all();
-            var train_writer = tf.summary.FileWriter(summaries_dir + "/train", sess.graph);
-            var validation_writer = tf.summary.FileWriter(summaries_dir + "/validation", sess.graph);
-
-            // Create a train saver that is used to restore values into an eval graph
-            // when exporting models.
-            var train_saver = tf.train.Saver();
-            train_saver.save(sess, CHECKPOINT_NAME);
-
-            sw.Restart();
-
-            for (int i = 0; i < how_many_training_steps; i++)
+            using (var sess = tf.Session(graph))
             {
-                var (train_bottlenecks, train_ground_truth, _) = get_random_cached_bottlenecks(
-                     sess, image_lists, train_batch_size, "training",
-                     bottleneck_dir, image_dir, jpeg_data_tensor,
-                     decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
-                     tfhub_module);
+                // Initialize all weights: for the module to their pretrained values,
+                // and for the newly added retraining layer to random initial values.
+                var init = tf.global_variables_initializer();
+                sess.run(init);
 
-                // Feed the bottlenecks and ground truth into the graph, and run a training
-                // step. Capture training summaries for TensorBoard with the `merged` op.
-                var results = sess.run(
-                      new ITensorOrOperation[] { merged, train_step },
-                      new FeedItem(bottleneck_input, train_bottlenecks),
-                      new FeedItem(ground_truth_input, train_ground_truth));
-                var train_summary = results[0];
+                var (jpeg_data_tensor, decoded_image_tensor) = add_jpeg_decoding();
 
-                // TODO
-                // train_writer.add_summary(train_summary, i);
+                // We'll make sure we've calculated the 'bottleneck' image summaries and
+                // cached them on disk.
+                cache_bottlenecks(sess, image_lists, image_dir,
+                        bottleneck_dir, jpeg_data_tensor,
+                        decoded_image_tensor, resized_image_tensor,
+                        bottleneck_tensor, tfhub_module);
 
-                // Every so often, print out how well the graph is training.
-                bool is_last_step = (i + 1 == how_many_training_steps);
-                if ((i % eval_step_interval) == 0 || is_last_step)
+                // Create the operations we need to evaluate the accuracy of our new layer.
+                var (evaluation_step, _) = add_evaluation_step(final_tensor, ground_truth_input);
+
+                // Merge all the summaries and write them out to the summaries_dir
+                var merged = tf.summary.merge_all();
+                var train_writer = tf.summary.FileWriter(summaries_dir + "/train", sess.graph);
+                var validation_writer = tf.summary.FileWriter(summaries_dir + "/validation", sess.graph);
+
+                // Create a train saver that is used to restore values into an eval graph
+                // when exporting models.
+                var train_saver = tf.train.Saver();
+                train_saver.save(sess, CHECKPOINT_NAME);
+
+                sw.Restart();
+
+                for (int i = 0; i < how_many_training_steps; i++)
                 {
-                    (float train_accuracy, float cross_entropy_value) = sess.run((evaluation_step, cross_entropy),
-                        (bottleneck_input, train_bottlenecks),
-                        (ground_truth_input, train_ground_truth));
-                    print($"{DateTime.Now}: Step {i + 1}: Train accuracy = {train_accuracy * 100}%,  Cross entropy = {cross_entropy_value.ToString("G4")}");
+                    var (train_bottlenecks, train_ground_truth, _) = get_random_cached_bottlenecks(
+                         sess, image_lists, train_batch_size, "training",
+                         bottleneck_dir, image_dir, jpeg_data_tensor,
+                         decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
+                         tfhub_module);
 
-                    var (validation_bottlenecks, validation_ground_truth, _) = get_random_cached_bottlenecks(
-                        sess, image_lists, validation_batch_size, "validation",
-                        bottleneck_dir, image_dir, jpeg_data_tensor,
-                        decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
-                        tfhub_module);
+                    // Feed the bottlenecks and ground truth into the graph, and run a training
+                    // step. Capture training summaries for TensorBoard with the `merged` op.
+                    var results = sess.run(
+                          new ITensorOrOperation[] { merged, train_step },
+                          new FeedItem(bottleneck_input, train_bottlenecks),
+                          new FeedItem(ground_truth_input, train_ground_truth));
+                    var train_summary = results[0];
 
-                    // Run a validation step and capture training summaries for TensorBoard
-                    // with the `merged` op.
-                    (_, float validation_accuracy) = sess.run((merged, evaluation_step),
-                        (bottleneck_input, validation_bottlenecks),
-                        (ground_truth_input, validation_ground_truth));
+                    // TODO
+                    // train_writer.add_summary(train_summary, i);
 
-                    // validation_writer.add_summary(validation_summary, i);
-                    print($"{DateTime.Now}: Step {i + 1}: Validation accuracy = {validation_accuracy * 100}% (N={len(validation_bottlenecks)}) {sw.ElapsedMilliseconds}ms");
-                    sw.Restart();
+                    // Every so often, print out how well the graph is training.
+                    bool is_last_step = (i + 1 == how_many_training_steps);
+                    if ((i % eval_step_interval) == 0 || is_last_step)
+                    {
+                        (float train_accuracy, float cross_entropy_value) = sess.run((evaluation_step, cross_entropy),
+                            (bottleneck_input, train_bottlenecks),
+                            (ground_truth_input, train_ground_truth));
+                        print($"{DateTime.Now}: Step {i + 1}: Train accuracy = {train_accuracy * 100}%,  Cross entropy = {cross_entropy_value.ToString("G4")}");
+
+                        var (validation_bottlenecks, validation_ground_truth, _) = get_random_cached_bottlenecks(
+                            sess, image_lists, validation_batch_size, "validation",
+                            bottleneck_dir, image_dir, jpeg_data_tensor,
+                            decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
+                            tfhub_module);
+
+                        // Run a validation step and capture training summaries for TensorBoard
+                        // with the `merged` op.
+                        (_, float validation_accuracy) = sess.run((merged, evaluation_step),
+                            (bottleneck_input, validation_bottlenecks),
+                            (ground_truth_input, validation_ground_truth));
+
+                        // validation_writer.add_summary(validation_summary, i);
+                        print($"{DateTime.Now}: Step {i + 1}: Validation accuracy = {validation_accuracy * 100}% (N={len(validation_bottlenecks)}) {sw.ElapsedMilliseconds}ms");
+                        sw.Restart();
+                    }
+
+                    // Store intermediate results
+                    int intermediate_frequency = intermediate_store_frequency;
+                    if (intermediate_frequency > 0 && i % intermediate_frequency == 0 && i > 0)
+                    {
+
+                    }
                 }
 
-                // Store intermediate results
-                int intermediate_frequency = intermediate_store_frequency;
-                if (intermediate_frequency > 0 && i % intermediate_frequency == 0 && i > 0)
-                {
+                // After training is complete, force one last save of the train checkpoint.
+                train_saver.save(sess, CHECKPOINT_NAME);
 
-                }
+                // We've completed all our training, so run a final test evaluation on
+                // some new images we haven't used before.
+                (test_accuracy, predictions) = run_final_eval(sess, null, class_count, image_lists,
+                               jpeg_data_tensor, decoded_image_tensor, resized_image_tensor,
+                               bottleneck_tensor);
+
+                // Write out the trained graph and labels with the weights stored as
+                // constants.
+                print($"Save final result to : {output_graph}");
+                save_graph_to_file(output_graph, class_count);
+                File.WriteAllText(output_labels, string.Join("\n", image_lists.Keys));
             }
-
-            // After training is complete, force one last save of the train checkpoint.
-            train_saver.save(sess, CHECKPOINT_NAME);
-
-            // We've completed all our training, so run a final test evaluation on
-            // some new images we haven't used before.
-            (test_accuracy, predictions) = run_final_eval(sess, null, class_count, image_lists,
-                           jpeg_data_tensor, decoded_image_tensor, resized_image_tensor,
-                           bottleneck_tensor);
-
-            // Write out the trained graph and labels with the weights stored as
-            // constants.
-            print($"Save final result to : {output_graph}");
-            save_graph_to_file(output_graph, class_count);
-            File.WriteAllText(output_labels, string.Join("\n", image_lists.Keys));
         }
 
         /// <summary>
@@ -724,7 +719,7 @@ namespace TensorFlowNET.Examples
         /// 4 - tulips
         /// </summary>
         /// <param name="sess_"></param>
-        public void Predict(Session sess_)
+        public override void Predict()
         {
             if (!File.Exists(output_graph))
                 return;
@@ -772,7 +767,7 @@ namespace TensorFlowNET.Examples
                 return sess.run(normalized);
         }
 
-        public void Test(Session sess_)
+        public override void Test()
         {
             if (!File.Exists(output_graph))
                 return;

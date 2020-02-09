@@ -34,13 +34,8 @@ namespace TensorFlowNET.Examples
     /// 
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/3_NeuralNetworks/bidirectional_rnn.py
     /// </summary>
-    public class DigitRecognitionLSTM : IExample
+    public class DigitRecognitionLSTM : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-
-        public string Name => "MNIST LSTM";
-
         // Training Parameters
         float learning_rate = 0.001f;
         int training_steps = 1000;
@@ -61,21 +56,25 @@ namespace TensorFlowNET.Examples
         
         float accuracy_test = 0f;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "MNIST LSTM",
+                Enabled = true,
+                IsImportingGraph = false
+            };
+
         public bool Run()
         {
             PrepareData();
             BuildGraph();
-
-            using (var sess = tf.Session())
-            {
-                Train(sess);
-                Test(sess);
-            }
+            Train();
+            Test();
 
             return accuracy_test > 0.40;
         }
 
-        public Graph BuildGraph()
+        public override Graph BuildGraph()
         {
             var graph = new Graph().as_default();
 
@@ -115,50 +114,56 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public void Train(Session sess)
+        public override void Train()
         {
             float loss_val = 100.0f;
             float accuracy_val = 0f;
 
-            var init = tf.global_variables_initializer();
-            sess.run(init);
-
-            var sw = new Stopwatch();
-            sw.Start();
-            foreach (var step in range(1, training_steps + 1))
+            using (var sess = tf.Session())
             {
-                var (batch_x, batch_y) = mnist.Train.GetNextBatch(batch_size);
+                var init = tf.global_variables_initializer();
+                sess.run(init);
 
-                // Reshape data to get 28 seq of 28 elements
-                batch_x = batch_x.reshape(batch_size, timesteps, num_input);
-
-                // Run optimization op (backprop)
-                sess.run(train_op, (X, batch_x), (Y, batch_y));
-
-                if (step % display_step == 0 || step == 1)
+                var sw = new Stopwatch();
+                sw.Start();
+                foreach (var step in range(1, training_steps + 1))
                 {
-                    // Calculate batch loss and accuracy
-                    (loss_val, accuracy_val) = sess.run((loss_op, accuracy), (X, batch_x), (Y, batch_y));
-                    print($"Step {step}: Minibatch Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("0.000")} {sw.ElapsedMilliseconds}ms");
-                    sw.Restart();
+                    var (batch_x, batch_y) = mnist.Train.GetNextBatch(batch_size);
+
+                    // Reshape data to get 28 seq of 28 elements
+                    batch_x = batch_x.reshape(batch_size, timesteps, num_input);
+
+                    // Run optimization op (backprop)
+                    sess.run(train_op, (X, batch_x), (Y, batch_y));
+
+                    if (step % display_step == 0 || step == 1)
+                    {
+                        // Calculate batch loss and accuracy
+                        (loss_val, accuracy_val) = sess.run((loss_op, accuracy), (X, batch_x), (Y, batch_y));
+                        print($"Step {step}: Minibatch Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("0.000")} {sw.ElapsedMilliseconds}ms");
+                        sw.Restart();
+                    }
                 }
             }
 
             print("Optimization Finished!");
         }
 
-        public void Test(Session sess)
+        public override void Test()
         {
-            // Calculate accuracy for 128 mnist test images
-            var (x_test, y_test) = (mnist.Test.Data[":128"], mnist.Test.Labels[":128"]);
-            x_test = x_test.reshape(-1, timesteps, num_input);
-            accuracy_test = sess.run(accuracy, new FeedItem(X, x_test), new FeedItem(Y, y_test));
-            print("---------------------------------------------------------");
-            print($"Testing Accuracy: {accuracy_test.ToString("P")}");
-            print("---------------------------------------------------------");
+            using (var sess = tf.Session())
+            {
+                // Calculate accuracy for 128 mnist test images
+                var (x_test, y_test) = (mnist.Test.Data[":128"], mnist.Test.Labels[":128"]);
+                x_test = x_test.reshape(-1, timesteps, num_input);
+                accuracy_test = sess.run(accuracy, new FeedItem(X, x_test), new FeedItem(Y, y_test));
+                print("---------------------------------------------------------");
+                print($"Testing Accuracy: {accuracy_test.ToString("P")}");
+                print("---------------------------------------------------------");
+            }
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
 
@@ -167,9 +172,5 @@ namespace TensorFlowNET.Examples
             print($"- Validation-set:\t{len(mnist.Validation.Data)}");
             print($"- Test-set:\t\t{len(mnist.Test.Data)}");
         }
-
-        public Graph ImportGraph() => throw new NotImplementedException();
-
-        public void Predict(Session sess) => throw new NotImplementedException();
     }
 }

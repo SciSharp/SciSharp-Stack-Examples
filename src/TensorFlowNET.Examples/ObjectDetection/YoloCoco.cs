@@ -30,12 +30,8 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// https://github.com/shimat/opencvsharp/wiki/Capturing-Video
     /// </summary>
-    public class YoloCoco : IExample
+    public class YoloCoco : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "YoloCoco";
-        public bool IsImportingGraph { get; set; } = true;
-
         int input_size = 416;
         int num_classes = 80;
 
@@ -48,31 +44,34 @@ namespace TensorFlowNET.Examples
         };
 
         Tensor[] return_tensors;
-        
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "YoloCoco",
+                Enabled = true,
+                IsImportingGraph = true
+            };
+
         public bool Run()
         {
             PrepareData();
-
-            var graph = ImportGraph();
-
-            using (var sess = new Session(graph))
-                Predict(sess);
-
+            Predict();
             return true;       
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // download video
             string url = "https://raw.githubusercontent.com/YunYang1994/tensorflow-yolov3/master/docs/images/road.mp4";
-            Web.Download(url, Name, "road.mp4");
+            Web.Download(url, Config.Name, "road.mp4");
         }
 
-        public Graph ImportGraph()
+        public override Graph ImportGraph()
         {
             var graph = tf.Graph().as_default();
 
-            var bytes = File.ReadAllBytes(Path.Combine(Name, "yolov3_coco.pb"));
+            var bytes = File.ReadAllBytes(Path.Combine(Config.Name, "yolov3_coco.pb"));
             var graphDef = GraphDef.Parser.ParseFrom(bytes);
             return_tensors = tf.import_graph_def(graphDef, return_elements: return_elements)
                 .Select(x => x as Tensor)
@@ -81,68 +80,71 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public Graph BuildGraph()
+        public void Predict()
         {
-            throw new NotImplementedException();
+            PredictFromImage();
+            PredictFromVideo();
         }
 
-        public void Train(Session sess)
+        public void PredictFromImage()
         {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            // Opens MP4 file (ffmpeg is probably needed)
-            var original_image = cv2.imread(@"D:\SciSharp\SciSharp-Stack-Examples\data\images\cars.jpg");
-            original_image = cv2.cvtColor(original_image, ColorConversionCodes.COLOR_BGR2RGB);
-            var original_image_size = (original_image.shape[0], original_image.shape[1]);
-            var image_data = image_preporcess(original_image, (input_size, input_size));
-            image_data = image_data[np.newaxis, Slice.Ellipsis];
-
-            var (pred_sbbox, pred_mbbox, pred_lbbox) = sess.run((return_tensors[1], return_tensors[2], return_tensors[3]),
-                    (return_tensors[0], image_data));
-
-            var pred_bbox = np.concatenate((np.reshape(pred_sbbox, (-1, 5 + num_classes)),
-                                    np.reshape(pred_mbbox, (-1, 5 + num_classes)),
-                                    np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
-
-            var bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.3f);
-            var bboxess = nms(bboxes, 0.45f, method: "nms");
-            var image = draw_bbox(original_image, bboxess);
-            cv2.imshow("objects", image);
-            cv2.waitKey();
-        }
-
-        public void PredictInVideo(Session sess)
-        {
-            // Opens MP4 file (ffmpeg is probably needed)
-            var vid = cv2.VideoCapture(Path.Combine(Name, "road.mp4"));
-
-            int sleepTime = (int)Math.Round(1000 / 24.0);
-
-            var (loaded, frame) = vid.read();
-            while (loaded)
+            var graph = ImportGraph();
+            using (var sess = new Session(graph))
             {
-                var frame_size = (frame.shape[0], frame.shape[1]);
-                var image_data = image_preporcess(frame, (input_size, input_size));
+                var original_image = cv2.imread(@"D:\SciSharp\SciSharp-Stack-Examples\data\images\cars.jpg");
+                original_image = cv2.cvtColor(original_image, ColorConversionCodes.COLOR_BGR2RGB);
+                var original_image_size = (original_image.shape[0], original_image.shape[1]);
+                var image_data = image_preporcess(original_image, (input_size, input_size));
                 image_data = image_data[np.newaxis, Slice.Ellipsis];
 
                 var (pred_sbbox, pred_mbbox, pred_lbbox) = sess.run((return_tensors[1], return_tensors[2], return_tensors[3]),
-                    (return_tensors[0], image_data));
+                        (return_tensors[0], image_data));
 
                 var pred_bbox = np.concatenate((np.reshape(pred_sbbox, (-1, 5 + num_classes)),
-                                    np.reshape(pred_mbbox, (-1, 5 + num_classes)),
-                                    np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
+                                        np.reshape(pred_mbbox, (-1, 5 + num_classes)),
+                                        np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
 
-                var bboxes = postprocess_boxes(pred_bbox, frame_size, input_size, 0.3f);
+                var bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.3f);
                 var bboxess = nms(bboxes, 0.45f, method: "nms");
-                var image = draw_bbox(frame, bboxess);
-
+                var image = draw_bbox(original_image, bboxess);
                 cv2.imshow("objects", image);
-                cv2.waitKey(sleepTime);
+                cv2.waitKey();
+            }
+        }
 
-                (loaded, frame) = vid.read();
+        public void PredictFromVideo()
+        {
+            var graph = ImportGraph();
+            using (var sess = new Session(graph))
+            {
+                // Opens MP4 file (ffmpeg is probably needed)
+                var vid = cv2.VideoCapture(Path.Combine(Config.Name, "road.mp4"));
+
+                int sleepTime = (int)Math.Round(1000 / 24.0);
+
+                var (loaded, frame) = vid.read();
+                while (loaded)
+                {
+                    var frame_size = (frame.shape[0], frame.shape[1]);
+                    var image_data = image_preporcess(frame, (input_size, input_size));
+                    image_data = image_data[np.newaxis, Slice.Ellipsis];
+
+                    var (pred_sbbox, pred_mbbox, pred_lbbox) = sess.run((return_tensors[1], return_tensors[2], return_tensors[3]),
+                        (return_tensors[0], image_data));
+
+                    var pred_bbox = np.concatenate((np.reshape(pred_sbbox, (-1, 5 + num_classes)),
+                                        np.reshape(pred_mbbox, (-1, 5 + num_classes)),
+                                        np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
+
+                    var bboxes = postprocess_boxes(pred_bbox, frame_size, input_size, 0.3f);
+                    var bboxess = nms(bboxes, 0.45f, method: "nms");
+                    var image = draw_bbox(frame, bboxess);
+
+                    cv2.imshow("objects", image);
+                    cv2.waitKey(sleepTime);
+
+                    (loaded, frame) = vid.read();
+                }
             }
         }
 
@@ -193,7 +195,7 @@ namespace TensorFlowNET.Examples
             // (4) discard some invalid boxes
             var coor_diff = pred_coor[Slice.All, new Slice(2, 4)] -pred_coor[Slice.All, new Slice(0, 2)];
             var bboxes_scale = np.sqrt(np.prod(coor_diff, axis: -1));
-            var scale_mask = np.logical_and(bboxes_scale > 0f, bboxes_scale < float.MaxValue);
+            var scale_mask = np.logical_and(bboxes_scale > 0d, bboxes_scale < double.MaxValue);
 
             // (5) discard some boxes with low scores
             NDArray coors;
@@ -298,11 +300,6 @@ namespace TensorFlowNET.Examples
             }
 
             return image;
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

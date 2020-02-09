@@ -11,16 +11,19 @@ namespace TensorFlowNET.Examples
     /// 
     /// https://github.com/susheelsk/image-background-removal
     /// </summary>
-    public class ImageBackgroundRemoval : IExample
+    public class ImageBackgroundRemoval : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public bool IsImportingGraph { get; set; } = true;
-
-        public string Name => "Image Background Removal";
-
         string dataDir = "deeplabv3";
         string modelDir = "deeplabv3_mnv2_pascal_train_aug";
         string modelName = "frozen_inference_graph.pb";
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Image Background Removal",
+                Enabled = false,
+                IsImportingGraph = true
+            };
 
         public bool Run()
         {
@@ -41,7 +44,7 @@ namespace TensorFlowNET.Examples
             return false;
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // get mobile_net_model file
             string fileName = "deeplabv3_mnv2_pascal_train_aug_2018_01_29.tar.gz";
@@ -54,31 +57,6 @@ namespace TensorFlowNET.Examples
             url = $"http://download.tensorflow.org/models/{fileName}";
             Web.Download(url, modelDir, fileName);
             Compress.ExtractTGZ(Path.Join(modelDir, fileName), modelDir);*/
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

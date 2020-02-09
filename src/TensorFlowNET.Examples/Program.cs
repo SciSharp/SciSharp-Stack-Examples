@@ -39,19 +39,20 @@ namespace TensorFlowNET.Examples
             var examples = Assembly.GetEntryAssembly().GetTypes()
                 .Where(x => x.GetInterfaces().Contains(typeof(IExample)))
                 .Select(x => (IExample)Activator.CreateInstance(x))
-                .Where(x => x.Enabled)
-                .OrderBy(x => x.Name)
+                .Where(x => x.InitConfig() != null)
+                .Where(x => x.Config.Enabled)
+                .OrderBy(x => x.Config.Priority)
                 .ToArray();
 
             if (parsedArgs.ContainsKey("ex"))
-                examples = examples.Where(x => x.Name == parsedArgs["ex"]).ToArray();
+                examples = examples.Where(x => x.Config.Name == parsedArgs["ex"]).ToArray();
 
             Console.WriteLine(Environment.OSVersion.ToString(), Color.Yellow);
             Console.WriteLine($"TensorFlow Binary v{tf.VERSION}", Color.Yellow);
             Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}", Color.Yellow);
 
             for (var i = 0; i < examples.Length; i++)
-                Console.WriteLine($"[{i}]: {examples[i].Name}");
+                Console.WriteLine($"[{i}]: {examples[i].Config.Name}");
 
             var key = "0";
             
@@ -67,7 +68,7 @@ namespace TensorFlowNET.Examples
                 if (i.ToString() != key && key != "") continue;
 
                 var example = examples[i];
-                Console.WriteLine($"{DateTime.UtcNow} Starting {example.Name}", Color.White);
+                Console.WriteLine($"{DateTime.UtcNow} Starting {example.Config.Name}", Color.White);
 
                 try
                 {
@@ -76,18 +77,18 @@ namespace TensorFlowNET.Examples
                     sw.Stop();
 
                     if (isSuccess)
-                        success.Add($"Example: {example.Name} in {sw.Elapsed.TotalSeconds}s");
+                        success.Add($"Example: {example.Config.Name} in {sw.Elapsed.TotalSeconds}s");
                     else
-                        errors.Add($"Example: {example.Name} in {sw.Elapsed.TotalSeconds}s");
+                        errors.Add($"Example: {example.Config.Name} in {sw.Elapsed.TotalSeconds}s");
                 }
                 catch (Exception ex)
                 {
-                    errors.Add($"Example: {example.Name}");
+                    errors.Add($"Example: {example.Config.Name}");
                     Console.WriteLine(ex);
                 }
 
                 finished++;
-                Console.WriteLine($"{DateTime.UtcNow} Completed {example.Name}", Color.White);
+                Console.WriteLine($"{DateTime.UtcNow} Completed {example.Config.Name}", Color.White);
             }
 
             success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.Green));

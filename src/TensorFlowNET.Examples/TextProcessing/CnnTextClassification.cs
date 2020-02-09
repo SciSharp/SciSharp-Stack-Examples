@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Google.Protobuf;
 using NumSharp;
 using Tensorflow;
 using Tensorflow.Sessions;
@@ -31,14 +32,12 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// https://github.com/dongjun-Lee/text-classification-models-tf
     /// </summary>
-    public class CnnTextClassification : IExample
+    public class CnnTextClassification : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "CNN Text Classification";
         public int? DataLimit = null;
-        public bool IsImportingGraph { get; set; } = false;
 
         const string dataDir = "cnn_text";
+        const string checkpointDir = "cnn_text/checkpoint";
         string dataFileName = "dbpedia_csv.tar.gz";
 
         string TRAIN_PATH = $"{dataDir}/dbpedia_csv/train.csv";
@@ -55,18 +54,26 @@ namespace TensorFlowNET.Examples
 
         int alphabet_size = -1;
         int vocabulary_size = -1;
-        NDArray train_x, valid_x, train_y, valid_y;
+        NDArray train_x, test_x, train_y, test_y;
 
         ITextModel textModel;
         public string ModelName = "word_cnn"; // word_cnn | char_cnn | vd_cnn | word_rnn | att_rnn | rcnn
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "CNN Text Classification",
+                Enabled = true,
+                IsImportingGraph = false
+            };
+
         public bool Run()
         {
             PrepareData();
-            var graph = IsImportingGraph ? ImportGraph() : BuildGraph();
-
-            using (var sess = tf.Session(graph))
-                Train(sess);
+            Predict();
+            Test();
+            Train();
+            FreezeModel();
 
             return max_accuracy > 0.9;
         }
@@ -80,12 +87,12 @@ namespace TensorFlowNET.Examples
             //int samples = len / classes;
             int train_size = (int)Math.Round(len * (1 - test_size));
             train_x = x[new Slice(stop: train_size), new Slice()];
-            valid_x = x[new Slice(start: train_size), new Slice()];
+            test_x = x[new Slice(start: train_size), new Slice()];
             train_y = y[new Slice(stop: train_size)];
-            valid_y = y[new Slice(start: train_size)];
+            test_y = y[new Slice(start: train_size)];
             Console.WriteLine("\tDONE");
 
-            return (train_x, valid_x, train_y, valid_y);
+            return (train_x, test_x, train_y, test_y);
         }
 
         private void FillWithShuffledLabels(int[][] x, int[] y, int[][] shuffled_x, int[] shuffled_y, Random random, Dictionary<int, HashSet<int>> labels)
@@ -125,12 +132,14 @@ namespace TensorFlowNET.Examples
             }
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // full dataset https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz
             var url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/data/dbpedia_subset.zip";
             Web.Download(url, dataDir, "dbpedia_subset.zip");
             Compress.UnZip(Path.Combine(dataDir, "dbpedia_subset.zip"), Path.Combine(dataDir, "dbpedia_csv"));
+
+            Directory.CreateDirectory(checkpointDir);
 
             Console.WriteLine("Building dataset...");
             var (x, y) = (new int[0][], new int[0]);
@@ -148,12 +157,12 @@ namespace TensorFlowNET.Examples
 
             Console.WriteLine("\tDONE ");
 
-            var (train_x, valid_x, train_y, valid_y) = train_test_split(x, y, test_size: 0.15f);
+            (train_x, test_x, train_y, test_y) = train_test_split(x, y, test_size: 0.15f);
             Console.WriteLine("Training set size: " + train_x.shape[0]);
-            Console.WriteLine("Test set size: " + valid_x.shape[0]);
+            Console.WriteLine("Test set size: " + test_x.shape[0]);
         }
 
-        public Graph ImportGraph()
+        public override Graph ImportGraph()
         {
             var graph = tf.Graph().as_default();
 
@@ -194,79 +203,124 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public void Train(Session sess)
+        public override void Train()
         {
-            var graph = tf.get_default_graph();
+            var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
 
-            sess.run(tf.global_variables_initializer());
-            var saver = tf.train.Saver(tf.global_variables());
-
-            var train_batches = batch_iter(train_x, train_y, BATCH_SIZE, NUM_EPOCHS);
-            var num_batches_per_epoch = (len(train_x) - 1) / BATCH_SIZE + 1;
-
-            Tensor is_training = graph.OperationByName("is_training");
-            Tensor model_x = graph.OperationByName("x");
-            Tensor model_y = graph.OperationByName("y");
-            Tensor loss = graph.OperationByName("loss/Mean");
-            Operation optimizer = graph.OperationByName("loss/Adam");
-            Tensor global_step = graph.OperationByName("Variable");
-            Tensor accuracy = graph.OperationByName("accuracy/accuracy");
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-            int step = 0;
-            foreach (var (x_batch, y_batch, total) in train_batches)
+            using (var sess = tf.Session(graph))
             {
-                (_, step, loss_value) = sess.run((optimizer, global_step, loss),
-                    (model_x, x_batch), (model_y, y_batch), (is_training, true));
-                if (step % 10 == 0)
-                {
-                    Console.WriteLine($"Training on batch {step}/{total} loss: {loss_value.ToString("0.0000")} {sw.ElapsedMilliseconds}ms.");
-                    sw.Restart();
-                }
+                sess.run(tf.global_variables_initializer());
+                var saver = tf.train.Saver(tf.global_variables());
 
-                if (step % 100 == 0)
+                var train_batches = batch_iter(train_x, train_y, BATCH_SIZE, NUM_EPOCHS);
+                var num_batches_per_epoch = (len(train_x) - 1) / BATCH_SIZE + 1;
+
+                Tensor is_training = graph.OperationByName("is_training");
+                Tensor model_x = graph.OperationByName("x");
+                Tensor model_y = graph.OperationByName("y");
+                Tensor loss = graph.OperationByName("loss/Mean");
+                Operation optimizer = graph.OperationByName("loss/Adam");
+                Tensor global_step = graph.OperationByName("Variable");
+                Tensor accuracy = graph.OperationByName("accuracy/accuracy");
+
+                var sw = new Stopwatch();
+                sw.Start();
+
+                int step = 0;
+                foreach (var (x_batch, y_batch, total) in train_batches)
                 {
-                    // Test accuracy with validation data for each epoch.
-                    var valid_batches = batch_iter(valid_x, valid_y, BATCH_SIZE, 1);
-                    var (sum_accuracy, cnt) = (0.0f, 0);
-                    foreach (var (valid_x_batch, valid_y_batch, total_validation_batches) in valid_batches)
+                    (_, step, loss_value) = sess.run((optimizer, global_step, loss),
+                        (model_x, x_batch), (model_y, y_batch), (is_training, true));
+                    if (step % 10 == 0)
                     {
-                        var valid_feed_dict = new FeedDict
-                        {
-                            [model_x] = valid_x_batch,
-                            [model_y] = valid_y_batch,
-                            [is_training] = false
-                        };
-                        float accuracy_value = sess.run(accuracy, (model_x, valid_x_batch), (model_y, valid_y_batch), (is_training, false));
-                        sum_accuracy += accuracy_value;
-                        cnt += 1;
+                        Console.WriteLine($"Training on batch {step}/{total} loss: {loss_value.ToString("0.0000")} {sw.ElapsedMilliseconds}ms.");
+                        sw.Restart();
                     }
 
-                    var valid_accuracy = sum_accuracy / cnt;
-
-                    print($"\nValidation Accuracy = {valid_accuracy.ToString("P")}\n");
-                    
-                    // Save model
-                    if (valid_accuracy > max_accuracy)
+                    if (step % 100 == 0)
                     {
-                        max_accuracy = valid_accuracy;
-                        saver.save(sess, $"{dataDir}/word_cnn.ckpt", global_step: step);
-                        print("Model is saved.\n");
+                        // Test accuracy with validation data for each epoch.
+                        var valid_batches = batch_iter(test_x, test_y, BATCH_SIZE, 1);
+                        var (sum_accuracy, cnt) = (0.0f, 0);
+                        foreach (var (valid_x_batch, valid_y_batch, total_validation_batches) in valid_batches)
+                        {
+                            var valid_feed_dict = new FeedDict
+                            {
+                                [model_x] = valid_x_batch,
+                                [model_y] = valid_y_batch,
+                                [is_training] = false
+                            };
+                            float accuracy_value = sess.run(accuracy, (model_x, valid_x_batch), (model_y, valid_y_batch), (is_training, false));
+                            sum_accuracy += accuracy_value;
+                            cnt += 1;
+                        }
+
+                        var valid_accuracy = sum_accuracy / cnt;
+
+                        print($"\nValidation Accuracy = {valid_accuracy.ToString("P")}\n");
+
+                        // Save model
+                        if (valid_accuracy > max_accuracy)
+                        {
+                            max_accuracy = valid_accuracy;
+                            saver.save(sess, $"{checkpointDir}/word_cnn.ckpt", global_step: step);
+                            print("Model is saved.\n");
+                        }
                     }
                 }
             }
         }
 
-        public void Predict(Session sess)
+        public override void Test()
         {
-            throw new NotImplementedException();
+            var checkpoint = Path.Combine(checkpointDir, "word_cnn.ckpt-800");
+            if (!File.Exists($"{checkpoint}.meta")) return;
+
+            var graph = tf.Graph();
+            using (var sess = tf.Session(graph))
+            {
+                var saver = tf.train.import_meta_graph($"{checkpoint}.meta");
+                saver.restore(sess, checkpoint);
+
+                Tensor x = graph.get_operation_by_name("x");
+                Tensor y = graph.get_operation_by_name("y");
+                Tensor is_training = graph.get_operation_by_name("is_training");
+                Tensor accuracy = graph.get_operation_by_name("accuracy/accuracy");
+
+                var batches = batch_iter(test_x, test_y, BATCH_SIZE, 1);
+                float sum_accuracy = 0;
+                int cnt = 0;
+                foreach (var (batch_x, batch_y, total) in batches)
+                {
+                    float accuracy_out = sess.run(accuracy, (x, batch_x), (y, batch_y), (is_training, false));
+                    sum_accuracy += accuracy_out;
+                    cnt += 1;
+                }
+                print($"Test Accuracy : {sum_accuracy / cnt}");
+            }
         }
 
-        public void Test(Session sess)
+        public override void Predict()
         {
-            throw new NotImplementedException();
+            var model = Path.Combine(dataDir, "frozen_model.pb");
+            if (!File.Exists(model)) return;
+
+            var graph = tf.train.load_graph(model);
+            using (var sess = tf.Session(graph))
+            {
+                Tensor x = graph.get_operation_by_name("x");
+                Tensor is_training = graph.get_operation_by_name("is_training");
+                Tensor prediction = graph.get_operation_by_name("output/ArgMax");
+                // encode text into 100 dimensions
+                var batches = batch_iter(test_x, test_y, BATCH_SIZE, 1).First();
+                var input = batches.Item1[0].reshape(1, 100);
+                var result = sess.run(prediction, (x, input), (is_training, false));
+            }
+        }
+
+        public override string FreezeModel()
+        {
+            return tf.train.freeze_graph(checkpointDir, "frozen_model");
         }
     }
 }

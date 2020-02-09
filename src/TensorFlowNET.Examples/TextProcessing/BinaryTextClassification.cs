@@ -13,15 +13,20 @@ namespace TensorFlowNET.Examples
     /// This is a binary—or two-class—classification, an important and widely applicable kind of machine learning problem.
     /// https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb
     /// </summary>
-    public class BinaryTextClassification : IExample
+    public class BinaryTextClassification : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public string Name => "Binary Text Classification";
-        public bool IsImportingGraph { get; set; } = true;
-
         string dir = "binary_text_classification";
         string dataFile = "imdb.zip";
         NDArray train_data, train_labels, test_data, test_labels;
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Binary Text Classification",
+                Enabled = false,
+
+                IsImportingGraph = true
+            };
 
         public bool Run()
         {
@@ -52,7 +57,7 @@ namespace TensorFlowNET.Examples
             return false;
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             Directory.CreateDirectory(dir);
 
@@ -134,31 +139,6 @@ namespace TensorFlowNET.Examples
             result["<UNUSED>"] = 3;
 
             return result;
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

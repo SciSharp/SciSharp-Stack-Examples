@@ -26,12 +26,8 @@ using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
-    public class DetectInMobilenet : IExample
+    public class DetectInMobilenet : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Object Detection";
-        public bool IsImportingGraph { get; set; } = true;
-
         public float MIN_SCORE = 0.5f;
 
         string modelDir = "ssd_mobilenet_v1_coco_2018_01_28";
@@ -40,24 +36,24 @@ namespace TensorFlowNET.Examples
         string labelFile = "mscoco_label_map.pbtxt";
         string picFile = "input.jpg";
 
-        NDArray imgArr;
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Object Detection",
+                Enabled = true,
+                IsImportingGraph = true
+            };
 
         public bool Run()
         {
             PrepareData();
 
-            // read in the input image
-            imgArr = ReadTensorFromImageFile(Path.Join(imageDir, "input.jpg"));
-
-            var graph = IsImportingGraph ? ImportGraph() : BuildGraph();
-
-            using (var sess = tf.Session(graph))
-                Predict(sess);
+            Predict();
 
             return true;
         }
 
-        public Graph ImportGraph()
+        public override Graph ImportGraph()
         {
             var graph = new Graph().as_default();
             graph.Import(Path.Join(modelDir, pbFile));
@@ -65,23 +61,29 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public void Predict(Session sess)
+        public override void Predict()
         {
-            var graph = tf.get_default_graph();
+            // read in the input image
+            var imgArr = ReadTensorFromImageFile(Path.Join(imageDir, "input.jpg"));
 
-            Tensor tensorNum = graph.OperationByName("num_detections");
-            Tensor tensorBoxes = graph.OperationByName("detection_boxes");
-            Tensor tensorScores = graph.OperationByName("detection_scores");
-            Tensor tensorClasses = graph.OperationByName("detection_classes");
-            Tensor imgTensor = graph.OperationByName("image_tensor");
-            Tensor[] outTensorArr = new Tensor[] { tensorNum, tensorBoxes, tensorScores, tensorClasses };
+            var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
 
-            var results = sess.run(outTensorArr, new FeedItem(imgTensor, imgArr));
+            using (var sess = tf.Session(graph))
+            {
+                Tensor tensorNum = graph.OperationByName("num_detections");
+                Tensor tensorBoxes = graph.OperationByName("detection_boxes");
+                Tensor tensorScores = graph.OperationByName("detection_scores");
+                Tensor tensorClasses = graph.OperationByName("detection_classes");
+                Tensor imgTensor = graph.OperationByName("image_tensor");
+                Tensor[] outTensorArr = new Tensor[] { tensorNum, tensorBoxes, tensorScores, tensorClasses };
 
-            buildOutputImage(results);
+                var results = sess.run(outTensorArr, new FeedItem(imgTensor, imgArr));
+
+                buildOutputImage(results);
+            }
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // get model file
             string url = "http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2018_01_28.tar.gz";
@@ -167,9 +169,5 @@ namespace TensorFlowNET.Examples
                 }
             }
         }
-
-        public Graph BuildGraph() => throw new NotImplementedException();
-        public void Train(Session sess) => throw new NotImplementedException();
-        public void Test(Session sess) => throw new NotImplementedException();
     }
 }

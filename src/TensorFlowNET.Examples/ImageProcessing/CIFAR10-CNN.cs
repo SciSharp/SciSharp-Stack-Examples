@@ -24,49 +24,21 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// https://www.tensorflow.org/tutorials/images/deep_cnn
     /// </summary>
-    public class CIFAR10_CNN : IExample
+    public class CIFAR10_CNN : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-
-        public string Name => "CIFAR-10 CNN";
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "CIFAR-10 CNN",
+                Enabled = false,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
             PrepareData();
 
             return true;
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PrepareData()
-        {
-            //var tfds = new DatasetBuilder();
-            //tfds.download_and_prepare();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

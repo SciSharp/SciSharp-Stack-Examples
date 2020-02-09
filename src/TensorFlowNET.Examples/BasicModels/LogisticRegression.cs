@@ -29,13 +29,8 @@ namespace TensorFlowNET.Examples
     /// This example is using the MNIST database of handwritten digits
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/logistic_regression.py
     /// </summary>
-    public class LogisticRegression : IExample
+    public class LogisticRegression : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Logistic Regression";
-        public bool IsImportingGraph { get; set; } = false;
-
-
         public int training_epochs = 10;
         public int? train_size = null;
         public int validation_size = 5000;
@@ -44,13 +39,33 @@ namespace TensorFlowNET.Examples
 
         private float learning_rate = 0.01f;
         private int display_step = 1;
+        float accuracy = 0f;
 
         Datasets<MnistDataSet> mnist;
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Logistic Regression",
+                Enabled = true,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
             PrepareData();
+            Train();
 
+            return accuracy > 0.9;
+        }
+
+        public override void PrepareData()
+        {
+            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, trainSize: train_size, validationSize: validation_size, testSize: test_size, showProgressInConsole: true).Result;
+        }
+
+        public override void Train()
+        {
             // tf Graph Input
             var x = tf.placeholder(tf.float32, new TensorShape(-1, 784)); // mnist data image of shape 28*28=784
             var y = tf.placeholder(tf.float32, new TensorShape(-1, 10)); // 0-9 digits recognition => 10 classes
@@ -85,7 +100,7 @@ namespace TensorFlowNET.Examples
                 {
                     sw.Start();
                     var avg_cost = 0.0f;
-                    
+
                     // Loop over all batches
                     foreach (var i in range(total_batch))
                     {
@@ -93,8 +108,8 @@ namespace TensorFlowNET.Examples
                         var end = (i + 1) * batch_size;
                         var (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, end);
                         // Run optimization op (backprop) and cost op (to get loss value)
-                        (_, float c) = sess.run((optimizer, cost), 
-                            (x, batch_xs), 
+                        (_, float c) = sess.run((optimizer, cost),
+                            (x, batch_xs),
                             (y, batch_ys));
 
                         // Compute average loss
@@ -116,17 +131,10 @@ namespace TensorFlowNET.Examples
                 // Test model
                 var correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1));
                 // Calculate accuracy
-                var accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
-                float acc = accuracy.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
+                var acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
+                accuracy = acc.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
                 print($"Accuracy: {acc:F4}");
-
-                return acc > 0.9;
             }
-        }
-
-        public void PrepareData()
-        {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, trainSize: train_size, validationSize: validation_size, testSize: test_size, showProgressInConsole: true).Result;
         }
 
         public void SaveModel(Session sess)
@@ -147,47 +155,30 @@ namespace TensorFlowNET.Examples
                               initializer_nodes: "");
         }
 
-        public void Predict(Session sess)
+        public override void Predict()
         {
             var graph = new Graph().as_default();
-            graph.Import(Path.Join(".resources/logistic_regression", "model.pb"));
+            using(var sess = tf.Session(graph))
+            {
+                graph.Import(Path.Join(".resources/logistic_regression", "model.pb"));
 
-            // restoring the model
-            // var saver = tf.train.import_meta_graph("logistic_regression/tensorflowModel.ckpt.meta");
-            // saver.restore(sess, tf.train.latest_checkpoint('logistic_regression'));
-            var pred = graph.OperationByName("Softmax");
-            var output = pred.outputs[0];
-            var x = graph.OperationByName("Placeholder");
-            var input = x.outputs[0];
+                // restoring the model
+                // var saver = tf.train.import_meta_graph("logistic_regression/tensorflowModel.ckpt.meta");
+                // saver.restore(sess, tf.train.latest_checkpoint('logistic_regression'));
+                var pred = graph.OperationByName("Softmax");
+                var output = pred.outputs[0];
+                var x = graph.OperationByName("Placeholder");
+                var input = x.outputs[0];
 
-            // predict
-            var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
-            var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
+                // predict
+                var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
+                var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
 
-            if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())
-                print("predicted OK!");
-            else
-                throw new ValueError("predict error, should be 90% accuracy");
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
+                if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())
+                    print("predicted OK!");
+                else
+                    throw new ValueError("predict error, should be 90% accuracy");
+            }
         }
     }
 }

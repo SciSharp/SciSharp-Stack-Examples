@@ -15,17 +15,20 @@ namespace TensorFlowNET.Examples
     /// that has been shown to attain greater than 78.1% accuracy on the ImageNet dataset. 
     /// The model is the culmination of many ideas developed by multiple researchers over the years.
     /// </summary>
-    public class ImageRecognitionInception : IExample
+    public class ImageRecognitionInception : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Image Recognition Inception";
-        public bool IsImportingGraph { get; set; } = false;
-
-
         string dir = "ImageRecognitionInception";
         string pbFile = "tensorflow_inception_graph.pb";
         string labelFile = "imagenet_comp_graph_label_strings.txt";
         List<NDArray> file_ndarrays = new List<NDArray>();
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Image Recognition Inception",
+                Enabled = true,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
@@ -84,7 +87,7 @@ namespace TensorFlowNET.Examples
                 return sess.run(normalized);
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             Directory.CreateDirectory(dir);
 
@@ -110,31 +113,6 @@ namespace TensorFlowNET.Examples
                 var nd = ReadTensorFromImageFile(files[i]);
                 file_ndarrays.Add(nd);
             }
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

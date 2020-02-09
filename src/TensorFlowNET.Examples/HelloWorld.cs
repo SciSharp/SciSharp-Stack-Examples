@@ -9,11 +9,16 @@ namespace TensorFlowNET.Examples
     /// Simple hello world using TensorFlow
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/1_Introduction/helloworld.py
     /// </summary>
-    public class HelloWorld : IExample
+    public class HelloWorld : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Hello World";
-        public bool IsImportingGraph { get; set; } = false;
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Enabled = true,
+                Name = "Hello World",
+                IsImportingGraph = false,
+                Priority = 1
+            };
 
         public bool Run()
         {
@@ -34,35 +39,6 @@ namespace TensorFlowNET.Examples
                 Console.WriteLine(output);
                 return output.Equals(str);
             }
-        }
-
-        public void PrepareData()
-        {
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

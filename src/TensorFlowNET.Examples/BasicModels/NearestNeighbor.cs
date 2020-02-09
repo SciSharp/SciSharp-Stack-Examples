@@ -27,17 +27,21 @@ namespace TensorFlowNET.Examples
     /// This example is using the MNIST database of handwritten digits
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/nearest_neighbor.py
     /// </summary>
-    public class NearestNeighbor : IExample
+    public class NearestNeighbor : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Nearest Neighbor";
         Datasets<MnistDataSet> mnist;
         NDArray Xtr, Ytr, Xte, Yte;
         public int? TrainSize = null;
         public int ValidationSize = 5000;
         public int? TestSize = null;
-        public bool IsImportingGraph { get; set; } = false;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Nearest Neighbor",
+                Enabled = true,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
@@ -82,37 +86,12 @@ namespace TensorFlowNET.Examples
             return accuracy > 0.8;
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, trainSize: TrainSize, validationSize: ValidationSize, testSize: TestSize, showProgressInConsole: true).Result;
             // In this example, we limit mnist data
             (Xtr, Ytr) = mnist.Train.GetNextBatch(TrainSize == null ? 5000 : TrainSize.Value / 100); // 5000 for training (nn candidates)
             (Xte, Yte) = mnist.Test.GetNextBatch(TestSize == null ? 200 : TestSize.Value / 100); // 200 for testing
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

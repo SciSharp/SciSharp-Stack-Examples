@@ -24,28 +24,19 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public interface IExample
     {
-        /// <summary>
-        /// True to run example
-        /// </summary>
-        bool Enabled { get; set; }
-
-        /// <summary>
-        /// Set true to import the computation graph instead of building it.
-        /// </summary>
-        bool IsImportingGraph { get; set; }
-
-        string Name { get; }
-
+        ExampleConfig Config { get; set; }
+        ExampleConfig InitConfig();
         bool Run();
 
         /// <summary>
         /// Build dataflow graph, train and predict
         /// </summary>
         /// <returns></returns>
-        void Train(Session sess);
-        void Test(Session sess);
+        void Train();
+        string FreezeModel();
+        void Test();
 
-        void Predict(Session sess);
+        void Predict();
 
         Graph ImportGraph();
 

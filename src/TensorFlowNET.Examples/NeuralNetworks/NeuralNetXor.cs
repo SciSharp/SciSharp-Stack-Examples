@@ -26,15 +26,20 @@ namespace TensorFlowNET.Examples
     /// Simple vanilla neural net solving the famous XOR problem
     /// https://github.com/amygdala/tensorflow-workshop/blob/master/workshop_sections/getting_started/xor/README.md
     /// </summary>
-    public class NeuralNetXor : IExample
+    public class NeuralNetXor : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "NN XOR";
-        public bool IsImportingGraph { get; set; } = false;
-
         public int num_steps = 10000;
 
         private NDArray data;
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "NN XOR",
+                Enabled = true,
+                IsImportingGraph = false,
+                Priority = 2
+            };
 
         private (Operation, Tensor, Tensor) make_graph(Tensor features,Tensor labels, int num_hidden = 8)
         {
@@ -67,7 +72,7 @@ namespace TensorFlowNET.Examples
         {
             PrepareData();
             float loss_value = 0;
-            if (IsImportingGraph)
+            if (Config.IsImportingGraph)
                 loss_value = RunWithImportedGraph();
             else
                 loss_value = RunWithBuiltGraph();
@@ -144,7 +149,7 @@ namespace TensorFlowNET.Examples
             return loss_value;
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             data = new float[,]
             {
@@ -154,37 +159,12 @@ namespace TensorFlowNET.Examples
                 {0, 1 }
             };
 
-            if (IsImportingGraph)
+            if (Config.IsImportingGraph)
             {
                 // download graph meta data
                 string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
                 Web.Download(url, "graph", "xor.meta");
             }
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

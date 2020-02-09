@@ -42,13 +42,8 @@ namespace TensorFlowNET.Examples
     /// TODO: Thread Queue will be added to improve images loading efficiency later.
     /// https://www.easy-tensorflow.com/tf-tutorials/convolutional-neural-nets-cnns/cnn1
     /// </summary>
-    class CnnInYourOwnData : IExample
+    class CnnInYourOwnData : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-
-        public string Name => "CnnInYourOwnData";
-
         string logs_path = "logs";
 
         string[] ArrayFileName_Train, ArrayFileName_Validation, ArrayFileName_Test;
@@ -107,17 +102,21 @@ namespace TensorFlowNET.Examples
         string path_model;
         int TrainQueueCapa = 3;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "CnnInYourOwnData",
+                Enabled = true,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
             PrepareData();
             BuildGraph();
 
-            using (var sess = tf.Session())
-            {
-                Train(sess);
-                Test(sess);
-            }
+            Train();
+            Test();
 
             TestDataOutput();
 
@@ -126,23 +125,22 @@ namespace TensorFlowNET.Examples
         }
 
         #region PrepareData
-        public void PrepareData()
+        public override void PrepareData()
         {
-
             string url = "https://github.com/SciSharp/SciSharp-Stack-Examples/raw/master/data/data_CnnInYourOwnData.zip";
-            Directory.CreateDirectory(Name);
-            Utility.Web.Download(url, Name, "data_CnnInYourOwnData.zip");
-            Utility.Compress.UnZip(Name + "\\data_CnnInYourOwnData.zip", Name);
+            Directory.CreateDirectory(Config.Name);
+            Utility.Web.Download(url, Config.Name, "data_CnnInYourOwnData.zip");
+            Utility.Compress.UnZip(Config.Name + "\\data_CnnInYourOwnData.zip", Config.Name);
 
-            FillDictionaryLabel(Name + "\\train");
+            FillDictionaryLabel(Config.Name + "\\train");
 
-            ArrayFileName_Train = Directory.GetFiles(Name + "\\train", "*.*", SearchOption.AllDirectories);
+            ArrayFileName_Train = Directory.GetFiles(Config.Name + "\\train", "*.*", SearchOption.AllDirectories);
             ArrayLabel_Train = GetLabelArray(ArrayFileName_Train);
 
-            ArrayFileName_Validation = Directory.GetFiles(Name + "\\validation", "*.*", SearchOption.AllDirectories);
+            ArrayFileName_Validation = Directory.GetFiles(Config.Name + "\\validation", "*.*", SearchOption.AllDirectories);
             ArrayLabel_Validation = GetLabelArray(ArrayFileName_Validation);
 
-            ArrayFileName_Test = Directory.GetFiles(Name + "\\test", "*.*", SearchOption.AllDirectories);
+            ArrayFileName_Test = Directory.GetFiles(Config.Name + "\\test", "*.*", SearchOption.AllDirectories);
             ArrayLabel_Test = GetLabelArray(ArrayFileName_Test);
 
             //shuffle array
@@ -451,93 +449,96 @@ namespace TensorFlowNET.Examples
         #endregion
 
         #region Train
-        public void Train(Session sess)
+        public override void Train()
         {
-            // Number of training iterations in each epoch
-            var num_tr_iter = (ArrayLabel_Train.Length) / batch_size;
-
-            var init = tf.global_variables_initializer();
-            sess.run(init);
-
-            var saver = tf.train.Saver(tf.global_variables(), max_to_keep: 10);
-
-            path_model = Name + "\\MODEL";
-            Directory.CreateDirectory(path_model);
-
-            float loss_val = 100.0f;
-            float accuracy_val = 0f;
-
-            var sw = new Stopwatch();
-            sw.Start();
-            foreach (var epoch in range(epochs))
+            using (var sess = tf.Session())
             {
-                print($"Training epoch: {epoch + 1}");
-                // Randomly shuffle the training data at the beginning of each epoch 
-                (ArrayFileName_Train, ArrayLabel_Train) = ShuffleArray(ArrayLabel_Train.Length, ArrayFileName_Train, ArrayLabel_Train);
-                y_train = np.eye(Dict_Label.Count)[new NDArray(ArrayLabel_Train)];
+                // Number of training iterations in each epoch
+                var num_tr_iter = (ArrayLabel_Train.Length) / batch_size;
 
-                //decay learning rate
-                if (learning_rate_step != 0)
+                var init = tf.global_variables_initializer();
+                sess.run(init);
+
+                var saver = tf.train.Saver(tf.global_variables(), max_to_keep: 10);
+
+                path_model = Config.Name + "\\MODEL";
+                Directory.CreateDirectory(path_model);
+
+                float loss_val = 100.0f;
+                float accuracy_val = 0f;
+
+                var sw = new Stopwatch();
+                sw.Start();
+                foreach (var epoch in range(epochs))
                 {
-                    if ((epoch != 0) && (epoch % learning_rate_step == 0))
+                    print($"Training epoch: {epoch + 1}");
+                    // Randomly shuffle the training data at the beginning of each epoch 
+                    (ArrayFileName_Train, ArrayLabel_Train) = ShuffleArray(ArrayLabel_Train.Length, ArrayFileName_Train, ArrayLabel_Train);
+                    y_train = np.eye(Dict_Label.Count)[new NDArray(ArrayLabel_Train)];
+
+                    //decay learning rate
+                    if (learning_rate_step != 0)
                     {
-                        learning_rate_base = learning_rate_base * learning_rate_decay;
-                        if (learning_rate_base <= learning_rate_min) { learning_rate_base = learning_rate_min; }
-                        sess.run(tf.assign(learning_rate, learning_rate_base));
+                        if ((epoch != 0) && (epoch % learning_rate_step == 0))
+                        {
+                            learning_rate_base = learning_rate_base * learning_rate_decay;
+                            if (learning_rate_base <= learning_rate_min) { learning_rate_base = learning_rate_min; }
+                            sess.run(tf.assign(learning_rate, learning_rate_base));
+                        }
                     }
-                }
 
-                //Load local images asynchronously,use queue,improve train efficiency
-                BlockingCollection<(NDArray c_x, NDArray c_y, int iter)> BlockC = new BlockingCollection<(NDArray C1, NDArray C2, int iter)>(TrainQueueCapa);
-                Task.Run(() =>
-                {
-                    foreach (var iteration in range(num_tr_iter))
+                    //Load local images asynchronously,use queue,improve train efficiency
+                    BlockingCollection<(NDArray c_x, NDArray c_y, int iter)> BlockC = new BlockingCollection<(NDArray C1, NDArray C2, int iter)>(TrainQueueCapa);
+                    Task.Run(() =>
                     {
-                        var start = iteration * batch_size;
-                        var end = (iteration + 1) * batch_size;
-                        (NDArray x_batch, NDArray y_batch) = GetNextBatch(sess, ArrayFileName_Train, y_train, start, end);
-                        BlockC.Add((x_batch, y_batch, iteration));
+                        foreach (var iteration in range(num_tr_iter))
+                        {
+                            var start = iteration * batch_size;
+                            var end = (iteration + 1) * batch_size;
+                            (NDArray x_batch, NDArray y_batch) = GetNextBatch(sess, ArrayFileName_Train, y_train, start, end);
+                            BlockC.Add((x_batch, y_batch, iteration));
+                        }
+                        BlockC.CompleteAdding();
+                    });
+
+                    foreach (var item in BlockC.GetConsumingEnumerable())
+                    {
+                        sess.run(optimizer, (x, item.c_x), (y, item.c_y));
+
+                        if (item.iter % display_freq == 0)
+                        {
+                            // Calculate and display the batch loss and accuracy
+                            var result = sess.run(new[] { loss, accuracy }, new FeedItem(x, item.c_x), new FeedItem(y, item.c_y));
+                            loss_val = result[0];
+                            accuracy_val = result[1];
+                            print("CNN：" + ($"iter {item.iter.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms"));
+                            sw.Restart();
+                        }
                     }
-                    BlockC.CompleteAdding();
-                });
 
-                foreach (var item in BlockC.GetConsumingEnumerable())
-                {
-                    sess.run(optimizer, (x, item.c_x), (y, item.c_y));
+                    // Run validation after every epoch
+                    (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
+                    print("CNN：" + "---------------------------------------------------------");
+                    print("CNN：" + $"gloabl steps: {sess.run(gloabl_steps) },learning rate: {sess.run(learning_rate)}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
+                    print("CNN：" + "---------------------------------------------------------");
 
-                    if (item.iter % display_freq == 0)
+                    if (SaverBest)
                     {
-                        // Calculate and display the batch loss and accuracy
-                        var result = sess.run(new[] { loss, accuracy }, new FeedItem(x, item.c_x), new FeedItem(y, item.c_y));
-                        loss_val = result[0];
-                        accuracy_val = result[1];
-                        print("CNN：" + ($"iter {item.iter.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms"));
-                        sw.Restart();
+                        if (accuracy_val > max_accuracy)
+                        {
+                            max_accuracy = accuracy_val;
+                            saver.save(sess, path_model + "\\CNN_Best");
+                            print("CKPT Model is save.");
+                        }
                     }
-                }               
-
-                // Run validation after every epoch
-                (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
-                print("CNN：" + "---------------------------------------------------------");
-                print("CNN：" + $"gloabl steps: {sess.run(gloabl_steps) },learning rate: {sess.run(learning_rate)}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
-                print("CNN：" + "---------------------------------------------------------");
-
-                if (SaverBest)
-                {
-                    if (accuracy_val > max_accuracy)
+                    else
                     {
-                        max_accuracy = accuracy_val;
-                        saver.save(sess, path_model + "\\CNN_Best");
+                        saver.save(sess, path_model + string.Format("\\CNN_Epoch_{0}_Loss_{1}_Acc_{2}", epoch, loss_val, accuracy_val));
                         print("CKPT Model is save.");
                     }
                 }
-                else
-                {
-                    saver.save(sess, path_model + string.Format("\\CNN_Epoch_{0}_Loss_{1}_Acc_{2}", epoch, loss_val, accuracy_val));
-                    print("CKPT Model is save.");
-                }
+                Write_Dictionary(path_model + "\\dic.txt", Dict_Label);
             }
-            Write_Dictionary(path_model + "\\dic.txt", Dict_Label);
         }
         private void Write_Dictionary(string path, Dictionary<Int64, string> mydic)
         {
@@ -579,16 +580,19 @@ namespace TensorFlowNET.Examples
         }
         #endregion               
 
-        public void Test(Session sess)
+        public override void Test()
         {
-            (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
-            print("CNN：" + "---------------------------------------------------------");
-            print("CNN：" + $"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
-            print("CNN：" + "---------------------------------------------------------");
+            using (var sess = tf.Session())
+            {
+                (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
+                print("CNN：" + "---------------------------------------------------------");
+                print("CNN：" + $"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
+                print("CNN：" + "---------------------------------------------------------");
 
-            (Test_Cls, Test_Data) = sess.run((cls_prediction, prob), (x, x_test));
-
+                (Test_Cls, Test_Data) = sess.run((cls_prediction, prob), (x, x_test));
+            }
         }
+
         private void TestDataOutput()
         {
             for (int i = 0; i < ArrayLabel_Test.Length; i++)
@@ -605,10 +609,5 @@ namespace TensorFlowNET.Examples
                     + "fileName:" + fileName);
             }
         }
-        public Graph ImportGraph() => throw new NotImplementedException();
-
-        public void Predict(Session sess) => throw new NotImplementedException();
-
-
     }
 }

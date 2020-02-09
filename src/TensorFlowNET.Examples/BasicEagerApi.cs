@@ -8,13 +8,17 @@ namespace TensorFlowNET.Examples
     /// Basic introduction to TensorFlow's Eager API.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/1_Introduction/basic_eager_api.py
     /// </summary>
-    public class BasicEagerApi : IExample
+    public class BasicEagerApi : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public string Name => "Basic Eager";
-        public bool IsImportingGraph { get; set; } = false;
-
         private Tensor a, b, c, d;
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Basic Eager",
+                Enabled = false,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
@@ -39,35 +43,6 @@ namespace TensorFlowNET.Examples
             // Full compatibility with Numpy
 
             return true;
-        }
-
-        public void PrepareData()
-        {
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

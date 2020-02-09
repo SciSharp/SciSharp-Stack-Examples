@@ -13,12 +13,8 @@ namespace TensorFlowNET.Examples
     /// Implement Word2Vec algorithm to compute vector representations of words.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/word2vec.py
     /// </summary>
-    public class Word2Vec : IExample
+    public class Word2Vec : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public string Name => "Word2Vec";
-        public bool IsImportingGraph { get; set; } = true;
-
         // Training Parameters
         float learning_rate = 0.1f;
         int batch_size = 128;
@@ -43,6 +39,14 @@ namespace TensorFlowNET.Examples
         int data_index = 0;
         int top_k = 8; // number of nearest neighbors
         float average_loss = 0;
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Word2Vec",
+                Enabled = true,
+                IsImportingGraph = true
+            };
 
         public bool Run()
         {
@@ -158,7 +162,7 @@ namespace TensorFlowNET.Examples
             return (batch, labels);
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // Download graph meta
             var url = "https://github.com/SciSharp/TensorFlow.NET/raw/master/graph/word2vec.meta";
@@ -201,31 +205,6 @@ namespace TensorFlowNET.Examples
             print($"Unique words: {text_words.Distinct().Count()}");
             print($"Vocabulary size: {word2id.Count}");
             print($"Most common words: {string.Join(", ", word2id.Take(10))}");
-        }
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
 
         private class WordId

@@ -13,12 +13,8 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
     /// Implementation of YOLO v3 object detector in Tensorflow
     /// https://github.com/YunYang1994/tensorflow-yolov3
     /// </summary>
-    public class SampleYOLOv3 : IExample
+    public class SampleYOLOv3 : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-        public string Name => "YOLOv3";
-
         #region args
         Dictionary<int, string> classes;
         int num_classes;
@@ -61,81 +57,82 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         int global_step_val;
         #endregion
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "YOLOv3",
+                Enabled = true,
+                IsImportingGraph = false
+            };
+
         public bool Run()
         {
             PrepareData();
-
-            var graph = IsImportingGraph ? ImportGraph() : BuildGraph();
-
-            var config = new ConfigProto { AllowSoftPlacement = true };
-            using (var sess = tf.Session(graph, config: config))
-            {
-                Train(sess);
-            }
+            Train();
 
             return true;
         }
 
-        public void Train(Session sess)
+        public override void Train()
         {
-            var graph = tf.get_default_graph();
-            //tf.train.export_meta_graph("tfnet.meta");
-            //var json = JsonConvert.SerializeObject(graph._nodes_by_name.Select(x => x.Value).ToArray(), Formatting.Indented);
-            //File.WriteAllText($"YOLOv3/nodes-{(IsImportingGraph ? "right" : "wrong")}.txt", json);
+            var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
 
-            sess.run(tf.global_variables_initializer());
-            print($"=> Restoring weights from: {cfg.TRAIN.INITIAL_WEIGHT} ... ");
-            loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
-            first_stage_epochs = 0;
-
-            foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
+            var config = new ConfigProto { AllowSoftPlacement = true };
+            using (var sess = tf.Session(graph, config: config))
             {
-                if (epoch <= first_stage_epochs)
-                    train_op = train_op_with_frozen_variables;
-                else
-                    train_op = train_op_with_all_variables;
+                //tf.train.export_meta_graph("tfnet.meta");
+                //var json = JsonConvert.SerializeObject(graph._nodes_by_name.Select(x => x.Value).ToArray(), Formatting.Indented);
+                //File.WriteAllText($"YOLOv3/nodes-{(IsImportingGraph ? "right" : "wrong")}.txt", json);
 
-                foreach (var train_data in trainset.Items())
+                sess.run(tf.global_variables_initializer());
+                print($"=> Restoring weights from: {cfg.TRAIN.INITIAL_WEIGHT} ... ");
+                loader.restore(sess, cfg.TRAIN.INITIAL_WEIGHT);
+                first_stage_epochs = 0;
+
+                foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
                 {
-                    var results = sess.run(new object[] { train_op, loss, global_step },
-                        (input_data,   train_data[0]),
-                        (label_sbbox,  train_data[1]),
-                        (label_mbbox,  train_data[2]),
-                        (label_lbbox,  train_data[3]),
-                        (true_sbboxes, train_data[4]),
-                        (true_mbboxes, train_data[5]),
-                        (true_lbboxes, train_data[6]),
-                        (trainable,    true));
+                    if (epoch <= first_stage_epochs)
+                        train_op = train_op_with_frozen_variables;
+                    else
+                        train_op = train_op_with_all_variables;
 
-                    (train_step_loss, global_step_val) = (results[1], results[2]);
-                    //train_epoch_loss.append(train_step_loss);
-                    // summary_writer.add_summary(summary, global_step_val)
-                    print($"train loss: {train_step_loss}");
-                }
+                    foreach (var train_data in trainset.Items())
+                    {
+                        var results = sess.run(new object[] { train_op, loss, global_step },
+                            (input_data, train_data[0]),
+                            (label_sbbox, train_data[1]),
+                            (label_mbbox, train_data[2]),
+                            (label_lbbox, train_data[3]),
+                            (true_sbboxes, train_data[4]),
+                            (true_mbboxes, train_data[5]),
+                            (true_lbboxes, train_data[6]),
+                            (trainable, true));
 
-                foreach (var test_data in testset.Items())
-                {
-                    var test_step_loss = sess.run(loss,
-                        (input_data, test_data[0]),
-                        (label_sbbox, test_data[1]),
-                        (label_mbbox, test_data[2]),
-                        (label_lbbox, test_data[3]),
-                        (true_sbboxes, test_data[4]),
-                        (true_mbboxes, test_data[5]),
-                        (true_lbboxes, test_data[6]),
-                        (trainable, false));
+                        (train_step_loss, global_step_val) = (results[1], results[2]);
+                        //train_epoch_loss.append(train_step_loss);
+                        // summary_writer.add_summary(summary, global_step_val)
+                        print($"train loss: {train_step_loss}");
+                    }
 
-                    //test_epoch_loss.append(test_step_loss);
+                    foreach (var test_data in testset.Items())
+                    {
+                        var test_step_loss = sess.run(loss,
+                            (input_data, test_data[0]),
+                            (label_sbbox, test_data[1]),
+                            (label_mbbox, test_data[2]),
+                            (label_lbbox, test_data[3]),
+                            (true_sbboxes, test_data[4]),
+                            (true_mbboxes, test_data[5]),
+                            (true_lbboxes, test_data[6]),
+                            (trainable, false));
+
+                        //test_epoch_loss.append(test_step_loss);
+                    }
                 }
             }
         }
 
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Graph BuildGraph()
+        public override Graph BuildGraph()
         {
             var graph = new Graph().as_default();
 
@@ -278,16 +275,11 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             return graph;
         }
 
-        public void Predict(Session sess)
+        public override void PrepareData()
         {
-            throw new NotImplementedException();
-        }
+            cfg = new Config(Config.Name);
 
-        public void PrepareData()
-        {
-            cfg = new Config(Name);
-
-            string dataDir = Path.Combine(Name, "data");
+            string dataDir = Path.Combine(Config.Name, "data");
             Directory.CreateDirectory(dataDir);
 
             classes = Utils.read_class_names(cfg.YOLO.CLASSES);

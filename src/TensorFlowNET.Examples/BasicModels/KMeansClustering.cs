@@ -28,12 +28,8 @@ namespace TensorFlowNET.Examples
     /// handwritten digit images.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/kmeans.py
     /// </summary>
-    public class KMeansClustering : IExample
+    public class KMeansClustering : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = false;
-        public string Name => "K-means Clustering";
-        public bool IsImportingGraph { get; set; } = true;
-
         public int? train_size = null;
         public int validation_size = 5000;
         public int? test_size = null;
@@ -48,6 +44,14 @@ namespace TensorFlowNET.Examples
 
         float accuray_test = 0f;
 
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "K-means Clustering",
+                Enabled = false,
+                IsImportingGraph = true
+            };
+
         public bool Run()
         {
             PrepareData();
@@ -60,7 +64,7 @@ namespace TensorFlowNET.Examples
             return accuray_test > 0.70;
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             var loader = new MnistModelLoader();
 
@@ -83,18 +87,13 @@ namespace TensorFlowNET.Examples
             loader.DownloadAsync(url, ".resources/graph", "kmeans.meta").Wait();
         }
 
-        public Graph ImportGraph()
+        public override Graph ImportGraph()
         {
             var graph = tf.Graph().as_default();
 
             tf.train.import_meta_graph(".resources/graph/kmeans.meta");
 
             return graph;
-        }
-
-        public Graph BuildGraph()
-        {
-            throw new NotImplementedException();
         }
 
         public void Train(Session sess)
@@ -170,16 +169,6 @@ namespace TensorFlowNET.Examples
             result = sess.run(accuracy_op, new FeedItem(X, test_x), new FeedItem(Y, test_y));
             accuray_test = result;
             print($"Test Accuracy: {accuray_test}");
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }

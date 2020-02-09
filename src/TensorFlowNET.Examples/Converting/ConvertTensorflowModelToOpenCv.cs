@@ -12,17 +12,21 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// Convert tensorflow model to opencv dnn format.
     /// </summary>
-    public class ConvertTensorflowModelToOpenCv : IExample
+    public class ConvertTensorflowModelToOpenCv : SciSharpExample, IExample
     {
-        public bool Enabled { get; set; } = true;
-        public bool IsImportingGraph { get; set; } = false;
-        public string Name => "Convert TensorFlow Model to OpenCv";
-
         string modelDir = "ConvertTfModelToOpenCv";
         string imageDir = "images";
 
         string frozen_graph = "frozen_graph.pb";
         string output_graph = "output_graph.pb";
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Convert TensorFlow Model to OpenCv",
+                Enabled = true,
+                IsImportingGraph = false
+            };
 
         public bool Run()
         {
@@ -33,7 +37,7 @@ namespace TensorFlowNET.Examples
             return true;
         }
 
-        public Graph BuildGraph()
+        public override Graph BuildGraph()
         {
             string pb = Path.Combine(modelDir, frozen_graph);
             var graph_def = GraphDef.Parser.ParseFrom(File.ReadAllBytes(pb));
@@ -137,18 +141,7 @@ namespace TensorFlowNET.Examples
             return null;
         }
 
-
-        public Graph ImportGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Predict(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PrepareData()
+        public override void PrepareData()
         {
             // get model file
             string url = "http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2018_01_28.tar.gz";
@@ -163,16 +156,6 @@ namespace TensorFlowNET.Examples
             // download the pbtxt file
             url = $"https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/data/mscoco_label_map.pbtxt";
             Web.Download(url, modelDir, "mscoco_label_map.pbtxt");
-        }
-
-        public void Test(Session sess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Train(Session sess)
-        {
-            throw new NotImplementedException();
         }
     }
 }
