@@ -320,7 +320,9 @@ namespace TensorFlowNET.Examples
 
         public override string FreezeModel()
         {
-            return tf.train.freeze_graph(checkpointDir, "frozen_model");
+            return tf.train.freeze_graph(checkpointDir,
+                "frozen_model",
+                new[] { "output/ArgMax" });
         }
     }
 }

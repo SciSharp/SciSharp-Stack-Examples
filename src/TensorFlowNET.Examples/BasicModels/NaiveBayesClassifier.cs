@@ -31,6 +31,16 @@ namespace TensorFlowNET.Examples
     {
         public NDArray X, y;
         public Normal dist { get; set; }
+
+        public ExampleConfig InitConfig()
+            => Config = new ExampleConfig
+            {
+                Name = "Naive Bayes Classifier",
+                Enabled = true,
+                IsImportingGraph = false,
+                Priority = 7
+            };
+
         public bool Run()
         {
             PrepareData();
@@ -188,13 +198,5 @@ namespace TensorFlowNET.Examples
             Web.Download(url, "nb", "nb_example.npy");
             #endregion
         }
-
-        public ExampleConfig InitConfig()
-            => Config = new ExampleConfig
-            {
-                Name = "Naive Bayes Classifier",
-                Enabled = true,
-                IsImportingGraph = false
-            };
     }
 }

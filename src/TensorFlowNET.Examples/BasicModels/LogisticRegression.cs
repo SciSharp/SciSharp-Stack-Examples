@@ -48,7 +48,8 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Logistic Regression",
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = false,
+                Priority = 5
             };
 
         public bool Run()

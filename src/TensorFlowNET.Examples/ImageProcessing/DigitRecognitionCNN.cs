@@ -75,9 +75,9 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST CNN",
-
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = false,
+                Priority = 9
             };
 
         public bool Run()
@@ -185,14 +185,33 @@ namespace TensorFlowNET.Examples
                 }
 
                 SaveCheckpoint(sess);
-                // ExportModel(sess);
             }
+        }
+
+        public override string FreezeModel()
+        {
+            return tf.train.freeze_graph(Config.Name,
+                "model",
+                new[] { "Train/Loss/loss,Train/Accuracy/accuracy" });
         }
 
         public override void Test()
         {
-            using(var sess = tf.Session())
+            using(var graph = tf.Graph().as_default())
+            using(var sess = tf.Session(graph))
             {
+                var saver = tf.train.import_meta_graph(Path.Combine(Config.Name, "mnist_cnn.ckpt.meta"));
+                // Restore variables from checkpoint
+                saver.restore(sess, tf.train.latest_checkpoint(Config.Name));
+
+                loss = graph.get_tensor_by_name("Train/Loss/loss:0");
+                accuracy = graph.get_tensor_by_name("Train/Accuracy/accuracy:0");
+                x = graph.get_tensor_by_name("Input/X:0");
+                y = graph.get_tensor_by_name("Input/Y:0");
+
+                //var init = tf.global_variables_initializer();
+                //sess.run(init);
+
                 (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
                 print("---------------------------------------------------------");
                 print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
@@ -348,28 +367,6 @@ namespace TensorFlowNET.Examples
         {
             var saver = tf.train.Saver();
             saver.save(sess, Path.Combine(Config.Name, "mnist_cnn.ckpt"));
-        }
-
-        public void ExportModel(Session sess)
-        {
-            var graph = sess.graph;
-            var output_graph_def = tf.graph_util.convert_variables_to_constants(
-                sess, graph.as_graph_def(), new string[] { "Train/Loss/loss:0" });
-            File.WriteAllBytes(Path.Combine(Config.Name, "model.pb"), output_graph_def.ToByteArray());
-        }
-
-        public void LoadModel(Session sess)
-        {
-            Console.WriteLine($"Import graph meta");
-            var saver = tf.train.import_meta_graph(Path.Combine(Config.Name, "mnist_cnn.ckpt.meta"));
-            // Restore variables from checkpoint
-            saver.restore(sess, tf.train.latest_checkpoint(Config.Name));
-
-            var graph = tf.get_default_graph();
-            loss = graph.get_tensor_by_name("Train/Loss/loss:0");
-            accuracy = graph.get_tensor_by_name("Train/Accuracy/accuracy:0");
-            x = graph.get_tensor_by_name("Input/X:0");
-            y = graph.get_tensor_by_name("Input/Y:0");
         }
     }
 }

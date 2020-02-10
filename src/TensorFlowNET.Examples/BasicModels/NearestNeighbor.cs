@@ -40,7 +40,8 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Nearest Neighbor",
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = false,
+                Priority = 8
             };
 
         public bool Run()
