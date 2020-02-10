@@ -80,10 +80,10 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public void Predict()
+        public override void Predict()
         {
             PredictFromImage();
-            PredictFromVideo();
+            // PredictFromVideo();
         }
 
         public void PredictFromImage()

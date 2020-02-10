@@ -37,7 +37,6 @@ namespace TensorFlowNET.Examples
         public int? DataLimit = null;
 
         const string dataDir = "cnn_text";
-        const string checkpointDir = "cnn_text/checkpoint";
         string dataFileName = "dbpedia_csv.tar.gz";
 
         string TRAIN_PATH = $"{dataDir}/dbpedia_csv/train.csv";
@@ -138,8 +137,6 @@ namespace TensorFlowNET.Examples
             var url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/data/dbpedia_subset.zip";
             Web.Download(url, dataDir, "dbpedia_subset.zip");
             Compress.UnZip(Path.Combine(dataDir, "dbpedia_subset.zip"), Path.Combine(dataDir, "dbpedia_csv"));
-
-            Directory.CreateDirectory(checkpointDir);
 
             Console.WriteLine("Building dataset...");
             var (x, y) = (new int[0][], new int[0]);
@@ -263,7 +260,7 @@ namespace TensorFlowNET.Examples
                         if (valid_accuracy > max_accuracy)
                         {
                             max_accuracy = valid_accuracy;
-                            saver.save(sess, $"{checkpointDir}/word_cnn.ckpt", global_step: step);
+                            saver.save(sess, $"{dataDir}/word_cnn.ckpt", global_step: step);
                             print("Model is saved.\n");
                         }
                     }
@@ -273,7 +270,7 @@ namespace TensorFlowNET.Examples
 
         public override void Test()
         {
-            var checkpoint = Path.Combine(checkpointDir, "word_cnn.ckpt-800");
+            var checkpoint = Path.Combine(dataDir, "word_cnn.ckpt-800");
             if (!File.Exists($"{checkpoint}.meta")) return;
 
             var graph = tf.Graph();
@@ -320,7 +317,7 @@ namespace TensorFlowNET.Examples
 
         public override string FreezeModel()
         {
-            return tf.train.freeze_graph(checkpointDir,
+            return tf.train.freeze_graph(dataDir,
                 "frozen_model",
                 new[] { "output/ArgMax" });
         }
