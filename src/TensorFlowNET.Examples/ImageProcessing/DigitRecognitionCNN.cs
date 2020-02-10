@@ -77,7 +77,7 @@ namespace TensorFlowNET.Examples
                 Name = "MNIST CNN",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 9
+                Priority = 10
             };
 
         public bool Run()

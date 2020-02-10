@@ -55,19 +55,24 @@ namespace TensorFlowNET.Examples
         Operation train_op;
         
         float accuracy_test = 0f;
+        Session sess;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
                 Name = "MNIST LSTM",
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = false,
+                Priority = 11
             };
 
         public bool Run()
         {
             PrepareData();
             BuildGraph();
+
+            sess = tf.Session();
+
             Train();
             Test();
 
@@ -119,30 +124,27 @@ namespace TensorFlowNET.Examples
             float loss_val = 100.0f;
             float accuracy_val = 0f;
 
-            using (var sess = tf.Session())
+            var init = tf.global_variables_initializer();
+            sess.run(init);
+
+            var sw = new Stopwatch();
+            sw.Start();
+            foreach (var step in range(1, training_steps + 1))
             {
-                var init = tf.global_variables_initializer();
-                sess.run(init);
+                var (batch_x, batch_y) = mnist.Train.GetNextBatch(batch_size);
 
-                var sw = new Stopwatch();
-                sw.Start();
-                foreach (var step in range(1, training_steps + 1))
+                // Reshape data to get 28 seq of 28 elements
+                batch_x = batch_x.reshape(batch_size, timesteps, num_input);
+
+                // Run optimization op (backprop)
+                sess.run(train_op, (X, batch_x), (Y, batch_y));
+
+                if (step % display_step == 0 || step == 1)
                 {
-                    var (batch_x, batch_y) = mnist.Train.GetNextBatch(batch_size);
-
-                    // Reshape data to get 28 seq of 28 elements
-                    batch_x = batch_x.reshape(batch_size, timesteps, num_input);
-
-                    // Run optimization op (backprop)
-                    sess.run(train_op, (X, batch_x), (Y, batch_y));
-
-                    if (step % display_step == 0 || step == 1)
-                    {
-                        // Calculate batch loss and accuracy
-                        (loss_val, accuracy_val) = sess.run((loss_op, accuracy), (X, batch_x), (Y, batch_y));
-                        print($"Step {step}: Minibatch Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("0.000")} {sw.ElapsedMilliseconds}ms");
-                        sw.Restart();
-                    }
+                    // Calculate batch loss and accuracy
+                    (loss_val, accuracy_val) = sess.run((loss_op, accuracy), (X, batch_x), (Y, batch_y));
+                    print($"Step {step}: Minibatch Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("0.000")} {sw.ElapsedMilliseconds}ms");
+                    sw.Restart();
                 }
             }
 
@@ -151,16 +153,13 @@ namespace TensorFlowNET.Examples
 
         public override void Test()
         {
-            using (var sess = tf.Session())
-            {
-                // Calculate accuracy for 128 mnist test images
-                var (x_test, y_test) = (mnist.Test.Data[":128"], mnist.Test.Labels[":128"]);
-                x_test = x_test.reshape(-1, timesteps, num_input);
-                accuracy_test = sess.run(accuracy, new FeedItem(X, x_test), new FeedItem(Y, y_test));
-                print("---------------------------------------------------------");
-                print($"Testing Accuracy: {accuracy_test.ToString("P")}");
-                print("---------------------------------------------------------");
-            }
+            // Calculate accuracy for 128 mnist test images
+            var (x_test, y_test) = (mnist.Test.Data[":128"], mnist.Test.Labels[":128"]);
+            x_test = x_test.reshape(-1, timesteps, num_input);
+            accuracy_test = sess.run(accuracy, new FeedItem(X, x_test), new FeedItem(Y, y_test));
+            print("---------------------------------------------------------");
+            print($"Testing Accuracy: {accuracy_test.ToString("P")}");
+            print("---------------------------------------------------------");
         }
 
         public override void PrepareData()

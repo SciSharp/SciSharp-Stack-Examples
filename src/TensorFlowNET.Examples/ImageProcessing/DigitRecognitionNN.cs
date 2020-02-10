@@ -49,19 +49,23 @@ namespace TensorFlowNET.Examples
         int display_freq = 100;
         float accuracy_test = 0f;
         float loss_test = 1f;
+        Session sess;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
                 Name = "Digits Recognition Neural Network",
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = false,
+                Priority = 9
             };
 
         public bool Run()
         {
             PrepareData();
             BuildGraph();
+
+            sess = tf.Session();
 
             Train();
             Test();
@@ -126,59 +130,54 @@ namespace TensorFlowNET.Examples
             // Number of training iterations in each epoch
             var num_tr_iter = mnist.Train.Labels.shape[0] / batch_size;
 
-            using (var sess = tf.Session())
+            var init = tf.global_variables_initializer();
+            sess.run(init);
+
+            float loss_val = 100.0f;
+            float accuracy_val = 0f;
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            foreach (var epoch in range(epochs))
             {
-                var init = tf.global_variables_initializer();
-                sess.run(init);
+                print($"Training epoch: {epoch + 1}");
+                // Randomly shuffle the training data at the beginning of each epoch 
+                var (x_train, y_train) = mnist.Randomize(mnist.Train.Data, mnist.Train.Labels);
 
-                float loss_val = 100.0f;
-                float accuracy_val = 0f;
-
-                var sw = new Stopwatch();
-                sw.Start();
-
-                foreach (var epoch in range(epochs))
+                foreach (var iteration in range(num_tr_iter))
                 {
-                    print($"Training epoch: {epoch + 1}");
-                    // Randomly shuffle the training data at the beginning of each epoch 
-                    var (x_train, y_train) = mnist.Randomize(mnist.Train.Data, mnist.Train.Labels);
+                    var start = iteration * batch_size;
+                    var end = (iteration + 1) * batch_size;
+                    var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
 
-                    foreach (var iteration in range(num_tr_iter))
+                    // Run optimization op (backprop)
+                    sess.run(optimizer, (x, x_batch), (y, y_batch));
+
+                    if (iteration % display_freq == 0)
                     {
-                        var start = iteration * batch_size;
-                        var end = (iteration + 1) * batch_size;
-                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
-
-                        // Run optimization op (backprop)
-                        sess.run(optimizer, (x, x_batch), (y, y_batch));
-
-                        if (iteration % display_freq == 0)
-                        {
-                            // Calculate and display the batch loss and accuracy
-                            (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_batch), (y, y_batch));
-                            print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
-                            sw.Restart();
-                        }
+                        // Calculate and display the batch loss and accuracy
+                        (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_batch), (y, y_batch));
+                        print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
+                        sw.Restart();
                     }
-
-                    // Run validation after every epoch
-                    (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, mnist.Validation.Data), (y, mnist.Validation.Labels));
-                    print("---------------------------------------------------------");
-                    print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
-                    print("---------------------------------------------------------");
                 }
+
+                // Run validation after every epoch
+                (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, mnist.Validation.Data), (y, mnist.Validation.Labels));
+                print("---------------------------------------------------------");
+                print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
+                print("---------------------------------------------------------");
             }
+
         }
 
         public override void Test()
         {
-            using (var sess = tf.Session())
-            {
-                (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, mnist.Test.Data), (y, mnist.Test.Labels));
-                print("---------------------------------------------------------");
-                print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
-                print("---------------------------------------------------------");
-            };
+            (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, mnist.Test.Data), (y, mnist.Test.Labels));
+            print("---------------------------------------------------------");
+            print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
+            print("---------------------------------------------------------");
         }
     }
 }
