@@ -33,7 +33,7 @@ namespace TensorFlowNET.Examples
     public class YoloCoco : SciSharpExample, IExample
     {
         int input_size = 416;
-        int num_classes = 80;
+        int num_classes = 1;
 
         string[] return_elements = new[] 
         { 
@@ -49,7 +49,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "YoloCoco",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = true
             };
 
@@ -91,7 +91,7 @@ namespace TensorFlowNET.Examples
             var graph = ImportGraph();
             using (var sess = new Session(graph))
             {
-                var original_image = cv2.imread(@"D:\SciSharp\SciSharp-Stack-Examples\data\images\cars.jpg");
+                var original_image = cv2.imread(@"D:\SciSharp\SciSharp-Stack-Examples\data\images\cat_face.jpg");
                 original_image = cv2.cvtColor(original_image, ColorConversionCodes.COLOR_BGR2RGB);
                 var original_image_size = (original_image.shape[0], original_image.shape[1]);
                 var image_data = image_preporcess(original_image, (input_size, input_size));
@@ -105,9 +105,9 @@ namespace TensorFlowNET.Examples
                                         np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
 
                 var bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.3f);
-                var bboxess = nms(bboxes, 0.45f, method: "nms");
+                var bboxess = nms(bboxes, 0.75f, method: "nms");
                 var image = draw_bbox(original_image, bboxess);
-                cv2.imshow("objects", image);
+                cv2.imshow("Detected Objects in TensorFlow.NET", image);
                 cv2.waitKey();
             }
         }

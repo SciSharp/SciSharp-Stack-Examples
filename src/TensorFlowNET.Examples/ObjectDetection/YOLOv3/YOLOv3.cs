@@ -234,7 +234,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         public Tensor focal(Tensor target, Tensor actual, int alpha = 1, int gamma = 2)
         {
-            var focal_loss = alpha * tf.pow(tf.abs(target - actual), gamma);
+            var focal_loss = alpha * tf.pow(tf.abs(target - actual), gamma, name: "Pow");
             return focal_loss;
         }
 

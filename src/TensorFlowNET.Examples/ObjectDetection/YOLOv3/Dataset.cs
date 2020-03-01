@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using Tensorflow;
 using static Tensorflow.Binding;
+using static SharpCV.Binding;
+using SharpCV;
 
 namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 {
@@ -60,16 +62,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         public IEnumerable<NDArray[]> Items()
         {
-            /*for (int i = 3; i < 6; i++)
-            {
-                var results = new List<NDArray>();
-                for (int j = 0; j < 7; j++)
-                    results.Add(np.load($"YOLOv3/data/npy/training/data-{i}.0-{j}.npy"));
-                yield return results.ToArray();
-            }*/
-
-
-            train_input_size = 448;// train_input_sizes[new Random().Next(0, train_input_sizes.Length - 1)];
+            train_input_size = train_input_sizes[new Random().Next(0, train_input_sizes.Length - 1)];
             train_output_sizes = train_input_size / strides;
             var batch_image = np.zeros((batch_size, train_input_size, train_input_size, 3));
             var batch_label_sbbox = np.zeros((batch_size, train_output_sizes[0], train_output_sizes[0],
@@ -84,14 +77,14 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var batch_lbboxes = np.zeros((batch_size, max_bbox_per_scale, 4));
 
             int num = 0;
-            if (batch_count < num_batchs)
+            while (batch_count < num_batchs)
             {
                 while (num < batch_size)
                 {
                     var index = batch_count * batch_size + num;
                     if (index >= num_samples)
                         index -= num_samples;
-                    var annotation = "D:/VOC\\train/VOCdevkit/VOC2007\\JPEGImages\\000192.jpg 116,64,356,375,14";// annotations[index];
+                    var annotation = annotations[index];
                     var (image, bboxes) = parse_annotation(annotation);
                     var (label_sbbox, label_mbbox, label_lbbox, sbboxes, mbboxes, lbboxes) = preprocess_true_boxes(bboxes);
 
@@ -106,7 +99,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 }
                 batch_count += 1;
 
-                /*return new[]
+                yield return new[]
                 {
                     batch_image,
                     batch_label_sbbox,
@@ -115,15 +108,11 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     batch_sbboxes,
                     batch_mbboxes,
                     batch_lbboxes
-                };*/
-                throw new NotImplementedException("");
+                };
             }
-            else
-            {
-                batch_count = 0;
-                np.random.shuffle(annotations);
-                throw new StopIteration();
-            }
+
+            batch_count = 0;
+            np.random.shuffle(annotations);
         }
 
         private (NDArray, NDArray) parse_annotation(string annotation)
@@ -132,7 +121,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var image_path = line[0];
             if (!File.Exists(image_path))
                 throw new KeyError($"{image_path} does not exist ... ");
-            NDArray image = Utils.imread(image_path);
+            var image = cv2.imread(image_path);
 
             var bboxes = np.stack(line
                 .Skip(1)
@@ -145,12 +134,13 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             
             if (data_aug)
             {
-                //(image, bboxes) = random_horizontal_flip(np.copy(image), np.copy(bboxes));
-                //(image, bboxes) = random_crop(np.copy(image), np.copy(bboxes));
-                //(image, bboxes) = random_translate(np.copy(image), np.copy(bboxes));
+                (image, bboxes) = random_horizontal_flip(image, bboxes);
+                (image, bboxes) = random_crop(image, bboxes);
+                (image, bboxes) = random_translate(image, bboxes);
             }
-            (image, bboxes) = Utils.image_preporcess(np.copy(image), new[] { train_input_size, train_input_size }, np.copy(bboxes));
-            return (image, bboxes);
+            NDArray image1;
+            (image1, bboxes) = Utils.image_preporcess(image, new[] { train_input_size, train_input_size }, bboxes);
+            return (image1, bboxes);
         }
 
         private(NDArray, NDArray, NDArray, NDArray, NDArray, NDArray) preprocess_true_boxes(NDArray bboxes)
@@ -182,16 +172,17 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
                     var iou_scale = bbox_iou(bbox_xywh_scaled[i][np.newaxis, Slice.All], anchors_xywh);
                     iou.Add(iou_scale);
-                    var iou_mask = np.array(new[] { false, false, true }).AsGeneric<bool>(); // iou_scale > 0.3;
+                    var iou_mask = iou_scale > 0.3;
                     if (np.any(iou_mask))
                     {
                         var floors = np.floor(bbox_xywh_scaled[i, new Slice(0, 2)]).astype(np.int32);
                         var (xind, yind) = (floors.GetInt32(0), floors.GetInt32(1));
 
-                        label[i][yind, xind, iou_mask, Slice.All] = 0;
-                        label[i][yind, xind, iou_mask, new Slice(0, 4)] = bbox_xywh;
-                        label[i][yind, xind, iou_mask, new Slice(4, 5)] = 1.0f;
-                        label[i][yind, xind, iou_mask, new Slice(5)] = smooth_onehot;
+                        var ndTmp = label[i][yind, xind][iou_mask];
+                        ndTmp[Slice.All] = 0;
+                        ndTmp[Slice.All, new Slice(0, 4)] = bbox_xywh;
+                        ndTmp[Slice.All, new Slice(4, 5)] = 1.0f;
+                        ndTmp[Slice.All, new Slice(5)] = smooth_onehot;
 
                         var bbox_ind = (int)(bbox_count[i] % max_bbox_per_scale);
                         bboxes_xywh[i][bbox_ind, new Slice(0, 4)] = bbox_xywh;
@@ -232,6 +223,21 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var union_area = boxes1_area + boxes2_area - inter_area;
 
             return inter_area / union_area;
+        }
+
+        private (Mat, NDArray) random_horizontal_flip(Mat image, NDArray bboxes)
+        {
+            return (image, bboxes);
+        }
+
+        private (Mat, NDArray) random_crop(Mat image, NDArray bboxes)
+        {
+            return (image, bboxes);
+        }
+
+        private (Mat, NDArray) random_translate(Mat image, NDArray bboxes)
+        {
+            return (image, bboxes);
         }
     }
 }
