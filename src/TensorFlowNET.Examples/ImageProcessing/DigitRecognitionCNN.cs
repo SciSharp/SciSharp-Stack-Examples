@@ -14,13 +14,11 @@
    limitations under the License.
 ******************************************************************************/
 
-using Google.Protobuf;
 using NumSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
 using Tensorflow;
-using Tensorflow.Hub;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples

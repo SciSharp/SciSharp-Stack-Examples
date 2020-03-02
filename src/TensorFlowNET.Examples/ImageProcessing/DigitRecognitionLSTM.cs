@@ -14,12 +14,10 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using Tensorflow;
-using Tensorflow.Hub;
 using Tensorflow.Operations;
 using static Tensorflow.Binding;
 

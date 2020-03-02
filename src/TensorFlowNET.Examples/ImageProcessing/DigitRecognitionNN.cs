@@ -14,11 +14,9 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using System.Diagnostics;
 using Tensorflow;
-using Tensorflow.Hub;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -108,7 +106,7 @@ namespace TensorFlowNET.Examples
                         shape: (in_dim, num_units),
                         initializer: initer);
 
-            var initial = tf.constant(0f, num_units);
+            var initial = tf.constant(0f, shape: num_units);
             var b = tf.get_variable("b_" + name,
                         dtype: tf.float32,
                         initializer: initial);

@@ -47,14 +47,17 @@ namespace TensorFlowNET.Examples
             if (parsedArgs.ContainsKey("ex"))
                 examples = examples.Where(x => x.Config.Name == parsedArgs["ex"]).ToArray();
 
-            Console.WriteLine(Environment.OSVersion.ToString(), Color.Yellow);
-            Console.WriteLine($"TensorFlow Binary v{tf.VERSION}", Color.Yellow);
+            Console.WriteLine(Environment.OSVersion, Color.Yellow);
+            Console.WriteLine($"64Bit Operating System: {Environment.Is64BitOperatingSystem}", Color.Yellow);
             Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}", Color.Yellow);
+            Console.WriteLine($"TensorFlow Binary v{tf.VERSION}", Color.Yellow);
+            Console.WriteLine($".NET CLR: {Environment.Version}", Color.Yellow);
+            Console.WriteLine(Environment.CurrentDirectory, Color.Yellow);
 
             for (var i = 0; i < examples.Length; i++)
-                Console.WriteLine($"[{i}]: {examples[i].Config.Name}");
+                Console.WriteLine($"[{i + 1}]: {examples[i].Config.Name}");
 
-            var key = "0";
+            var key = "1";
             
             if (examples.Length > 1)
             {
@@ -65,7 +68,7 @@ namespace TensorFlowNET.Examples
             var sw = new Stopwatch();
             for (var i = 0; i < examples.Length; i++)
             {
-                if (i.ToString() != key && key != "") continue;
+                if ((i + 1).ToString() != key && key != "") continue;
 
                 var example = examples[i];
                 Console.WriteLine($"{DateTime.UtcNow} Starting {example.Config.Name}", Color.White);
