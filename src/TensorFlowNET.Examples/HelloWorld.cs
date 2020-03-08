@@ -15,9 +15,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Enabled = true,
                 Name = "Hello World",
-                IsImportingGraph = false,
                 Priority = 1
             };
 

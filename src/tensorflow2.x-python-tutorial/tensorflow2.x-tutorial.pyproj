@@ -5,13 +5,17 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>hello-world.py</StartupFile>
+    <StartupFile>basic-operations.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>tensorflow2.x-tutorial</Name>
     <RootNamespace>tensorflow2.x-python-examples</RootNamespace>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterArguments>
+    </InterpreterArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +26,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="basic-operations.py" />
     <Compile Include="hello-world.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
