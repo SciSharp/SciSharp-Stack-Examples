@@ -24,11 +24,20 @@ namespace TensorFlowNET.Examples
             // Define tensor constants.
             var a = tf.constant(2);
             var b = tf.constant(3);
+            var c = tf.constant(5);
 
             // Various tensor operations.
             // Note: Tensors also support operators (+, *, ...)
             var add = tf.add(a, b);
-            Debug.Assert(5 == add.numpy());
+            var sub = tf.subtract(a, b);
+            var mul = tf.multiply(a, b);
+            var div = tf.divide(a, b);
+
+            // Access tensors value.
+            print("add =", add.numpy());
+            print("sub =", sub.numpy());
+            print("mul =", mul.numpy());
+            print("div =", div.numpy());
 
             return true;
         }

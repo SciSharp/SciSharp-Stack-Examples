@@ -115,7 +115,7 @@ namespace TensorFlowNET.Examples
                     for (int j = 0; j < data.Length; j++)
                         data[j] = Convert.ToInt32(matches[j].Value);
                     nd[i] = data.ToArray();*/
-                    nd[i] = lines[i].Substring(1, lines[i].Length - 2).Replace(" ", string.Empty);
+                    nd[i] = (NDArray)lines[i].Substring(1, lines[i].Length - 2).Replace(" ", string.Empty);
                 }
             }
             else

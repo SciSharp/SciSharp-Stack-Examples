@@ -32,7 +32,7 @@ namespace TensorFlowNET.Examples
             // tf.Tensor: shape=(), dtype=string, numpy=b'Hello, TensorFlow.NET!'
             print(hello);
 
-            string tensor = hello.numpy();
+            string tensor = (string)hello.numpy();
 
             return str == tensor;
         }
