@@ -39,6 +39,10 @@ namespace TensorFlowNET.Examples
             print("mul =", mul.numpy());
             print("div =", div.numpy());
 
+            // Some more operations.
+            // var mean = tf.reduce_mean(new[] { a, b, c });
+            // var sum = tf.reduce_sum(new[] { a, b, c });
+
             return true;
         }
     }
