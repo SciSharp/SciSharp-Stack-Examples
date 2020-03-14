@@ -40,8 +40,19 @@ namespace TensorFlowNET.Examples
             print("div =", div.numpy());
 
             // Some more operations.
-            // var mean = tf.reduce_mean(new[] { a, b, c });
-            // var sum = tf.reduce_sum(new[] { a, b, c });
+            var mean = tf.reduce_mean(new[] { a, b, c });
+            var sum = tf.reduce_sum(new[] { a, b, c });
+
+            // Access tensors value.
+            print("mean =", mean.numpy());
+            print("sum =", sum.numpy());
+
+            // Matrix multiplications.
+            var matrix1 = tf.constant(np.array(new float[,] { { 1, 2 }, { 3, 4 } }));
+            var matrix2 = tf.constant(np.array(new float[,] { { 5, 6 }, { 7, 8 } }));
+            var product = tf.matmul(matrix1, matrix2);
+            // Convert Tensor to Numpy.
+            print("product =", product.numpy());
 
             return true;
         }
