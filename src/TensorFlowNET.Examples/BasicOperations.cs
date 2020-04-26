@@ -21,6 +21,20 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            /*var w = tf.constant(1.5f);
+            c_api._gradient_function_callback callback = (op_name, num_inputs, attrs, num_attrs) =>
+            {
+
+            };
+            c_api.TFE_RegisterGradientFunction(callback);
+
+            using (var tape = tf.GradientTape())
+            {
+                tape.watch(w);
+                var loss = w * w;
+                var grad = tape.gradient(loss, w);
+            }*/
+
             // Define tensor constants.
             var a = tf.constant(2);
             var b = tf.constant(3);
@@ -44,6 +58,7 @@ namespace TensorFlowNET.Examples
             var sum = tf.reduce_sum(new[] { a, b, c });
 
             // Access tensors value.
+            
             print("mean =", mean.numpy());
             print("sum =", sum.numpy());
 
@@ -53,6 +68,8 @@ namespace TensorFlowNET.Examples
             var product = tf.matmul(matrix1, matrix2);
             // Convert Tensor to Numpy.
             print("product =", product.numpy());
+
+
 
             return true;
         }

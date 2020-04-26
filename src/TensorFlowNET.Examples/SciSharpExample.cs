@@ -9,6 +9,11 @@ namespace TensorFlowNET.Examples
     {
         public ExampleConfig Config { get; set; }
 
+        public virtual void BuildModel()
+        {
+
+        }
+
         public virtual Graph BuildGraph()
         {
             throw new NotImplementedException();

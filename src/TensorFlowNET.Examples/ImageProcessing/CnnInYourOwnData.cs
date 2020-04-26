@@ -304,7 +304,7 @@ namespace TensorFlowNET.Examples
             //create train images graph
             tf_with(tf.variable_scope("LoadImage"), delegate
             {
-                decodeJpeg = tf.placeholder(tf.@byte, name: "DecodeJpeg");
+                decodeJpeg = tf.placeholder(tf.byte8, name: "DecodeJpeg");
                 var cast = tf.cast(decodeJpeg, tf.float32);
                 var dims_expander = tf.expand_dims(cast, 0);
                 var resize = tf.constant(new int[] { img_h, img_w });

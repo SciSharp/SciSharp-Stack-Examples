@@ -10,10 +10,10 @@ c = tf.constant(5)
 
 # Various tensor operations.
 # Note: Tensors also support python operators (+, *, ...)
-div = tf.divide(a, b)
 add = tf.add(a, b)
 sub = tf.subtract(a, b)
 mul = tf.multiply(a, b)
+div = tf.divide(a, b)
 
 # Access tensors value.
 print("add =", add.numpy())

@@ -28,6 +28,8 @@ namespace TensorFlowNET.Examples
         ExampleConfig InitConfig();
         bool Run();
 
+        void BuildModel();
+
         /// <summary>
         /// Build dataflow graph, train and predict
         /// </summary>

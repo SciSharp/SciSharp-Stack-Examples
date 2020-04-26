@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>basic-operations.py</StartupFile>
+    <StartupFile>GradientTape.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,7 +27,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="basic-operations.py" />
+    <Compile Include="GradientTape.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="hello-world.py" />
+    <Compile Include="linear_regression.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SolderJointInspection3.py" />
+    <Compile Include="SolderJointInspection2.py" />
+    <Compile Include="SolderJointInspection1.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PCB.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
