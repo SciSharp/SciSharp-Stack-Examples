@@ -42,7 +42,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         Tensor trainable;
 
         YOLOv3 model;
-        VariableV1[] net_var;
+        IVariableV1[] net_var;
         Tensor giou_loss, conf_loss, prob_loss;
         RefVariable global_step;
         Tensor learn_rate;
@@ -207,7 +207,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 first_stage_trainable_var_list = new List<RefVariable>();
                 foreach (var var in tf.trainable_variables())
                 {
-                    var var_name = var.op.name;
+                    var var_name = var.Op.name;
                     var var_name_mess = var_name.Split('/');
                     if (new[] { "conv_sbbox", "conv_mbbox", "conv_lbbox" }.Contains(var_name_mess[0]))
                         first_stage_trainable_var_list.Add(var as RefVariable);

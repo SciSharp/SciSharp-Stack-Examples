@@ -17,6 +17,7 @@
 using NumSharp;
 using System;
 using Tensorflow;
+using Tensorflow.Gradients;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -27,7 +28,7 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class LinearRegression : SciSharpExample, IExample
     {
-        public int training_epochs = 1000;
+        public int training_steps = 1000;
 
         // Parameters
         float learning_rate = 0.01f;
@@ -63,10 +64,26 @@ namespace TensorFlowNET.Examples
             // var rnd2 = rng.randn<float>();
             var W = tf.Variable(-0.06f, name: "weight");
             var b = tf.Variable(-0.73f, name: "bias");
-
             var optimizer = tf.optimizers.SGD(learning_rate);
 
-            var pred = tf.add(tf.multiply(X, W), b);
+            // Run training for the given number of steps.
+            foreach (var step in range(1, training_steps + 1))
+            {
+                Tensor loss;
+                GradientTape g;
+                // Run the optimization to update W and b values.
+                // Wrap computation inside a GradientTape for automatic differentiation.
+                using (g = tf.GradientTape())
+                {
+                    // Linear regression (Wx + b).
+                    var pred = W * X + b;
+                    // Mean square error.
+                    loss = tf.reduce_sum(tf.pow(pred - Y, 2)) / (2 * n_samples);
+                }
+                // Compute gradients.
+                var gradients = g.gradient(loss, (W, b));
+                optimizer.apply_gradients(zip(gradients, (W, b)));
+            }
         }
 
         public override void PrepareData()
