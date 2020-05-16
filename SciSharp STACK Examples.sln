@@ -9,8 +9,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TensorFlowNET.Examples.FSha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpCV.Exmaples", "src\SharpCV.Exmaples\SharpCV.Exmaples.csproj", "{0B92B39C-48D3-44C4-B8B8-95CA4911A67B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlow.Binding", "..\TensorFlow.NET\src\TensorFlowNET.Core\TensorFlow.Binding.csproj", "{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,14 +41,6 @@ Global
 		{0B92B39C-48D3-44C4-B8B8-95CA4911A67B}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{0B92B39C-48D3-44C4-B8B8-95CA4911A67B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B92B39C-48D3-44C4-B8B8-95CA4911A67B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Debug-Minimal|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Debug-Minimal|Any CPU.Build.0 = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Publish|Any CPU.Build.0 = Debug|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D4F204B-C60A-41FC-BB3D-4A2D1E7886BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

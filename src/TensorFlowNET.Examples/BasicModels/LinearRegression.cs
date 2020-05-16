@@ -69,20 +69,27 @@ namespace TensorFlowNET.Examples
             // Run training for the given number of steps.
             foreach (var step in range(1, training_steps + 1))
             {
-                Tensor loss;
-                GradientTape g;
                 // Run the optimization to update W and b values.
                 // Wrap computation inside a GradientTape for automatic differentiation.
-                using (g = tf.GradientTape())
-                {
-                    // Linear regression (Wx + b).
-                    var pred = W * X + b;
-                    // Mean square error.
-                    loss = tf.reduce_sum(tf.pow(pred - Y, 2)) / (2 * n_samples);
-                }
+                using var g = tf.GradientTape();
+                // Linear regression (Wx + b).
+                var pred = W * X + b;
+                // Mean square error.
+                var loss = tf.reduce_sum(tf.pow(pred - Y, 2)) / (2 * n_samples);
+                // should stop recording
                 // Compute gradients.
                 var gradients = g.gradient(loss, (W, b));
+
+                // Update W and b following gradients.
                 optimizer.apply_gradients(zip(gradients, (W, b)));
+
+                if (step % display_step == 0)
+                {
+                    pred = W * X + b;
+                    loss = tf.reduce_sum(tf.pow(pred - Y, 2)) / (2 * n_samples);
+                    print($"step: {step}, loss: {loss}, W: {W.numpy()}, b: {b.numpy()}");
+                }
+
             }
         }
 
