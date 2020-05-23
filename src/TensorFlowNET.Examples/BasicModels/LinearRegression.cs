@@ -32,7 +32,7 @@ namespace TensorFlowNET.Examples
 
         // Parameters
         float learning_rate = 0.01f;
-        int display_step = 50;
+        int display_step = 100;
 
         NumPyRandom rng = np.random;
         NDArray X, Y;
@@ -87,9 +87,8 @@ namespace TensorFlowNET.Examples
                 {
                     pred = W * X + b;
                     loss = tf.reduce_sum(tf.pow(pred - Y, 2)) / (2 * n_samples);
-                    print($"step: {step}, loss: {loss}, W: {W.numpy()}, b: {b.numpy()}");
+                    print($"step: {step}, loss: {loss.numpy()}, W: {W.numpy()}, b: {b.numpy()}");
                 }
-
             }
         }
 

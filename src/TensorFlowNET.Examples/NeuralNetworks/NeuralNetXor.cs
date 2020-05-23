@@ -31,6 +31,7 @@ namespace TensorFlowNET.Examples
         public int num_steps = 10000;
 
         private NDArray data;
+        private NDArray label;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
@@ -44,7 +45,7 @@ namespace TensorFlowNET.Examples
         private (Operation, Tensor, Tensor) make_graph(Tensor features,Tensor labels, int num_hidden = 8)
         {
             var stddev = 1 / Math.Sqrt(2);
-            var hidden_weights = tf.Variable(tf.truncated_normal(new int []{2, num_hidden}, seed:1, stddev: (float) stddev ));
+            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));
 
             // Shape [4, num_hidden]
             var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
@@ -72,7 +73,10 @@ namespace TensorFlowNET.Examples
         {
             PrepareData();
             float loss_value = 0;
-            if (Config.IsImportingGraph)
+
+            if (tf.context.executing_eagerly())
+                loss_value = RunEagerMode();
+            else if (Config.IsImportingGraph)
                 loss_value = RunWithImportedGraph();
             else
                 loss_value = RunWithBuiltGraph();
@@ -80,8 +84,22 @@ namespace TensorFlowNET.Examples
             return loss_value < 0.0628;
         }
 
+        private float RunEagerMode()
+        {
+            var x = data;
+
+            return 0;
+        }
+
         private float RunWithImportedGraph()
         {
+            if (Config.IsImportingGraph)
+            {
+                // download graph meta data
+                string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
+                Web.Download(url, "graph", "xor.meta");
+            }
+
             var graph = tf.Graph().as_default();
 
             tf.train.import_meta_graph("graph/xor.meta");
@@ -159,12 +177,13 @@ namespace TensorFlowNET.Examples
                 {0, 1 }
             };
 
-            if (Config.IsImportingGraph)
+            label = new float[,]
             {
-                // download graph meta data
-                string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
-                Web.Download(url, "graph", "xor.meta");
-            }
+                {1 },
+                {0 },
+                {0 },
+                {1 }
+            };
         }
     }
 }

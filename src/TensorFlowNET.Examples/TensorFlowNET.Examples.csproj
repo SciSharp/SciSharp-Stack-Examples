@@ -39,10 +39,13 @@
     <PackageReference Include="SharpCV" Version="0.5.0" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="TensorFlow.NET" Version="0.20.0-alpha" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="TextProcessing\NER\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Core\Tensorflow.Binding.csproj" />
   </ItemGroup>
 </Project>

@@ -85,8 +85,8 @@ namespace TensorFlowNET.Examples
             Y = tf.placeholder(tf.float32, (-1, num_classes));
 
             // Hidden layer weights => 2*n_hidden because of forward + backward cells
-            var weights = tf.Variable(tf.random_normal((2 * num_hidden, num_classes)));
-            var biases = tf.Variable(tf.random_normal(num_classes));
+            var weights = tf.Variable(tf.random.normal((2 * num_hidden, num_classes)));
+            var biases = tf.Variable(tf.random.normal(num_classes));
 
             // Unstack to get a list of 'timesteps' tensors of shape (batch_size, num_input)
             var x = tf.unstack(X, timesteps, 1);
