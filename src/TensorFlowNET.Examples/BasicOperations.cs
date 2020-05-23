@@ -47,8 +47,8 @@ namespace TensorFlowNET.Examples
             print("sum =", sum.numpy());
 
             // Matrix multiplications.
-            var matrix1 = tf.constant(np.array(new float[,] { { 1, 2 }, { 3, 4 } }));
-            var matrix2 = tf.constant(np.array(new float[,] { { 5, 6 }, { 7, 8 } }));
+            var matrix1 = tf.constant(new float[,] { { 1, 2 }, { 3, 4 } });
+            var matrix2 = tf.constant(new float[,] { { 5, 6 }, { 7, 8 } });
             var product = tf.matmul(matrix1, matrix2);
             // Convert Tensor to Numpy.
             print("product =", product.numpy());
