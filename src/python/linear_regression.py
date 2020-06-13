@@ -2,11 +2,14 @@ from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
 import numpy as np
+from datetime import datetime
+
+start = datetime.now()
 
 # Parameters.
 learning_rate = 0.01
 training_steps = 1000
-display_step = 50
+display_step = 100
 
 # Training Data.
 X = np.array([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,
@@ -25,7 +28,10 @@ def linear_regression(x):
 
 # Mean square error.
 def mean_square(y_pred, y_true):
-    return tf.reduce_sum(tf.pow(y_pred-y_true, 2)) / (2 * n_samples)
+    pow = tf.pow(y_pred-y_true, 2)
+    denominator = 2 * n_samples
+    sum = tf.reduce_sum(pow)
+    return  sum / denominator
 
 # Stochastic Gradient Descent Optimizer.
 optimizer = tf.optimizers.SGD(learning_rate)
@@ -52,11 +58,6 @@ for step in range(1, training_steps + 1):
         pred = linear_regression(X)
         loss = mean_square(pred, Y)
         print("step: %i, loss: %f, W: %f, b: %f" % (step, loss, W.numpy(), b.numpy()))
-        
-import matplotlib.pyplot as plt
 
-# Graphic display
-plt.plot(X, Y, 'ro', label='Original data')
-plt.plot(X, np.array(W * X + b), label='Fitted line')
-plt.legend()
-plt.show()
+print(datetime.now() - start)
+print("finished")

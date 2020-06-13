@@ -26,21 +26,21 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// A logistic regression learning algorithm example using TensorFlow library.
     /// This example is using the MNIST database of handwritten digits
-    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/logistic_regression.py
+    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/2_BasicModels/logistic_regression.ipynb
     /// </summary>
     public class LogisticRegression : SciSharpExample, IExample
     {
-        public int training_epochs = 10;
-        public int? train_size = null;
-        public int validation_size = 5000;
-        public int? test_size = null;
-        public int batch_size = 100;
+        int training_epochs = 10;
+        int? train_size = null;
+        int validation_size = 5000;
+        int? test_size = null;
+        int batch_size = 100;
 
-        private float learning_rate = 0.01f;
-        private int display_step = 1;
+        float learning_rate = 0.01f;
+        int display_step = 1;
         float accuracy = 0f;
 
-        Datasets<MnistDataSet> mnist;
+        Datasets<MnistDataSet> mnistV1;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
@@ -54,14 +54,104 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             PrepareData();
-            Train();
+            if (tf.context.executing_eagerly())
+                RunEagerMode();
+            else
+                Train();
+            return accuracy > 0.8;
+        }
 
-            return accuracy > 0.9;
+        public void RunEagerMode()
+        {
+            int num_classes = 10; // 0 to 9 digits
+            int num_features = 784; // 28*28
+            display_step = 10;
+            batch_size = 256;
+            int training_steps = 100;
+
+            // Prepare MNIST data.
+            var ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            // Flatten images to 1-D vector of 784 features (28*28).
+            (x_train, x_test) = (x_train.reshape((-1, num_features)), x_test.reshape((-1, num_features)));
+            // Normalize images value from [0, 255] to [0, 1].
+            (x_train, x_test) = (x_train / 255f, x_test / 255f);
+
+            // Use tf.data API to shuffle and batch data.
+            //var train_data = tf.data.Dataset.from_tensor_slices(x_train, y_train);
+
+            // Weight of shape [784, 10], the 28*28 image features, and total number of classes.
+            var W = tf.Variable(tf.ones((num_features, num_classes)), name: "weight");
+            // Bias of shape [10], the total number of classes.
+            var b = tf.Variable(tf.zeros(num_classes), name: "bias");
+
+            Func<Tensor, Tensor> logistic_regression = x 
+                => tf.nn.softmax(tf.matmul(x, W) + b);
+
+            Func<Tensor, Tensor, Tensor> cross_entropy = (y_pred, y_true) =>
+            {
+                y_true = tf.cast(y_true, TF_DataType.TF_UINT8);
+                // Encode label to a one hot vector.
+                y_true = tf.one_hot(y_true, depth: num_classes);
+                // Clip prediction values to avoid log(0) error.
+                y_pred = tf.clip_by_value(y_pred, 1e-9f, 1.0f);
+                // Compute cross-entropy.
+                return tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred), 1));
+            };
+
+            Func<Tensor, Tensor, Tensor> accuracy = (y_pred, y_true) =>
+            {
+                // Predicted class is the index of highest score in prediction vector (i.e. argmax).
+                var correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.cast(y_true, tf.int64));
+                return tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
+            };
+
+            // Stochastic gradient descent optimizer.
+            var optimizer = tf.optimizers.SGD(learning_rate);
+
+            Action<Tensor, Tensor> run_optimization = (x, y) =>
+            {
+                // Wrap computation inside a GradientTape for automatic differentiation.
+                using var g = tf.GradientTape();
+                var pred = logistic_regression(x);
+                var loss = cross_entropy(pred, y);
+
+                // Compute gradients.
+                var gradients = g.gradient(loss, (W, b));
+
+                // Update W and b following gradients.
+                optimizer.apply_gradients(zip(gradients, (W, b)));
+            };
+
+            // Run training for the given number of steps.
+            foreach (var step in range(1, training_steps))
+            {
+                var start = (step - 1) * batch_size;
+                var end = step * batch_size;
+                var (batch_x, batch_y) = mnistV1.GetNextBatch(mnistV1.Train.Data, mnistV1.Train.Labels, start, end);
+                // Run the optimization to update W and b values.
+                var x_tensor = tf.constant(batch_x);
+                var y_tensor = tf.constant(np.argmax(batch_y, 1));
+                run_optimization(x_tensor, y_tensor);
+
+                if (step % display_step == 0)
+                {
+                    var pred = logistic_regression(x_tensor);
+                    var loss = cross_entropy(pred, y_tensor);
+                    var acc = accuracy(pred, y_tensor);
+                    print($"step: {step}, loss: {loss.numpy()}, accuracy: {acc.numpy()}");
+                    this.accuracy = (float)acc.numpy();
+                }
+            }
         }
 
         public override void PrepareData()
         {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, trainSize: train_size, validationSize: validation_size, testSize: test_size, showProgressInConsole: true).Result;
+            mnistV1 = MnistModelLoader.LoadAsync(".resources/mnist", 
+                oneHot: true, 
+                trainSize: train_size, 
+                validationSize: validation_size, 
+                testSize: test_size, 
+                showProgressInConsole: true).Result;
         }
 
         public override void Train()
@@ -86,7 +176,7 @@ namespace TensorFlowNET.Examples
             // Initialize the variables (i.e. assign their default value)
             var init = tf.global_variables_initializer();
 
-            var total_batch = mnist.Train.NumOfExamples / batch_size;
+            var total_batch = mnistV1.Train.NumOfExamples / batch_size;
 
             var sw = new Stopwatch();
 
@@ -106,7 +196,7 @@ namespace TensorFlowNET.Examples
                     {
                         var start = i * batch_size;
                         var end = (i + 1) * batch_size;
-                        var (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, end);
+                        var (batch_xs, batch_ys) = mnistV1.GetNextBatch(mnistV1.Train.Data, mnistV1.Train.Labels, start, end);
                         // Run optimization op (backprop) and cost op (to get loss value)
                         (_, float c) = sess.run((optimizer, cost),
                             (x, batch_xs),
@@ -132,7 +222,7 @@ namespace TensorFlowNET.Examples
                 var correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1));
                 // Calculate accuracy
                 var acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
-                accuracy = acc.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
+                accuracy = acc.eval(sess, (x, mnistV1.Test.Data), (y, mnistV1.Test.Labels));
                 print($"Accuracy: {acc:F4}");
             }
         }
@@ -171,7 +261,7 @@ namespace TensorFlowNET.Examples
                 var input = x.outputs[0];
 
                 // predict
-                var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
+                var (batch_xs, batch_ys) = mnistV1.Train.GetNextBatch(10);
                 var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
 
                 if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())

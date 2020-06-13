@@ -44,8 +44,8 @@ namespace TensorFlowNET.Examples
 
         private (Operation, Tensor, Tensor) make_graph(Tensor features,Tensor labels, int num_hidden = 8)
         {
-            var stddev = 1 / Math.Sqrt(2);
-            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));
+            var stddev = (float)(1 / Math.Sqrt(2));
+            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, stddev: stddev));
 
             // Shape [4, num_hidden]
             var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
@@ -86,8 +86,50 @@ namespace TensorFlowNET.Examples
 
         private float RunEagerMode()
         {
-            var x = data;
+            var learning_rate = 0.01f;
+            var num_hidden = 8;
+            var display_step = 1000;
+            var stddev = 1 / Math.Sqrt(2);
+            var features = tf.constant(data);
+            var labels = tf.constant(label);
 
+            var hidden_weights = tf.Variable(tf.random.truncated_normal((2, num_hidden), seed: 1, stddev: (float)stddev));
+
+            var optimizer = tf.optimizers.SGD(learning_rate);
+
+            // Run training for the given number of steps.
+            foreach (var step in range(1, num_steps + 1))
+            {
+                using var g = tf.GradientTape();
+
+                // Shape [4, num_hidden]
+                var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
+
+                var output_weights = tf.Variable(tf.truncated_normal(
+                    (num_hidden, 1),
+                    seed: 17,
+                    stddev: (float)(1 / Math.Sqrt(num_hidden))
+                ));
+
+                // Shape [4, 1]
+                var logits = tf.matmul(hidden_activations, output_weights);
+
+                // Shape [4]
+                var predictions = tf.tanh(tf.squeeze(logits));
+                var loss = tf.reduce_mean(tf.square(predictions - tf.cast(labels, tf.float32)), name: "loss");
+
+                // should stop recording
+                // Compute gradients.
+                var gradients = g.gradient(loss, output_weights);
+
+                // Update W and b following gradients.
+                optimizer.apply_gradients((gradients, output_weights));
+
+                if (step % display_step == 0)
+                {
+                    print($"step: {step}, loss: {loss.numpy()}");
+                }
+            }
             return 0;
         }
 

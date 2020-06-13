@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>GradientTape.py</StartupFile>
+    <StartupFile>logistic_regression.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -34,9 +34,10 @@
     <Compile Include="linear_regression.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SolderJointInspection3.py" />
-    <Compile Include="SolderJointInspection2.py" />
-    <Compile Include="SolderJointInspection1.py" />
+    <Compile Include="logistic_regression.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="xor.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="PCB.jpg" />
