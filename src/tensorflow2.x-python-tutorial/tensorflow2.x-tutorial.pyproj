@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>logistic_regression.py</StartupFile>
+    <StartupFile>linear_regression.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -35,6 +35,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="logistic_regression.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="neural_network.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="xor.py" />

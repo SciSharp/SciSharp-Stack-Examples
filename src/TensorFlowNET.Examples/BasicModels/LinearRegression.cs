@@ -28,7 +28,7 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class LinearRegression : SciSharpExample, IExample
     {
-        public int training_steps = 10 * 1000;
+        int training_steps = 1000;
 
         // Parameters
         float learning_rate = 0.01f;
