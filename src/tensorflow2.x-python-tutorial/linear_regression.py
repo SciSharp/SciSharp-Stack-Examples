@@ -4,12 +4,18 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 import numpy as np
 import math
+from datetime import datetime 
+
+tensor = tf.zeros((3, 2), tf.int32, "small");
+
+start_time = datetime.now() 
+
 rng = np.random
 
 # Parameters.
 learning_rate = 0.01
-training_steps = 1000
-display_step = 50
+training_steps = 10*1000
+display_step = 100
 
 # Training Data.
 X = np.array([3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,
@@ -56,11 +62,14 @@ for step in range(1, training_steps + 1):
         loss = mean_square(pred, Y)
         print("step: %i, loss: %f, W: %f, b: %f" % (step, loss, W.numpy(), b.numpy()))
 
+time_elapsed = datetime.now() - start_time 
 
-import matplotlib.pyplot as plt
+print('Python Linear Regression in {}'.format(time_elapsed))
+input("Press Enter to continue...")
+# import matplotlib.pyplot as plt
 
 # Graphic display
-plt.plot(X, Y, 'ro', label='Original data')
-plt.plot(X, np.array(W * X + b), label='Fitted line')
-plt.legend()
-plt.show()
+# plt.plot(X, Y, 'ro', label='Original data')
+# plt.plot(X, np.array(W * X + b), label='Fitted line')
+# plt.legend()
+# plt.show()
