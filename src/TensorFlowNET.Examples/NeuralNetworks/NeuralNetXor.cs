@@ -44,16 +44,16 @@ namespace TensorFlowNET.Examples
 
         private (Operation, Tensor, Tensor) make_graph(Tensor features,Tensor labels, int num_hidden = 8)
         {
-            var stddev = (float)(1 / Math.Sqrt(2));
-            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, stddev: stddev));
+            var stddev = 1 / Math.Sqrt(2);
+            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));
 
             // Shape [4, num_hidden]
             var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
 
             var output_weights = tf.Variable(tf.truncated_normal(
-                new[] {num_hidden, 1},
+                new[] { num_hidden, 1 },
                 seed: 17,
-                stddev: (float) (1 / Math.Sqrt(num_hidden))
+                stddev: (float)(1 / Math.Sqrt(num_hidden))
             ));
 
             // Shape [4, 1]
@@ -61,16 +61,19 @@ namespace TensorFlowNET.Examples
 
             // Shape [4]
             var predictions = tf.tanh(tf.squeeze(logits));
-            var loss = tf.reduce_mean(tf.square(predictions - tf.cast(labels, tf.float32)), name:"loss");
+            var loss = tf.reduce_mean(tf.square(predictions - tf.cast(labels, tf.float32)), name: "loss");
 
             var gs = tf.Variable(0, trainable: false, name: "global_step");
-            var train_op = tf.train.GradientDescentOptimizer(0.2f).minimize(loss, global_step: gs);
+            var optimizer = tf.train.GradientDescentOptimizer(0.2f);
+            var train_op = optimizer.minimize(loss, global_step: gs);
 
             return (train_op, loss, gs);
         }
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
             float loss_value = 0;
 
@@ -135,13 +138,6 @@ namespace TensorFlowNET.Examples
 
         private float RunWithImportedGraph()
         {
-            if (Config.IsImportingGraph)
-            {
-                // download graph meta data
-                string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
-                Web.Download(url, "graph", "xor.meta");
-            }
-
             var graph = tf.Graph().as_default();
 
             tf.train.import_meta_graph("graph/xor.meta");
@@ -226,6 +222,13 @@ namespace TensorFlowNET.Examples
                 {0 },
                 {1 }
             };
+
+            if (Config.IsImportingGraph)
+            {
+                // download graph meta data
+                string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
+                Web.Download(url, "graph", "xor.meta");
+            }
         }
     }
 }
