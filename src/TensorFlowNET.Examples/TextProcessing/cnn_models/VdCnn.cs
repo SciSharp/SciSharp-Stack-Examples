@@ -17,8 +17,8 @@ namespace TensorFlowNET.Examples.Text
         public Tensor x { get; private set; }
         public Tensor y { get; private set; }
         public Tensor is_training { get; private set; }
-        private RefVariable global_step;
-        private RefVariable embeddings;
+        private IVariableV1 global_step;
+        private IVariableV1 embeddings;
         private Tensor x_emb;
         private Tensor x_expanded;
         private Tensor logits;
@@ -44,7 +44,7 @@ namespace TensorFlowNET.Examples.Text
             tf_with(tf.name_scope("embedding"), delegate
             {
                 var init_embeddings = tf.random_uniform(new int[] { alphabet_size, embedding_size }, -1.0f, 1.0f);
-                embeddings = tf.get_variable("embeddings", initializer: init_embeddings);
+                embeddings = tf.compat.v1.get_variable("embeddings", initializer: init_embeddings);
                 x_emb = tf.nn.embedding_lookup(embeddings, x);
                 x_expanded = tf.expand_dims(x_emb, -1);
             });

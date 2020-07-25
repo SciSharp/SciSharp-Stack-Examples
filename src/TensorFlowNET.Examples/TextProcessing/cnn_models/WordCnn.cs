@@ -39,7 +39,7 @@ namespace TensorFlowNET.Examples.Text
             tf_with(tf.name_scope("embedding"), scope =>
             {
                 var init_embeddings = tf.random_uniform(new int[] { vocabulary_size, embedding_size });
-                var embeddings = tf.get_variable("embeddings", initializer: init_embeddings);
+                var embeddings = tf.compat.v1.get_variable("embeddings", initializer: init_embeddings);
                 x_emb = tf.nn.embedding_lookup(embeddings, x);
                 x_emb = tf.expand_dims(x_emb, -1);
             });

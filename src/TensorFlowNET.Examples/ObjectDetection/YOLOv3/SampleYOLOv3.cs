@@ -47,7 +47,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         RefVariable global_step;
         Tensor learn_rate;
         Tensor loss;
-        List<RefVariable> first_stage_trainable_var_list;
+        List<ResourceVariable> first_stage_trainable_var_list;
         Operation train_op_with_frozen_variables;
         Operation train_op_with_all_variables;
         Operation train_op;
@@ -191,7 +191,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     }
                 );
 
-                global_step_update = tf.assign_add(global_step, 1.0f);
+                global_step_update = tf.assign_add(global_step, 1.0f) as Tensor;
             });
 
             Operation moving_ave = null;
@@ -204,13 +204,13 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
             tf_with(tf.name_scope("define_first_stage_train"), scope =>
             {
-                first_stage_trainable_var_list = new List<RefVariable>();
+                first_stage_trainable_var_list = new List<ResourceVariable>();
                 foreach (var var in tf.trainable_variables())
                 {
                     var var_name = var.Op.name;
                     var var_name_mess = var_name.Split('/');
                     if (new[] { "conv_sbbox", "conv_mbbox", "conv_lbbox" }.Contains(var_name_mess[0]))
-                        first_stage_trainable_var_list.Add(var as RefVariable);
+                        first_stage_trainable_var_list.Add(var as ResourceVariable);
                 }
 
                 var adam = tf.train.AdamOptimizer(learn_rate);
@@ -229,7 +229,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
             tf_with(tf.name_scope("define_second_stage_train"), delegate
             {
-                var second_stage_trainable_var_list = tf.trainable_variables().Select(x => x as RefVariable).ToList();
+                var second_stage_trainable_var_list = tf.trainable_variables().Select(x => x as ResourceVariable).ToList();
                 var adam = tf.train.AdamOptimizer(learn_rate);
                 var second_stage_optimizer = adam.minimize(loss, var_list: second_stage_trainable_var_list);
                 tf_with(tf.control_dependencies(tf.get_collection<Operation>(tf.GraphKeys.UPDATE_OPS).ToArray()), delegate

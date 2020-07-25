@@ -33,7 +33,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     padding = "SAME";
                 }
 
-                var weight = tf.get_variable(name: "weight", dtype: tf.float32, trainable: true,
+                var weight = tf.compat.v1.get_variable(name: "weight", dtype: tf.float32, trainable: true,
                     shape: filters_shape, initializer: tf.random_normal_initializer(stddev: 0.01f));
 
                 var conv = tf.nn.conv2d(input: input_data, filter: weight, strides: strides, padding: padding);
@@ -47,7 +47,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 }
                 else
                 {
-                    var bias = tf.get_variable(name: "bias", shape: filters_shape.Last(), trainable: true,
+                    var bias = tf.compat.v1.get_variable(name: "bias", shape: filters_shape.Last(), trainable: true,
                        dtype: tf.float32, initializer: tf.constant_initializer(0.0f));
                     conv = tf.nn.bias_add(conv, bias);
                 }

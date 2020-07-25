@@ -754,7 +754,7 @@ namespace TensorFlowNET.Examples
         {
             var graph = tf.Graph().as_default();
 
-            var file_reader = tf.read_file(file_name, "file_reader");
+            var file_reader = tf.io.read_file(file_name, "file_reader");
             var image_reader = tf.image.decode_jpeg(file_reader, channels: 3, name: "jpeg_reader");
             var caster = tf.cast(image_reader, tf.float32);
             var dims_expander = tf.expand_dims(caster, 0);

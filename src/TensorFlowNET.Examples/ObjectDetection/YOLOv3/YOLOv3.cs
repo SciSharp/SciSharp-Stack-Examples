@@ -117,7 +117,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var output_size = conv_shape[1];
             anchor_per_scale = len(anchors);
 
-            conv_output = tf.reshape(conv_output, new object[] { batch_size, output_size, output_size, anchor_per_scale, 5 + num_class });
+            conv_output = tf.reshape(conv_output, (1, 1)/*new object[] { batch_size, output_size, output_size, anchor_per_scale, 5 + num_class }*/);
 
             var conv_raw_dxdy = conv_output[":", ":", ":", ":", "0:2"];
             var conv_raw_dwdh = conv_output[":", ":", ":", ":", "2:4"];
@@ -191,8 +191,8 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             var batch_size = conv_shape[0];
             var output_size = conv_shape[1];
             var input_size = stride * output_size;
-            conv = tf.reshape(conv, new object[] {batch_size, output_size, output_size,
-                                 anchor_per_scale, 5 + num_class });
+            conv = tf.reshape(conv, (1, 1)/*new object[] {batch_size, output_size, output_size,
+                                 anchor_per_scale, 5 + num_class }*/);
             var conv_raw_conf = conv[":", ":", ":", ":", "4:5"];
             var conv_raw_prob = conv[":", ":", ":", ":", "5:"];
 

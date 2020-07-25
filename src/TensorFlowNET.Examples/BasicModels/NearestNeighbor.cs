@@ -45,6 +45,7 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
             // tf Graph Input
             var xtr = tf.placeholder(tf.float32, new TensorShape(-1, 784));
             var xte = tf.placeholder(tf.float32, new TensorShape(784));

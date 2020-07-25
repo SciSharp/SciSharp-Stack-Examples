@@ -188,7 +188,7 @@ namespace TensorFlowNET.Examples
 
         private NDArray ReadTensorFromImageFile(string file_name, Graph graph)
         {
-            var file_reader = tf.read_file(file_name, "file_reader");
+            var file_reader = tf.io.read_file(file_name, "file_reader");
             var decodeJpeg = tf.image.decode_jpeg(file_reader, channels: n_channels, name: "DecodeJpeg");
             var cast = tf.cast(decodeJpeg, tf.float32);
             var dims_expander = tf.expand_dims(cast, 0);
@@ -363,7 +363,7 @@ namespace TensorFlowNET.Examples
                 var layer = tf.nn.conv2d(x, W,
                                      strides: new[] { 1, stride, stride, 1 },
                                      padding: "SAME");
-                layer += b;
+                layer += b.AsTensor();
                 return tf.nn.relu(layer);
             });
         }
@@ -408,10 +408,10 @@ namespace TensorFlowNET.Examples
         /// <param name="name"></param>
         /// <param name="shape"></param>
         /// <returns></returns>
-        private RefVariable weight_variable(string name, int[] shape)
+        private IVariableV1 weight_variable(string name, int[] shape)
         {
             var initer = tf.truncated_normal_initializer(stddev: 0.01f);
-            return tf.get_variable(name,
+            return tf.compat.v1.get_variable(name,
                                    dtype: tf.float32,
                                    shape: shape,
                                    initializer: initer);
@@ -423,10 +423,10 @@ namespace TensorFlowNET.Examples
         /// <param name="name"></param>
         /// <param name="shape"></param>
         /// <returns></returns>
-        private RefVariable bias_variable(string name, int[] shape)
+        private IVariableV1 bias_variable(string name, int[] shape)
         {
             var initial = tf.constant(0f, shape: shape, dtype: tf.float32);
-            return tf.get_variable(name,
+            return tf.compat.v1.get_variable(name,
                            dtype: tf.float32,
                            initializer: initial);
         }
@@ -448,7 +448,7 @@ namespace TensorFlowNET.Examples
                 var W = weight_variable("W_" + name, shape: new[] { in_dim, num_units });
                 var b = bias_variable("b_" + name, new[] { num_units });
 
-                var layer = tf.matmul(x, W) + b;
+                var layer = tf.matmul(x, W.AsTensor()) + b.AsTensor();
                 if (use_relu)
                     layer = tf.nn.relu(layer);
 
