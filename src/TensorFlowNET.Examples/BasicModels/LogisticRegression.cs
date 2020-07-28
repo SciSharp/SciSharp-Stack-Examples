@@ -30,14 +30,15 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class LogisticRegression : SciSharpExample, IExample
     {
-        public int training_epochs = 10;
-        public int? train_size = null;
-        public int validation_size = 5000;
-        public int? test_size = null;
-        public int batch_size = 100;
-
-        private float learning_rate = 0.01f;
-        private int display_step = 1;
+        int training_epochs = 1000;
+        int? train_size = null;
+        int validation_size = 5000;
+        int? test_size = null;
+        int batch_size = 256;
+        int num_classes = 10; // 0 to 9 digits
+        int num_features = 784; // 28*28
+        float learning_rate = 0.01f;
+        int display_step = 50;
         float accuracy = 0f;
 
         Datasets<MnistDataSet> mnist;
@@ -54,7 +55,6 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             // tf.compat.v1.disable_eager_execution();
-
             
             if (tf.context.executing_eagerly())
             {
@@ -76,12 +76,6 @@ namespace TensorFlowNET.Examples
 
         public void RunEagerMode()
         {
-            int num_classes = 10; // 0 to 9 digits
-            int num_features = 784; // 28*28
-            display_step = 10;
-            batch_size = 256;
-            int training_steps = 10;
-
             // Prepare MNIST data.
             var ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
             // Flatten images to 1-D vector of 784 features (28*28).
@@ -109,9 +103,7 @@ namespace TensorFlowNET.Examples
                 // Clip prediction values to avoid log(0) error.
                 y_pred = tf.clip_by_value(y_pred, 1e-9f, 1.0f);
                 // Compute cross-entropy.
-                var a = y_true * tf.math.log(y_pred);
-                var b = tf.reduce_sum(a, 1);
-                return tf.reduce_mean(-b);
+                return tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred), 1));
             };
 
             Func<Tensor, Tensor, Tensor> accuracy = (y_pred, y_true) =>
@@ -138,7 +130,7 @@ namespace TensorFlowNET.Examples
                 optimizer.apply_gradients(zip(gradients, (W, b)));
             };
 
-            train_data = train_data.take(training_steps);
+            train_data = train_data.take(training_epochs);
             // Run training for the given number of steps.
             foreach (var (step, (batch_x, batch_y)) in enumerate(train_data, 1))
             {
@@ -150,9 +142,15 @@ namespace TensorFlowNET.Examples
                     var pred = logistic_regression(batch_x);
                     var loss = cross_entropy(pred, batch_y);
                     var acc = accuracy(pred, batch_y);
-                    print($"step: {step}, loss: {loss.numpy()}, accuracy: {acc.numpy()}");
+                    print($"step: {step}, loss: {(float)loss}, accuracy: {(float)acc}");
                     this.accuracy = acc.numpy();
                 }
+            }
+
+            // Test model on validation set.
+            {
+                var pred = logistic_regression(x_test);
+                print($"Test Accuracy: {(float)accuracy(pred, y_test)}");
             }
         }
 

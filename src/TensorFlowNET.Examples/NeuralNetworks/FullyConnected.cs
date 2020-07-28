@@ -20,6 +20,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Tensorflow;
+using Tensorflow.Keras.ArgsDefinition;
+using Tensorflow.Keras.Engine;
+using Tensorflow.Operations.Activation;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -123,11 +126,7 @@ namespace TensorFlowNET.Examples
             float learning_rate = 0.1f;
             int display_step = 100;
             int batch_size = 256;
-            int training_steps = 2000;
-
-            // Network parameters.
-            int n_hidden_1 = 128; // 1st layer number of neurons.
-            int n_hidden_2 = 256; // 2nd layer number of neurons.
+            int training_steps = 10;
 
             // Prepare MNIST data.
             var ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
@@ -138,69 +137,120 @@ namespace TensorFlowNET.Examples
 
             // Use tf.data API to shuffle and batch data.
             var train_data = tf.data.Dataset.from_tensor_slices(x_train, y_train);
+            train_data = train_data.repeat().shuffle(5000).batch(batch_size).prefetch(1);
 
-            // Weight of shape [784, 10], the 28*28 image features, and total number of classes.
-            var W = tf.Variable(tf.ones((num_features, num_classes)), name: "weight");
-            // Bias of shape [10], the total number of classes.
-            var b = tf.Variable(tf.zeros(num_classes), name: "bias");
-
-            Func<Tensor, Tensor> logistic_regression = x
-                => tf.nn.softmax(tf.matmul(x, W) + b);
-
-            Func<Tensor, Tensor, Tensor> cross_entropy = (y_pred, y_true) =>
+            // Build neural network model.
+            var neural_net = new NeuralNet(new NeuralNetArgs
             {
-                y_true = tf.cast(y_true, TF_DataType.TF_UINT8);
-                // Encode label to a one hot vector.
-                y_true = tf.one_hot(y_true, depth: num_classes);
-                // Clip prediction values to avoid log(0) error.
-                y_pred = tf.clip_by_value(y_pred, 1e-9f, 1.0f);
-                // Compute cross-entropy.
-                return tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred), 1));
+                NeuronOfHidden1 = 128,
+                Activation1 = tf.nn.relu(),
+                NeuronOfHiddenHidden2 = 256,
+                Activation2 = tf.nn.relu()
+            });
+
+            // Cross-Entropy Loss.
+            // Note that this will apply 'softmax' to the logits.
+            Func<Tensor, Tensor, Tensor> cross_entropy_loss = (x, y) =>
+            {
+                // Convert labels to int 64 for tf cross-entropy function.
+                y = tf.cast(y, tf.int64);
+                // Apply softmax to logits and compute cross-entropy.
+                var loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels: y, logits: x);
+                // Average loss across the batch.
+                return tf.reduce_mean(loss);
             };
 
+            // Accuracy metric.
             Func<Tensor, Tensor, Tensor> accuracy = (y_pred, y_true) =>
             {
                 // Predicted class is the index of highest score in prediction vector (i.e. argmax).
                 var correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.cast(y_true, tf.int64));
-                return tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
+                return tf.reduce_mean(tf.cast(correct_prediction, tf.float32), axis: -1);
             };
 
             // Stochastic gradient descent optimizer.
             var optimizer = tf.optimizers.SGD(learning_rate);
 
+            // Optimization process.
             Action<Tensor, Tensor> run_optimization = (x, y) =>
             {
                 // Wrap computation inside a GradientTape for automatic differentiation.
                 using var g = tf.GradientTape();
-                var pred = logistic_regression(x);
-                var loss = cross_entropy(pred, y);
+                // Forward pass.
+                var pred = neural_net.Apply(x, is_training: true);
+                var loss = cross_entropy_loss(pred, y);
 
                 // Compute gradients.
-                var gradients = g.gradient(loss, (W, b));
-
-                // Update W and b following gradients.
-                optimizer.apply_gradients(zip(gradients, (W, b)));
+                var gradients = g.gradient(loss, neural_net.trainable_variables);
             };
 
+            train_data = train_data.take(training_steps);
             // Run training for the given number of steps.
-            foreach (var step in range(1, training_steps))
+            foreach (var (step, (batch_x, batch_y)) in enumerate(train_data, 1))
             {
-                var start = (step - 1) * batch_size;
-                var end = step * batch_size;
-                var (batch_x, batch_y) = (x_test, y_test); //mnistV1.GetNextBatch(mnistV1.Train.Data, mnistV1.Train.Labels, start, end);
                 // Run the optimization to update W and b values.
-                var x_tensor = tf.constant(batch_x);
-                var y_tensor = tf.constant(np.argmax(batch_y, 1));
-                run_optimization(x_tensor, y_tensor);
+                run_optimization(batch_x, batch_y);
 
                 if (step % display_step == 0)
                 {
-                    var pred = logistic_regression(x_tensor);
-                    var loss = cross_entropy(pred, y_tensor);
-                    var acc = accuracy(pred, y_tensor);
-                    print($"step: {step}, loss: {loss.numpy()}, accuracy: {acc.numpy()}");
+                    var pred = neural_net.Apply(batch_x, is_training: true);
+                    var loss = cross_entropy_loss(pred, batch_y);
+                    var acc = accuracy(pred, batch_y);
+                    print($"step: {step}, loss: {(float)loss}, accuracy: {(float)acc}");
+                    this.accuracy = acc.numpy();
                 }
             }
+
+            // Test model on validation set.
+            {
+                var pred = neural_net.Apply(x_test, is_training: false);
+            }
+        }
+
+        public class NeuralNet : Model
+        {
+            ILayer fc1;
+            ILayer fc2;
+            ILayer output;
+
+            public NeuralNet(NeuralNetArgs args) : 
+                base(args)
+            {
+                // First fully-connected hidden layer.
+                fc1 = tf.keras.layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);
+
+                // Second fully-connected hidden layer.
+                fc2 = tf.keras.layers.Dense(args.NeuronOfHiddenHidden2, activation: args.Activation2);
+
+                output = tf.keras.layers.Dense(args.NumClasses);
+            }
+
+            // Set forward pass.
+            protected override Tensor[] call(Tensor inputs, bool is_training = false, Tensor state = null)
+            {
+                var x = fc1.Apply(inputs);
+                throw new NotImplementedException("");
+            }
+        }
+
+        /// <summary>
+        /// Network parameters.
+        /// </summary>
+        public class NeuralNetArgs : ModelArgs
+        {
+            /// <summary>
+            /// 1st layer number of neurons.
+            /// </summary>
+            public int NeuronOfHidden1 { get; set; }
+            public IActivation Activation1 { get; set; }
+
+            /// <summary>
+            /// 2nd layer number of neurons.
+            /// </summary>
+            public int NeuronOfHiddenHidden2 { get; set; }
+            public IActivation Activation2 { get; set; }
+
+            public int NumClasses { get; set; }
         }
 
         public override void Train()
