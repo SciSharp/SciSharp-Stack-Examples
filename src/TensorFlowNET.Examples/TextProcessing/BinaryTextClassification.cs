@@ -5,6 +5,7 @@ using Tensorflow;
 using System.Linq;
 using NumSharp;
 using Newtonsoft.Json;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
@@ -50,9 +51,9 @@ namespace TensorFlowNET.Examples
             // input shape is the vocabulary count used for the movie reviews (10,000 words)
             int vocab_size = 10000;
 
-            var model = keras.Sequential();
-            var layer = keras.layers.Embedding(vocab_size, 16);
-            model.add(layer);
+            var model = tf.keras.Sequential();
+            //var layer = tf.keras.layers.Embedding(vocab_size, 16);
+            //model.add(layer);
 
             return false;
         }

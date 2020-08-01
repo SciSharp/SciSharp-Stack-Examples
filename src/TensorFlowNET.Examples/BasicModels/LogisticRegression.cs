@@ -56,7 +56,7 @@ namespace TensorFlowNET.Examples
         {
             // tf.compat.v1.disable_eager_execution();
             
-            if (tf.context.executing_eagerly())
+            if (tf.Context.executing_eagerly())
             {
                 RunEagerMode();
             }

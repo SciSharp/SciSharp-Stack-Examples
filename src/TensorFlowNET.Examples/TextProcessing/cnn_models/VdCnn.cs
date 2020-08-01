@@ -98,12 +98,12 @@ namespace TensorFlowNET.Examples.Text
             // ============= Fully Connected Layers =============
             tf_with(tf.name_scope("fc-1"), scope =>
             {
-                fc1_out = tf.layers.dense(h_flat, 2048, activation: tf.nn.relu(), kernel_initializer: fc_initializer);
+                //fc1_out = tf.layers.dense(h_flat, 2048, activation: tf.nn.relu(), kernel_initializer: fc_initializer);
             });
 
             tf_with(tf.name_scope("fc-2"), scope =>
             {
-                fc2_out = tf.layers.dense(fc1_out, 2048, activation: tf.nn.relu(), kernel_initializer: fc_initializer);
+                //fc2_out = tf.layers.dense(fc1_out, 2048, activation: tf.nn.relu(), kernel_initializer: fc_initializer);
             });
 
             tf_with(tf.name_scope("fc-3"), scope =>

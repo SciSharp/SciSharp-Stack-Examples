@@ -54,7 +54,7 @@ namespace TensorFlowNET.Examples
             // Training Data
             PrepareData();
 
-            if (tf.context.executing_eagerly())
+            if (tf.Context.executing_eagerly())
                 RunModelInEagerMode();
             else
                 BuildModel();

@@ -77,7 +77,7 @@ namespace TensorFlowNET.Examples
             PrepareData();
             float loss_value = 0;
 
-            if (tf.context.executing_eagerly())
+            if (tf.Context.executing_eagerly())
                 loss_value = RunEagerMode();
             else if (Config.IsImportingGraph)
                 loss_value = RunWithImportedGraph();

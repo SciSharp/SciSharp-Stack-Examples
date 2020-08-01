@@ -107,18 +107,18 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("fc-1"), delegate
             {
-                fc1_out = tf.layers.dense(h_pool,
+                /*fc1_out = tf.layers.dense(h_pool,
                     1024,
                     activation: tf.nn.relu(),
-                    kernel_initializer: kernel_initializer);
+                    kernel_initializer: kernel_initializer);*/
             });
 
             tf_with(tf.name_scope("fc-2"), delegate
             {
-                fc2_out = tf.layers.dense(fc1_out,
+                /*fc2_out = tf.layers.dense(fc1_out,
                     1024,
                     activation: tf.nn.relu(),
-                    kernel_initializer: kernel_initializer);
+                    kernel_initializer: kernel_initializer);*/
             });
 
             tf_with(tf.name_scope("fc-3"), delegate

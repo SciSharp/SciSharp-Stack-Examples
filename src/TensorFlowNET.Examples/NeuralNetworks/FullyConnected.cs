@@ -105,7 +105,7 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
-            if (tf.context.executing_eagerly())
+            if (tf.Context.executing_eagerly())
                 RunEagerMode();
             else
             {
@@ -177,11 +177,11 @@ namespace TensorFlowNET.Examples
                 // Wrap computation inside a GradientTape for automatic differentiation.
                 using var g = tf.GradientTape();
                 // Forward pass.
-                var pred = neural_net.Apply(x, is_training: true);
+                var pred = neural_net.Apply(new[] { x }, is_training: true);
                 var loss = cross_entropy_loss(pred, y);
 
                 // Compute gradients.
-                var gradients = g.gradient(loss, neural_net.trainable_variables);
+                var gradients = g.gradient(loss, neural_net.TrainableVariables);
             };
 
             train_data = train_data.take(training_steps);
@@ -193,7 +193,7 @@ namespace TensorFlowNET.Examples
 
                 if (step % display_step == 0)
                 {
-                    var pred = neural_net.Apply(batch_x, is_training: true);
+                    var pred = neural_net.Apply(new[] { batch_x }, is_training: true);
                     var loss = cross_entropy_loss(pred, batch_y);
                     var acc = accuracy(pred, batch_y);
                     print($"step: {step}, loss: {(float)loss}, accuracy: {(float)acc}");
@@ -203,30 +203,30 @@ namespace TensorFlowNET.Examples
 
             // Test model on validation set.
             {
-                var pred = neural_net.Apply(x_test, is_training: false);
+                var pred = neural_net.Apply(new[] { (Tensor)x_test }, is_training: false);
             }
         }
 
         public class NeuralNet : Model
         {
-            ILayer fc1;
-            ILayer fc2;
-            ILayer output;
+            Layer fc1;
+            Layer fc2;
+            Layer output;
 
             public NeuralNet(NeuralNetArgs args) : 
                 base(args)
             {
                 // First fully-connected hidden layer.
-                fc1 = tf.keras.layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);
+                //fc1 = tf.keras.layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);
 
                 // Second fully-connected hidden layer.
-                fc2 = tf.keras.layers.Dense(args.NeuronOfHiddenHidden2, activation: args.Activation2);
+                //fc2 = tf.keras.layers.Dense(args.NeuronOfHiddenHidden2, activation: args.Activation2);
 
                 output = tf.keras.layers.Dense(args.NumClasses);
             }
 
             // Set forward pass.
-            protected override Tensor[] call(Tensor inputs, bool is_training = false, Tensor state = null)
+            protected override Tensor[] call(Tensor[] inputs, bool is_training = false, Tensor state = null)
             {
                 var x = fc1.Apply(inputs);
                 throw new NotImplementedException("");
