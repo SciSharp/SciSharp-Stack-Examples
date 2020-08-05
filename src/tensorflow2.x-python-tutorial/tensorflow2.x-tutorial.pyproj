@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>linear_regression.py</StartupFile>
+    <StartupFile>neural_network.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

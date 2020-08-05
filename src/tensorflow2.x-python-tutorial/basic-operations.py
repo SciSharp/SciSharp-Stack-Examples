@@ -3,6 +3,47 @@
 
 import tensorflow as tf
 
+# tf.compat.v1.disable_eager_execution()
+
+x = tf.constant([[1.0, -0.5, 3.4], [-2.1, 0, -6.5]])
+a = tf.reduce_sum(x)  # 6
+a = tf.reduce_sum(x, 0)  # [2, 2, 2]
+a = tf.reduce_sum(x, 1)  # [3, 3]
+a = tf.reduce_sum(x, 1, keepdims=True)  # [[3], [3]]
+a = tf.reduce_sum(x, [0, 1])  # 6
+
+const = tf.constant(['map_and_batch_fusion', 'noop_elimination', 'shuffle_and_repeat_fusion'], 
+                             dtype=tf.string, 
+                             name="optimizations")
+
+sess = tf.compat.v1.Session()
+result = sess.run(const)
+print(result)
+
+
+tensor = tf.linalg.eye(3)
+
+gs = tf.compat.v1.Variable(0, trainable = False, name = "global_step");
+gs.assign(10)
+# x = tf.Variable(10, name = "x")
+
+# Build a graph
+a = tf.constant(4.0)
+b = tf.constant(5.0)
+c = tf.add(a, b)
+
+with tf.compat.v1.Session() as sess:
+    o = sess.run(c)
+    print(o)
+
+str = tf.constant('Hello')
+
+a = tf.constant(b'\x41\xff\xd8\xff', dtype=tf.string)
+
+contents = tf.io.read_file('D:\SciSharp\TensorFlow.NET\data\shasta-daisy.jpg')
+substr = tf.strings.substr(contents, 0, 3)
+b = tf.equal(substr, b'\xff\xd8\xff')
+
 # Define tensor constants.
 a = tf.constant(2)
 b = tf.constant(3)

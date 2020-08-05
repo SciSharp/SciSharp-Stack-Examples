@@ -1,100 +1,92 @@
-﻿'''
-A logistic regression learning algorithm example using TensorFlow library.
-This example is using the MNIST database of handwritten digits
-(http://yann.lecun.com/exdb/mnist/)
-Author: Aymeric Damien
-Project: https://github.com/aymericdamien/TensorFlow-Examples/
-'''
-
-from __future__ import print_function
+﻿from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
+import numpy as np
+from datetime import datetime
 
-# Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+start = datetime.now()
 
-# Parameters
+# MNIST dataset parameters.
+num_classes = 10 # 0 to 9 digits
+num_features = 784 # 28*28
+
+# Training parameters.
 learning_rate = 0.01
-training_epochs = 10
-batch_size = 100
-display_step = 1
+training_steps = 1000
+batch_size = 256
+display_step = 50
 
-# tf Graph Input
-x = tf.placeholder(tf.float32, [None, 784]) # mnist data image of shape 28*28=784
-y = tf.placeholder(tf.float32, [None, 10]) # 0-9 digits recognition => 10 classes
+# Prepare MNIST data.
+from tensorflow.keras.datasets import mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# Convert to float32.
+x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
+# Flatten images to 1-D vector of 784 features (28*28).
+x_train, x_test = x_train.reshape([-1, num_features]), x_test.reshape([-1, num_features])
+# Normalize images value from [0, 255] to [0, 1].
+x_train, x_test = x_train / 255., x_test / 255.
 
-# Set model weights
-W = tf.Variable(tf.zeros([784, 10]))
-b = tf.Variable(tf.zeros([10]))
+# Use tf.data API to shuffle and batch data.
+train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+train_data = train_data.repeat().shuffle(5000).batch(batch_size).prefetch(1)
 
-# Construct model
-pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
+# Weight of shape [784, 10], the 28*28 image features, and total number of classes.
+W = tf.Variable(tf.ones([num_features, num_classes]), name="weight")
+# Bias of shape [10], the total number of classes.
+b = tf.Variable(tf.zeros([num_classes]), name="bias")
 
-# Minimize error using cross entropy
-cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
-# Gradient Descent
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+# Logistic regression (Wx + b).
+def logistic_regression(x):
+    # Apply softmax to normalize the logits to a probability distribution.
+    return tf.nn.softmax(tf.matmul(x, W) + b)
 
-# Initialize the variables (i.e. assign their default value)
-init = tf.global_variables_initializer()
+# Cross-Entropy loss function.
+def cross_entropy(y_pred, y_true):
+    # Encode label to a one hot vector.
+    y_true = tf.one_hot(y_true, depth=num_classes)
+    # Clip prediction values to avoid log(0) error.
+    y_pred = tf.clip_by_value(y_pred, 1e-9, 1.)
+    # Compute cross-entropy.
+    a = y_true * tf.math.log(y_pred)
+    testb = tf.reduce_sum(a, 1)
+    return tf.reduce_mean(-testb)
 
-# Start training
-with tf.Session() as sess:
+# Accuracy metric.
+def accuracy(y_pred, y_true):
+    # Predicted class is the index of highest score in prediction vector (i.e. argmax).
+    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.cast(y_true, tf.int64))
+    return tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    # Run the initializer
-    sess.run(init)
+# Stochastic gradient descent optimizer.
+optimizer = tf.optimizers.SGD(learning_rate)
 
-    # Training cycle
-    for epoch in range(training_epochs):
-        avg_cost = 0.
-        total_batch = int(mnist.train.num_examples/batch_size)
-        # Loop over all batches
-        for i in range(total_batch):
-            batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-            # Run optimization op (backprop) and cost op (to get loss value)
-            _, c = sess.run([optimizer, cost], feed_dict={x: batch_xs,
-                                                          y: batch_ys})
-            # Compute average loss
-            avg_cost += c / total_batch
-        # Display logs per epoch step
-        if (epoch+1) % display_step == 0:
-            print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
+# Optimization process. 
+def run_optimization(x, y):
+    # Wrap computation inside a GradientTape for automatic differentiation.
+    with tf.GradientTape() as g:
+        pred = logistic_regression(x)
+        loss = cross_entropy(pred, y)
 
-    print("Optimization Finished!")
+    # Compute gradients.
+    gradients = g.gradient(loss, [W, b])
+    
+    # Update W and b following gradients.
+    optimizer.apply_gradients(zip(gradients, [W, b]))
 
-    # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
+# Run training for the given number of steps.
+train_data = train_data.take(training_steps)
+for step, (batch_x, batch_y) in enumerate(train_data, 1):
+    # Run the optimization to update W and b values.
+    run_optimization(batch_x, batch_y)
+    
+    if step % display_step == 0:
+        pred = logistic_regression(batch_x)
+        loss = cross_entropy(pred, batch_y)
+        acc = accuracy(pred, batch_y)
+        print("step: %i, loss: %f, accuracy: %f" % (step, loss, acc))
 
-    # predict
-    # results = sess.run(pred, feed_dict={x: batch_xs[:1]})
-
-    # save model
-    saver = tf.train.Saver()
-    save_path = saver.save(sess, "logistic_regression/model.ckpt")
-    tf.train.write_graph(sess.graph.as_graph_def(),'logistic_regression','model.pbtxt', as_text=True)
-
-    freeze_graph.freeze_graph(input_graph = 'logistic_regression/model.pbtxt', 
-                              input_saver = "", 
-                              input_binary = False, 
-                              input_checkpoint = 'logistic_regression/model.ckpt', 
-                              output_node_names = "Softmax",
-                              restore_op_name = "save/restore_all", 
-                              filename_tensor_name = "save/Const:0",
-                              output_graph = 'logistic_regression/model.pb', 
-                              clear_devices = True, 
-                              initializer_nodes = "")
-
-    # restoring the model
-    saver = tf.train.import_meta_graph('logistic_regression/tensorflowModel.ckpt.meta')
-    saver.restore(sess,tf.train.latest_checkpoint('logistic_regression'))
-
-    # predict
-    # pred = graph._nodes_by_name["Softmax"]
-    # output = pred.outputs[0]
-    # x = graph._nodes_by_name["Placeholder"]
-    # input = x.outputs[0]
-    # results = sess.run(output, feed_dict={input: batch_xs[:1]})
+# Test model on validation set.
+pred = logistic_regression(x_test)
+print("Test Accuracy: %f" % accuracy(pred, y_test))
+print(datetime.now() - start)
+sec = input('finished\n')

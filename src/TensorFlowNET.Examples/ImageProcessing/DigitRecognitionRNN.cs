@@ -59,7 +59,7 @@ namespace TensorFlowNET.Examples
                 Name = "MNIST RNN",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 10
+                Priority = 15
             };
 
         public bool Run()

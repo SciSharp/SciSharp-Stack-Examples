@@ -44,7 +44,9 @@ def cross_entropy(y_pred, y_true):
     # Clip prediction values to avoid log(0) error.
     y_pred = tf.clip_by_value(y_pred, 1e-9, 1.)
     # Compute cross-entropy.
-    return tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred),1))
+    a = y_true * tf.math.log(y_pred)
+    testb = tf.reduce_sum(a, 1)
+    return tf.reduce_mean(-testb)
 
 # Accuracy metric.
 def accuracy(y_pred, y_true):
@@ -69,7 +71,8 @@ def run_optimization(x, y):
     optimizer.apply_gradients(zip(gradients, [W, b]))
 
 # Run training for the given number of steps.
-for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
+train_data = train_data.take(training_steps)
+for step, (batch_x, batch_y) in enumerate(train_data, 1):
     # Run the optimization to update W and b values.
     run_optimization(batch_x, batch_y)
     
@@ -82,3 +85,4 @@ for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
 # Test model on validation set.
 pred = logistic_regression(x_test)
 print("Test Accuracy: %f" % accuracy(pred, y_test))
+print("end")

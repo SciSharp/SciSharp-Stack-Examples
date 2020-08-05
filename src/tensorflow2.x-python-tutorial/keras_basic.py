@@ -4,22 +4,9 @@
 import tensorflow as tf
 import numpy as np
 
-# Create a `Sequential` model and add a Dense layer as the first layer.
-model = tf.keras.models.Sequential()
-model.add(tf.keras.Input(shape=(16,)))
-model.add(tf.keras.layers.Dense(32, activation='relu'))
-# Now the model will take as input arrays of shape (None, 16)
-# and output arrays of shape (None, 32).
-# Note that after the first layer, you don't need to specify
-# the size of the input anymore:
-model.add(tf.keras.layers.Dense(32))
-print(model.output_shape)
-
-model = tf.keras.Sequential()
-dense_layer = tf.keras.layers.Dense(5, input_shape=(3,))
-eager = tf.executing_eagerly()
-model.add(dense_layer)
-# model.add(tf.keras.layers.Softmax())
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(5, input_shape=(3,)),
+    tf.keras.layers.Softmax()])
 model.save('/tmp/model')
 loaded_model = tf.keras.models.load_model('/tmp/model')
 x = tf.random.uniform((10, 3))
