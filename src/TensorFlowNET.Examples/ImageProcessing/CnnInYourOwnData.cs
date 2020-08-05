@@ -106,10 +106,10 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "CnnInYourOwnData",
+                Name = "CnnInYourOwnData (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 12
+                Priority = 17
             };
 
         public bool Run()

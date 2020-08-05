@@ -51,10 +51,10 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Fully Connected Neural Network (Eager)",
+                Name = "Fully Connected Neural Network (Keras Eager)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 14
+                Priority = 11
             };
 
         public override void PrepareData()
@@ -153,7 +153,7 @@ namespace TensorFlowNET.Examples
                 print($"Test Accuracy: {this.accuracy}");
             }
 
-            return this.accuracy > 0.90f;
+            return this.accuracy > 0.92f;
         }
 
         public class NeuralNet : Model

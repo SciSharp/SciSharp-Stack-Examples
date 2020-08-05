@@ -30,10 +30,6 @@ namespace TensorFlowNET.Examples
     {
         static void Main(string[] args)
         {
-            int finished = 0;
-            var errors = new List<string>();
-            var success = new List<string>();
-
             var parsedArgs = ParseArgs(args);
 
             var examples = Assembly.GetEntryAssembly().GetTypes()
@@ -54,16 +50,28 @@ namespace TensorFlowNET.Examples
             Console.WriteLine($".NET CLR: {Environment.Version}", Color.Yellow);
             Console.WriteLine(Environment.CurrentDirectory, Color.Yellow);
 
-            for (var i = 0; i < examples.Length; i++)
-                Console.WriteLine($"[{i + 1}]: {examples[i].Config.Name}");
-
-            var key = "1";
-            
-            if (examples.Length > 1)
+            while (true)
             {
-                Console.Write($"Choose one example to run, hit [Enter] to run all: ", Color.Yellow);
-                key = Console.ReadLine();
+                for (var i = 0; i < examples.Length; i++)
+                    Console.WriteLine($"[{i + 1}]: {examples[i].Config.Name}");
+
+                var key = "1";
+
+                if (examples.Length > 1)
+                {
+                    Console.Write($"Choose one example to run, hit [Enter] to run all: ", Color.Yellow);
+                    key = Console.ReadLine();
+                }
+
+                RunExamples(key, examples);
             }
+        }
+
+        private static void RunExamples(string key, IExample[] examples)
+        {
+            int finished = 0;
+            var errors = new List<string>();
+            var success = new List<string>();
 
             var sw = new Stopwatch();
             for (var i = 0; i < examples.Length; i++)
@@ -98,6 +106,7 @@ namespace TensorFlowNET.Examples
             errors.ForEach(x => Console.WriteLine($"{x} is Failed!", Color.Red));
 
             Console.WriteLine($"{finished} of {examples.Length} example(s) are completed.");
+            Console.Write("Press [Enter] to continue...");
             Console.ReadLine();
         }
 

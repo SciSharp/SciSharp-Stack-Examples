@@ -61,7 +61,7 @@ namespace TensorFlowNET.Examples
                 Name = "MNIST LSTM",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 11
+                Priority = 25
             };
 
         public bool Run()

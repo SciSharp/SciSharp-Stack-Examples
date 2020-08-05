@@ -24,12 +24,11 @@ using static Tensorflow.Binding;
 namespace TensorFlowNET.Examples
 {
     /// <summary>
-    /// Convolutional Neural Network classifier for Hand Written Digits
-    /// CNN architecture with two convolutional layers, followed by two fully-connected layers at the end.
-    /// Use Stochastic Gradient Descent (SGD) optimizer. 
-    /// https://www.easy-tensorflow.com/tf-tutorials/convolutional-neural-nets-cnns/cnn1
+    /// Build a convolutional neural network with TensorFlow v2.
+    /// This example is using a low-level approach to better understand all mechanics behind building convolutional neural networks and the training process.
+    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/convolutional_network_raw.ipynb
     /// </summary>
-    public class DigitRecognitionCNN : SciSharpExample, IExample
+    public class DigitRecognitionCnnEager : SciSharpExample, IExample
     {
         string logs_path = "logs";
 
@@ -72,10 +71,10 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "MNIST CNN (Graph)",
+                Name = "MNIST CNN (Eager)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 15
+                Priority = 16
             };
 
         public bool Run()

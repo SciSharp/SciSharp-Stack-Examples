@@ -48,7 +48,7 @@ namespace TensorFlowNET.Examples
                 Name = "Fully Connected Neural Network (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 13
+                Priority = 10
             };
 
         public override Graph BuildGraph()
