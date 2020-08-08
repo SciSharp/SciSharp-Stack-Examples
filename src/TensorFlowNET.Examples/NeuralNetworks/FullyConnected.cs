@@ -29,8 +29,8 @@ using static Tensorflow.Binding;
 namespace TensorFlowNET.Examples
 {
     /// <summary>
-    /// Build a 2-hidden layers fully connected neural network (a.k.a multilayer perceptron)
-    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/neural_network.ipynb
+    /// How to optimise your input pipeline with queues and multi-threading
+    /// https://blog.metaflow.fr/tensorflow-how-to-optimise-your-input-pipeline-with-queues-and-multi-threading-e7c3874157e0
     /// </summary>
     public class FullyConnected : SciSharpExample, IExample
     {
@@ -107,61 +107,12 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             tf.compat.v1.disable_eager_execution();
+
             PrepareData();
             BuildGraph();
             Train();
 
             return true;
-        }
-
-        public class NeuralNet : Model
-        {
-            Layer fc1;
-            Layer fc2;
-            Layer output;
-
-            public NeuralNet(NeuralNetArgs args) : 
-                base(args)
-            {
-                // First fully-connected hidden layer.
-                fc1 = Dense(args.NeuronOfHidden1, activation: args.Activation1);
-                
-                // Second fully-connected hidden layer.
-                fc2 = Dense(args.NeuronOfHidden2, activation: args.Activation2);
-
-                output = Dense(args.NumClasses);
-            }
-
-            // Set forward pass.
-            protected override Tensor call(Tensor inputs, bool is_training = false, Tensor state = null)
-            {
-                inputs = fc1.Apply(inputs);
-                inputs = fc2.Apply(inputs);
-                inputs = output.Apply(inputs);
-                if (!is_training)
-                    inputs = tf.nn.softmax(inputs);
-                return inputs;
-            }
-        }
-
-        /// <summary>
-        /// Network parameters.
-        /// </summary>
-        public class NeuralNetArgs : ModelArgs
-        {
-            /// <summary>
-            /// 1st layer number of neurons.
-            /// </summary>
-            public int NeuronOfHidden1 { get; set; }
-            public Activation Activation1 { get; set; }
-
-            /// <summary>
-            /// 2nd layer number of neurons.
-            /// </summary>
-            public int NeuronOfHidden2 { get; set; }
-            public Activation Activation2 { get; set; }
-
-            public int NumClasses { get; set; }
         }
 
         public override void Train()

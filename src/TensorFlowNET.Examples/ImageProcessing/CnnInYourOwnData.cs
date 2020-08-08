@@ -109,7 +109,7 @@ namespace TensorFlowNET.Examples
                 Name = "CnnInYourOwnData (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 17
+                Priority = 18
             };
 
         public bool Run()

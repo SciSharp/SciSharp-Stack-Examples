@@ -30,7 +30,7 @@ namespace TensorFlowNET.Examples
     /// This example is using a low-level approach to better understand all mechanics behind building convolutional neural networks and the training process.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/convolutional_network_raw.ipynb
     /// </summary>
-    public class DigitRecognitionCnnEager : SciSharpExample, IExample
+    public class DigitRecognitionCnnKeras : SciSharpExample, IExample
     {
         // MNIST dataset parameters.
         int num_classes = 10; // total classes (0-9 digits).
@@ -56,10 +56,10 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "MNIST CNN (Eager)",
+                Name = "MNIST CNN (Keras)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 16
+                Priority = 17
             };
 
         public bool Run()
