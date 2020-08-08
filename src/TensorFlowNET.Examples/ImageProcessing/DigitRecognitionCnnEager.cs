@@ -37,7 +37,7 @@ namespace TensorFlowNET.Examples
 
         // Training parameters.
         float learning_rate = 0.001f;
-        int training_steps = 200;
+        int training_steps = 100;
         int batch_size = 128;
         int display_step = 10;
 
@@ -72,6 +72,7 @@ namespace TensorFlowNET.Examples
 
             // A random value generator to initialize weights.
             var random_normal = tf.initializers.random_normal_initializer();
+
             // Conv Layer 1: 5x5 conv, 1 input, 32 filters (MNIST has 1 color channel only).
             wc1 = tf.Variable(random_normal.Apply(new InitializerArgs((5, 5, 1, conv1_filters))));
             // Conv Layer 2: 5x5 conv, 32 inputs, 64 filters.
@@ -104,7 +105,14 @@ namespace TensorFlowNET.Examples
                 }
             }
 
-            return accuracy_test > 0.98;
+            // Test model on validation set.
+            {
+                var pred = conv_net(x_test);
+                accuracy_test = (float)accuracy(pred, y_test);
+                print($"Test Accuracy: {accuracy_test}");
+            }
+
+            return accuracy_test > 0.95;
         }
 
         void run_optimization(OptimizerV2 optimizer, Tensor x, Tensor y)
@@ -160,8 +168,7 @@ namespace TensorFlowNET.Examples
             var fc1 = tf.reshape(conv2, (-1, wd1.shape.dims[0]));
 
             // Fully connected layer, Output shape: [-1, 1024].
-            var matmul = tf.matmul(fc1, wd1.AsTensor());
-            fc1 = tf.add(matmul, bd1.AsTensor());
+            fc1 = tf.add(tf.matmul(fc1, wd1.AsTensor()), bd1.AsTensor());
             // Apply ReLU to fc1 output for non-linearity.
             fc1 = tf.nn.relu(fc1);
 

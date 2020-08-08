@@ -86,8 +86,7 @@ def conv_net(x):
     fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
     
     # Fully connected layer, Output shape: [-1, 1024].
-    matmul = tf.matmul(fc1, weights['wd1'])
-    fc1 = tf.add(matmul, biases['bd1'])
+    fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
     # Apply ReLU to fc1 output for non-linearity.
     fc1 = tf.nn.relu(fc1)
 
@@ -141,3 +140,7 @@ for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
         loss = cross_entropy(pred, batch_y)
         acc = accuracy(pred, batch_y)
         print("step: %i, loss: %f, accuracy: %f" % (step, loss, acc))
+
+# Test model on validation set.
+pred = conv_net(x_test)
+print("Test Accuracy: %f" % accuracy(pred, y_test))
