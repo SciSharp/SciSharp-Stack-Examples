@@ -353,7 +353,6 @@ namespace TensorFlowNET.Examples
         {
             return tf_with(tf.variable_scope(name), delegate
             {
-
                 var num_in_channel = x.shape[x.NDims - 1];
                 var shape = new[] { filter_size, filter_size, num_in_channel, num_filters };
                 var W = weight_variable("W", shape);
@@ -361,7 +360,7 @@ namespace TensorFlowNET.Examples
                 var b = bias_variable("b", new[] { num_filters });
                 // tf.summary.histogram("bias", b);
                 var layer = tf.nn.conv2d(x, W,
-                                     strides: new[] { 1, stride, stride, 1 },
+                                     strides: new int[] { 1, stride, stride, 1 },
                                      padding: "SAME");
                 layer += b.AsTensor();
                 return tf.nn.relu(layer);

@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>neural_network.py</StartupFile>
+    <StartupFile>convolutional_network_raw.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,6 +27,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="basic-operations.py" />
+    <Compile Include="convolutional_network_raw.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GradientTape.py">
       <SubType>Code</SubType>
     </Compile>

@@ -239,7 +239,7 @@ namespace TensorFlowNET.Examples
                 var b = bias_variable("b", new[] { num_filters });
                 // tf.summary.histogram("bias", b);
                 var layer = tf.nn.conv2d(x, W,
-                                     strides: new[] { 1, stride, stride, 1 },
+                                     strides: new int[] { 1, stride, stride, 1 },
                                      padding: "SAME");
                 layer += b.AsTensor();
                 return tf.nn.relu(layer);
