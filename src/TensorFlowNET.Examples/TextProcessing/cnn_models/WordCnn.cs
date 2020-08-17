@@ -54,7 +54,7 @@ namespace TensorFlowNET.Examples.Text
                     kernel_size: new int[] { filter_size, embedding_size },
                     strides: new int[] { 1, 1 },
                     padding: "VALID",
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
 
                 var pool = tf.layers.max_pooling2d(
                     conv,

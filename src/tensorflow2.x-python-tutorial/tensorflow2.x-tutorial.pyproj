@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>convolutional_network_raw.py</StartupFile>
+    <StartupFile>convolutional_network.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,6 +27,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="basic-operations.py" />
+    <Compile Include="convolutional_network.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="convolutional_network_raw.py">
       <SubType>Code</SubType>
     </Compile>

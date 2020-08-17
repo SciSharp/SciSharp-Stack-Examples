@@ -32,7 +32,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[0], alphabet_size },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
 
                 pool1 = tf.layers.max_pooling2d(conv1,
                     pool_size: new[] { 3, 1 },
@@ -46,7 +46,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] {filter_sizes[1], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
 
                 pool2 = tf.layers.max_pooling2d(conv2,
                     pool_size: new[] { 3, 1 },
@@ -60,7 +60,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[2], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
                 conv3 = tf.transpose(conv3, new[] { 0, 1, 3, 2 });
             });
 
@@ -70,7 +70,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[3], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
                 conv4 = tf.transpose(conv4, new[] { 0, 1, 3, 2 });
             });
 
@@ -80,7 +80,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[4], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
                 conv5 = tf.transpose(conv5, new[] { 0, 1, 3, 2 });
             });
 
@@ -90,7 +90,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[5], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu());
+                    activation: tf.nn.relu);
 
                 var pool6 = tf.layers.max_pooling2d(conv6,
                     pool_size: new[] { 3, 1 },
