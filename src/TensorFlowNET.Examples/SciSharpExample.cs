@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tensorflow;
+using Tensorflow.Keras.Engine;
 
 namespace TensorFlowNET.Examples
 {

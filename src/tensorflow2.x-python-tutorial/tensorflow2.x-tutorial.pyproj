@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>convolutional_network.py</StartupFile>
+    <StartupFile>recurrent_network.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -44,6 +44,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="neural_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="recurrent_network.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="xor.py" />
