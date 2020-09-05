@@ -109,11 +109,13 @@ namespace TensorFlowNET.Examples
                 Name = "CnnInYourOwnData (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 18
+                Priority = 19
             };
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
             BuildGraph();
 

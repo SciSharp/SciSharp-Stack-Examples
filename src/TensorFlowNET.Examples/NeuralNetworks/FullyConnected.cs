@@ -46,7 +46,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Fully Connected Neural Network (Graph)",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = false,
                 Priority = 10
             };

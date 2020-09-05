@@ -6,6 +6,23 @@ import tensorflow as tf
 from tensorflow.keras import Model, layers
 import numpy as np
 
+import itertools
+tf.compat.v1.enable_eager_execution()
+
+dataset = tf.data.Dataset.from_tensors([1, 2, 3])
+for value in dataset:
+  print(value)
+
+def gen():
+  for i in itertools.count(1):
+    yield (i, [2] * i)
+
+ds = tf.data.Dataset.from_generator(
+    gen, (tf.int64, tf.int64), (tf.TensorShape([]), tf.TensorShape([None])))
+
+for value in ds.take(2):
+  print(value)
+
 # Create a `Sequential` model and add a Dense layer as the first layer.
 model = tf.keras.Sequential()
 layer = tf.keras.layers.Embedding(1000, 64, input_length=10)

@@ -53,7 +53,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Digits Recognition Neural Network",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = false,
                 Priority = 9
             };

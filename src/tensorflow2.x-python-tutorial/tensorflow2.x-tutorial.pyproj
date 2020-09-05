@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>recurrent_network.py</StartupFile>
+    <StartupFile>image_classification.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -26,6 +26,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="autograph.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="basic-operations.py" />
     <Compile Include="convolutional_network.py">
       <SubType>Code</SubType>
@@ -37,16 +40,25 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="hello-world.py" />
+    <Compile Include="image_classification.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="linear_regression.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="logistic_regression.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MapDataset.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="neural_network.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="recurrent_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="transfer-learning.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="xor.py" />
