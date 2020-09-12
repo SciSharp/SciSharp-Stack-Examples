@@ -74,13 +74,15 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Retrain Classifier With InceptionV3",
+                Name = "Retrain Classifier With InceptionV3 (Graph)",
                 Enabled = true,
                 IsImportingGraph = true
             };
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
 
             #region For debug purpose
@@ -191,24 +193,24 @@ namespace TensorFlowNET.Examples
             Tensor logits = null;
             tf_with(tf.name_scope(layer_name), scope =>
             {
-                RefVariable layer_weights = null;
+                IVariableV1 layer_weights = null;
                 tf_with(tf.name_scope("weights"), delegate
                 {
                     var initial_value = tf.truncated_normal(new int[] { bottleneck_tensor_size, class_count }, stddev: 0.001f);
                     layer_weights = tf.Variable(initial_value, name: "final_weights");
-                    variable_summaries(layer_weights);
+                    variable_summaries(layer_weights.AsTensor());
                 });
 
-                RefVariable layer_biases = null;
+                IVariableV1 layer_biases = null;
                 tf_with(tf.name_scope("biases"), delegate
                 {
                     layer_biases = tf.Variable(tf.zeros(new TensorShape(class_count)), name: "final_biases");
-                    variable_summaries(layer_biases);
+                    variable_summaries(layer_biases.AsTensor());
                 });
 
                 tf_with(tf.name_scope("Wx_plus_b"), delegate
                 {
-                    logits = tf.matmul(bottleneck_input, layer_weights) + layer_biases;
+                    logits = tf.matmul(bottleneck_input, layer_weights.AsTensor()) + layer_biases.AsTensor();
                     tf.summary.histogram("pre_activations", logits);
                 });
             });
@@ -253,7 +255,7 @@ namespace TensorFlowNET.Examples
                 final_tensor);
         }
 
-        private void variable_summaries(RefVariable var)
+        private void variable_summaries(Tensor var)
         {
             tf_with(tf.name_scope("summaries"), delegate
             {
