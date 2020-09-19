@@ -43,7 +43,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST RNN (Keras)",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = false,
                 Priority = 21
             };

@@ -44,7 +44,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         YOLOv3 model;
         IVariableV1[] net_var;
         Tensor giou_loss, conf_loss, prob_loss;
-        RefVariable global_step;
+        IVariableV1 global_step;
         Tensor learn_rate;
         Tensor loss;
         List<IVariableV1> first_stage_trainable_var_list;
@@ -60,7 +60,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "YOLOv3",
+                Name = "YOLOv3 (Graph)",
                 Enabled = false,
                 IsImportingGraph = true
             };
@@ -178,16 +178,16 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                                         dtype: tf.float64, name: "train_steps");
 
                 learn_rate = tf.cond(
-                    pred: global_step < warmup_steps,
+                    pred: global_step.AsTensor() < warmup_steps,
                     true_fn: delegate
                     {
-                        return global_step / warmup_steps * learn_rate_init;
+                        return global_step.AsTensor() / warmup_steps * learn_rate_init;
                     },
                     false_fn: delegate
                     {
                         return learn_rate_end + 0.5 * (learn_rate_init - learn_rate_end) *
                             (1 + tf.cos(
-                                (global_step - warmup_steps) / (train_steps - warmup_steps) * Math.PI));
+                                (global_step.AsTensor() - warmup_steps) / (train_steps - warmup_steps) * Math.PI));
                     }
                 );
 
@@ -278,7 +278,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             true_mbboxes = graph.get_tensor_by_name("define_input/mbboxes:0");
             true_lbboxes = graph.get_tensor_by_name("define_input/lbboxes:0");
             trainable = graph.get_tensor_by_name("define_input/training:0");
-            global_step = graph.OperationByName("learn_rate/global_step");
+            // global_step = graph.OperationByName("learn_rate/global_step");
 
             saver = tf.train.Saver(tf.global_variables(), max_to_keep: 10);
 

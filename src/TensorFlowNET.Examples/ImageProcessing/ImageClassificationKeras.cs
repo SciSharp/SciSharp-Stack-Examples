@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
+using Tensorflow;
+using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -15,7 +18,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Image Classification (Keras)",
-                Enabled = true,
+                Enabled = false,
                 Priority = 18
             };
 
@@ -27,6 +30,51 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
+            int batch_size = 32;
+            TensorShape img_dim = (180, 180);
+
+            var data_dir = @"C:/Users/haipi/.keras/datasets/flower_photos";
+            var train_ds = tf.keras.preprocessing.image_dataset_from_directory(data_dir,
+                validation_split: 0.2f,
+                subset: "training",
+                seed: 123,
+                image_size: img_dim,
+                batch_size: batch_size);
+
+            var val_ds = tf.keras.preprocessing.image_dataset_from_directory(data_dir,
+                validation_split: 0.2f,
+                subset: "validation",
+                seed: 123,
+                image_size: img_dim,
+                batch_size: batch_size);
+
+            train_ds = train_ds.cache().shuffle(100).prefetch(buffer_size: -1);
+            val_ds = val_ds.cache().prefetch(buffer_size: -1);
+
+            foreach (var (img, label) in train_ds)
+            {
+                print("batch images: " + img.TensorShape);
+                print("labels: " + label);
+            }
+
+            int num_classes = 5;
+            // var normalization_layer = tf.keras.layers.Rescaling(1.0f / 255);
+            var layers = tf.keras.layers;
+            var model = tf.keras.Sequential(new List<Layer>
+            {
+                layers.Rescaling(1.0f / 255, input_shape: (img_dim.dims[0], img_dim.dims[1], 3)),
+                layers.Conv2D(16, 3, padding: "same", activation: "relu"),
+                layers.MaxPooling2D(),
+                /*layers.Conv2D(32, 3, padding: "same", activation: "relu"),
+                layers.MaxPooling2D(),
+                layers.Conv2D(64, 3, padding: "same", activation: "relu"),
+                layers.MaxPooling2D(),*/
+                layers.Flatten(),
+                layers.Dense(128, activation: "relu"),
+                layers.Dense(num_classes)
+            });
+
+            model.compile("adam", tf.keras.losses.SparseCategoricalCrossentropy(from_logits: true));
         }
     }
 }

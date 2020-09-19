@@ -24,12 +24,14 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Convert TensorFlow Model to OpenCv",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = false
             };
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
 
             BuildGraph();

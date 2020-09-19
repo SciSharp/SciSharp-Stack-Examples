@@ -35,7 +35,7 @@ namespace TensorFlowNET.Examples
     /// 
     /// https://www.tensorflow.org/hub/tutorials/image_retraining
     /// </summary>
-    public class RetrainClassifierWithInceptionV3 : SciSharpExample, IExample
+    public class TransferLearningWithInceptionV3 : SciSharpExample, IExample
     {
         const string data_dir = "retrain_images";
         string summaries_dir = Path.Join(data_dir, "retrain_logs");
@@ -74,7 +74,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Retrain Classifier With InceptionV3 (Graph)",
+                Name = "Transfer Learning With InceptionV3 (Graph)",
                 Enabled = true,
                 IsImportingGraph = true
             };

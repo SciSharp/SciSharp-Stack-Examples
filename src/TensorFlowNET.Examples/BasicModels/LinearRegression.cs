@@ -17,22 +17,21 @@
 using NumSharp;
 using System;
 using Tensorflow;
-using Tensorflow.Gradients;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
     /// <summary>
     /// A linear regression learning algorithm example using TensorFlow library.
-    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/2_BasicModels/linear_regression.ipynb
+    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/linear_regression.py
     /// </summary>
     public class LinearRegression : SciSharpExample, IExample
     {
-        int training_steps = 1000;
+        public int training_epochs = 1000;
 
         // Parameters
         float learning_rate = 0.01f;
-        int display_step = 100;
+        int display_step = 50;
 
         NumPyRandom rng = np.random;
         NDArray train_X, train_Y;
@@ -41,7 +40,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Linear Regression",
+                Name = "Linear Regression (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 4
@@ -49,56 +48,11 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
-            // tf.compat.v1.disable_eager_execution();
+            tf.compat.v1.disable_eager_execution();
 
             // Training Data
             PrepareData();
 
-            if (tf.Context.executing_eagerly())
-                RunModelInEagerMode();
-            else
-                BuildModel();
-            return true;
-        }
-
-        public void RunModelInEagerMode()
-        {
-            // Set model weights 
-            // We can set a fixed init value in order to debug
-            // var rnd1 = rng.randn<float>();
-            // var rnd2 = rng.randn<float>();
-            var W = tf.Variable(-0.06f, name: "weight");
-            var b = tf.Variable(-0.73f, name: "bias");
-            var optimizer = tf.optimizers.SGD(learning_rate);
-
-            // Run training for the given number of steps.
-            foreach (var step in range(1, training_steps + 1))
-            {
-                // Run the optimization to update W and b values.
-                // Wrap computation inside a GradientTape for automatic differentiation.
-                using var g = tf.GradientTape();
-                // Linear regression (Wx + b).
-                var pred = W * train_X + b;
-                // Mean square error.
-                var loss = tf.reduce_sum(tf.pow(pred - train_Y, 2)) / (2 * n_samples);
-                // should stop recording
-                // Compute gradients.
-                var gradients = g.gradient(loss, (W, b));
-
-                // Update W and b following gradients.
-                optimizer.apply_gradients(zip(gradients, (W, b)));
-
-                if (step % display_step == 0)
-                {
-                    pred = W * train_X + b;
-                    loss = tf.reduce_sum(tf.pow(pred - train_Y, 2)) / (2 * n_samples);
-                    print($"step: {step}, loss: {loss.numpy()}, W: {W.numpy()}, b: {b.numpy()}");
-                }
-            }
-        }
-
-        public override void BuildModel()
-        {
             // tf Graph Input
             var X = tf.placeholder(tf.float32);
             var Y = tf.placeholder(tf.float32);
@@ -130,7 +84,7 @@ namespace TensorFlowNET.Examples
                 sess.run(init);
 
                 // Fit all training data
-                for (int epoch = 0; epoch < training_steps; epoch++)
+                for (int epoch = 0; epoch < training_epochs; epoch++)
                 {
                     foreach (var (x, y) in zip<float>(train_X, train_Y))
                         sess.run(optimizer, (X, x), (Y, y));
@@ -156,8 +110,11 @@ namespace TensorFlowNET.Examples
                 Console.WriteLine($"Testing cost={testing_cost}");
                 var diff = Math.Abs((float)training_cost - (float)testing_cost);
                 Console.WriteLine($"Absolute mean square loss difference: {diff}");
+
+                return diff < 0.01;
             }
         }
+
         public override void PrepareData()
         {
             train_X = np.array(3.3f, 4.4f, 5.5f, 6.71f, 6.93f, 4.168f, 9.779f, 6.182f, 7.59f, 2.167f,

@@ -105,6 +105,8 @@ namespace TensorFlowNET.Examples
             success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.Green));
             errors.ForEach(x => Console.WriteLine($"{x} is Failed!", Color.Red));
 
+            Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}");
+            Console.WriteLine($"TensorFlow Binary v{tf.VERSION}");
             Console.WriteLine($"{finished} of {examples.Length} example(s) are completed.");
             Console.Write("Press [Enter] to continue...");
             Console.ReadLine();

@@ -73,7 +73,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST CNN (Graph)",
-                Enabled = false,
+                Enabled = true,
                 IsImportingGraph = false,
                 Priority = 15
             };

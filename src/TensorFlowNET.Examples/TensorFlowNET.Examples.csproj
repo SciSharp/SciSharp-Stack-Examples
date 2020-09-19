@@ -39,7 +39,7 @@
     <PackageReference Include="SharpCV" Version="0.5.0" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="TensorFlow.NET" Version="0.20.0-preview4" />
+    <PackageReference Include="TensorFlow.NET" Version="0.20.0" />
   </ItemGroup>
 
   <ItemGroup>

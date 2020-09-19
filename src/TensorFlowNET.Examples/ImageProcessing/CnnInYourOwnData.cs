@@ -93,8 +93,8 @@ namespace TensorFlowNET.Examples
 
         NDArray Test_Cls, Test_Data;
 
-        RefVariable gloabl_steps;
-        RefVariable learning_rate;
+        IVariableV1 gloabl_steps;
+        IVariableV1 learning_rate;
 
         bool SaverBest = true;
         double max_accuracy = 0;
@@ -324,7 +324,7 @@ namespace TensorFlowNET.Examples
 
                 tf_with(tf.variable_scope("Optimizer"), delegate
                 {
-                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss, global_step: gloabl_steps);
+                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate.AsTensor(), name: "Adam-op").minimize(loss, global_step: gloabl_steps);
                 });
 
                 tf_with(tf.variable_scope("Accuracy"), delegate
@@ -491,7 +491,7 @@ namespace TensorFlowNET.Examples
                     {
                         learning_rate_base = learning_rate_base * learning_rate_decay;
                         if (learning_rate_base <= learning_rate_min) { learning_rate_base = learning_rate_min; }
-                        sess.run(tf.assign(learning_rate, learning_rate_base));
+                        sess.run(tf.assign(learning_rate.AsTensor(), learning_rate_base));
                     }
                 }
 

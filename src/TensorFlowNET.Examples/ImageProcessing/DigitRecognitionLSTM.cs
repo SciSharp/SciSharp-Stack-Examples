@@ -58,7 +58,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "MNIST LSTM",
+                Name = "MNIST LSTM (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 25
@@ -66,6 +66,8 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
             BuildGraph();
 

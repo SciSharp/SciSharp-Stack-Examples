@@ -39,13 +39,15 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Object Detection",
+                Name = "Object Detection in MobileNet (Graph)",
                 Enabled = true,
                 IsImportingGraph = true
             };
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
 
             Predict();
