@@ -16,8 +16,6 @@
 
 
 using NumSharp;
-using NumSharp.Backends;
-using NumSharp.Backends.Unmanaged;
 using SharpCV;
 using System;
 using System.Collections;
@@ -25,7 +23,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Tensorflow;
 using static Tensorflow.Binding;
 using static SharpCV.Binding;
@@ -47,8 +44,8 @@ namespace TensorFlowNET.Examples
         string logs_path = "logs";
 
         string[] ArrayFileName_Train, ArrayFileName_Validation, ArrayFileName_Test;
-        Int64[] ArrayLabel_Train, ArrayLabel_Validation, ArrayLabel_Test;
-        Dictionary<Int64, string> Dict_Label;
+        long[] ArrayLabel_Train, ArrayLabel_Validation, ArrayLabel_Test;
+        Dictionary<long, string> Dict_Label;
         NDArray x_train, y_train;
         NDArray x_valid, y_valid;
         NDArray x_test, y_test;
@@ -106,7 +103,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "CnnInYourOwnData (Graph)",
+                Name = "CNN in Your Own Data (Graph)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 19
@@ -162,8 +159,8 @@ namespace TensorFlowNET.Examples
         private void LoadImagesToNDArray()
         {
             //Load labels
-            y_valid = np.eye(Dict_Label.Count)[new NDArray(ArrayLabel_Validation)];
-            y_test = np.eye(Dict_Label.Count)[new NDArray(ArrayLabel_Test)];
+            y_valid = np.eye(Dict_Label.Count)[np.array(ArrayLabel_Validation)];
+            y_test = np.eye(Dict_Label.Count)[np.array(ArrayLabel_Test)];
             print("Load Labels To NDArray : OK!");
 
             //Load Images
@@ -212,11 +209,11 @@ namespace TensorFlowNET.Examples
         /// <param name="images"></param>
         /// <param name="labels"></param>
         /// <returns></returns>
-        public (string[], Int64[]) ShuffleArray(int count, string[] images, Int64[] labels)
+        public (string[], long[]) ShuffleArray(int count, string[] images, long[] labels)
         {
             ArrayList mylist = new ArrayList();
             string[] new_images = new string[count];
-            Int64[] new_labels = new Int64[count];
+            long[] new_labels = new long[count];
             Random r = new Random();
             for (int i = 0; i < count; i++)
             {
@@ -239,9 +236,9 @@ namespace TensorFlowNET.Examples
         /// </summary>
         /// <param name="FilesArray"></param>
         /// <returns></returns>
-        private Int64[] GetLabelArray(string[] FilesArray)
+        private long[] GetLabelArray(string[] FilesArray)
         {
-            Int64[] ArrayLabel = new Int64[FilesArray.Length];
+            var ArrayLabel = new long[FilesArray.Length];
             for (int i = 0; i < ArrayLabel.Length; i++)
             {
                 string[] labels = FilesArray[i].Split('\\');
@@ -324,7 +321,7 @@ namespace TensorFlowNET.Examples
 
                 tf_with(tf.variable_scope("Optimizer"), delegate
                 {
-                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate.AsTensor(), name: "Adam-op").minimize(loss, global_step: gloabl_steps);
+                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss, global_step: gloabl_steps);
                 });
 
                 tf_with(tf.variable_scope("Accuracy"), delegate
@@ -491,7 +488,7 @@ namespace TensorFlowNET.Examples
                     {
                         learning_rate_base = learning_rate_base * learning_rate_decay;
                         if (learning_rate_base <= learning_rate_min) { learning_rate_base = learning_rate_min; }
-                        sess.run(tf.assign(learning_rate.AsTensor(), learning_rate_base));
+                        sess.run(tf.assign(learning_rate, learning_rate_base));
                     }
                 }
 
@@ -548,7 +545,7 @@ namespace TensorFlowNET.Examples
             Write_Dictionary(path_model + "\\dic.txt", Dict_Label);
         }
 
-        private void Write_Dictionary(string path, Dictionary<Int64, string> mydic)
+        void Write_Dictionary(string path, Dictionary<Int64, string> mydic)
         {
             FileStream fs = new FileStream(path, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
@@ -559,14 +556,14 @@ namespace TensorFlowNET.Examples
             print("Write_Dictionary");
         }
 
-        private (NDArray, NDArray) Randomize(NDArray x, NDArray y)
+        (NDArray, NDArray) Randomize(NDArray x, NDArray y)
         {
             var perm = np.random.permutation(y.shape[0]);
             np.random.shuffle(perm);
             return (x[perm], y[perm]);
         }
 
-        private (NDArray, NDArray) GetNextBatch(NDArray x, NDArray y, int start, int end)
+        (NDArray, NDArray) GetNextBatch(NDArray x, NDArray y, int start, int end)
         {
             var slice = new Slice(start, end);
             var x_batch = x[slice];
@@ -574,7 +571,7 @@ namespace TensorFlowNET.Examples
             return (x_batch, y_batch);
         }
 
-        private unsafe (NDArray, NDArray) GetNextBatch(Session sess, string[] x, NDArray y, int start, int end)
+        (NDArray, NDArray) GetNextBatch(Session sess, string[] x, NDArray y, int start, int end)
         {
             NDArray x_batch = np.zeros(end - start, img_h, img_w, n_channels);
             int n = 0;
@@ -601,12 +598,12 @@ namespace TensorFlowNET.Examples
             (Test_Cls, Test_Data) = sess.run((cls_prediction, prob), (x, x_test));
         }
 
-        private void TestDataOutput()
+        void TestDataOutput()
         {
             for (int i = 0; i < ArrayLabel_Test.Length; i++)
             {
-                Int64 real = ArrayLabel_Test[i];
-                int predict = (int)(Test_Cls[i]);
+                long real = ArrayLabel_Test[i];
+                int predict = Test_Cls[i];
                 var probability = Test_Data[i, predict];
                 string result = (real == predict) ? "OK" : "NG";
                 string fileName = ArrayFileName_Test[i];
