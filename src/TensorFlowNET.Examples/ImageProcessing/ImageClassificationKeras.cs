@@ -18,7 +18,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Image Classification (Keras)",
-                Enabled = false,
+                Enabled = true,
                 Priority = 18
             };
 

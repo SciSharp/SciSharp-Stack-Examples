@@ -127,7 +127,7 @@ namespace TensorFlowNET.Examples
             output = Dense(args.NumClasses);
         }
 
-        protected override Tensor call(Tensor inputs, bool is_training = false, Tensor state = null)
+        protected override Tensor call(Tensor inputs, bool is_training = false)
         {
             // LSTM layer.
             inputs = lstm.Apply(inputs);

@@ -175,7 +175,7 @@ namespace TensorFlowNET.Examples
             }
 
             // Set forward pass.
-            protected override Tensor call(Tensor inputs, bool is_training = false, Tensor state = null)
+            protected override Tensor call(Tensor inputs, bool is_training = false)
             {
                 inputs = fc1.Apply(inputs);
                 inputs = fc2.Apply(inputs);
