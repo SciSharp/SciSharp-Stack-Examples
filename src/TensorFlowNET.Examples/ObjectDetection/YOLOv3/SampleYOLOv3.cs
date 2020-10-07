@@ -22,17 +22,18 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         float learn_rate_end;
         int first_stage_epochs;
         int second_stage_epochs;
-        int warmup_periods;
+        int warmup_steps;
+        int total_steps;
         string time;
         float moving_ave_decay;
         int max_bbox_per_scale;
-        int steps_per_period;
+        int steps_per_epoch;
 
         Dataset trainset, testset;
 
         Config cfg;
 
-        Tensor input_data;
+        Tensor input_tensor;
         Tensor label_sbbox;
         Tensor label_mbbox;
         Tensor label_lbbox;
@@ -54,19 +55,20 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         Saver loader;
         Saver saver;
         float train_step_loss;
-        double global_step_val;
+        IVariableV1 global_steps;
         #endregion
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "YOLOv3 (Graph)",
-                Enabled = false,
-                IsImportingGraph = true
+                Name = "YOLOv3 (Eager)",
+                Enabled = false
             };
 
         public bool Run()
         {
+            tf.enable_eager_execution();
+
             PrepareData();
             Train();
 
@@ -75,15 +77,15 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 
         public override void Train()
         {
-            var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
-
+            input_tensor = tf.keras.layers.Input((416, 416, 3));
+            var conv_tensors = new YOLOv3(cfg, input_tensor);
             /* for debug only
             tf.train.export_meta_graph(filename: "yolov3-debug.meta");
             var json = JsonConvert.SerializeObject(graph._nodes_by_name.Select(x => x.Value).ToArray(), Formatting.Indented);
             File.WriteAllText($"YOLOv3/nodes-{(Config.IsImportingGraph ? "right" : "wrong")}.json", json);
             */
 
-            var config = new ConfigProto { AllowSoftPlacement = true };
+            /*var config = new ConfigProto { AllowSoftPlacement = true };
             using (var sess = tf.Session(graph, config: config))
             {
                 sess.run(tf.global_variables_initializer());
@@ -138,151 +140,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                     string ckpt_file = $"./{Config.Name}/checkpoint/yolov3_test_loss={test_step_loss}.ckpt";
                     saver.save(sess, ckpt_file, global_step: epoch);
                 }
-            }
-        }
-
-        public override Graph BuildGraph()
-        {
-            var graph = new Graph().as_default();
-
-            tf_with(tf.name_scope("define_input"), scope =>
-            {
-                input_data = tf.placeholder(dtype: tf.float32, name: "input_data");
-                label_sbbox = tf.placeholder(dtype: tf.float32, name: "label_sbbox");
-                label_mbbox = tf.placeholder(dtype: tf.float32, name: "label_mbbox");
-                label_lbbox = tf.placeholder(dtype: tf.float32, name: "label_lbbox");
-                true_sbboxes = tf.placeholder(dtype: tf.float32, name: "sbboxes");
-                true_mbboxes = tf.placeholder(dtype: tf.float32, name: "mbboxes");
-                true_lbboxes = tf.placeholder(dtype: tf.float32, name: "lbboxes");
-                trainable = tf.placeholder(dtype: tf.@bool, name: "training");
-            });
-
-            tf_with(tf.name_scope("define_loss"), scope =>
-            {
-                model = new YOLOv3(cfg, input_data, trainable);
-                net_var = tf.global_variables();
-                (giou_loss, conf_loss, prob_loss) = model.compute_loss(
-                                                    label_sbbox, label_mbbox, label_lbbox,
-                                                    true_sbboxes, true_mbboxes, true_lbboxes);
-                loss = giou_loss + conf_loss + prob_loss;
-            });
-
-            Tensor global_step_update = null;
-            tf_with(tf.name_scope("learn_rate"), scope =>
-            {
-                global_step = tf.Variable(1.0, dtype: tf.float64, trainable: false, name: "global_step");
-                
-                var warmup_steps = tf.constant(warmup_periods * steps_per_period,
-                                        dtype: tf.float64, name: "warmup_steps");
-                var train_steps = tf.constant((first_stage_epochs + second_stage_epochs) * steps_per_period,
-                                        dtype: tf.float64, name: "train_steps");
-
-                learn_rate = tf.cond(
-                    pred: global_step.AsTensor() < warmup_steps,
-                    true_fn: delegate
-                    {
-                        return global_step.AsTensor() / warmup_steps * learn_rate_init;
-                    },
-                    false_fn: delegate
-                    {
-                        return learn_rate_end + 0.5 * (learn_rate_init - learn_rate_end) *
-                            (1 + tf.cos(
-                                (global_step.AsTensor() - warmup_steps) / (train_steps - warmup_steps) * Math.PI));
-                    }
-                );
-
-                global_step_update = tf.assign_add(global_step, 1.0f) as Tensor;
-            });
-
-            Operation moving_ave = null;
-            tf_with(tf.name_scope("define_weight_decay"), scope =>
-            {
-                var emv = tf.train.ExponentialMovingAverage(moving_ave_decay);
-                var vars = tf.trainable_variables().Select(x => (RefVariable)x).ToArray();
-                moving_ave = emv.apply(vars);
-            });
-
-            tf_with(tf.name_scope("define_first_stage_train"), scope =>
-            {
-                first_stage_trainable_var_list = new List<IVariableV1>();
-                foreach (var var in tf.trainable_variables())
-                {
-                    var var_name = var.Op.name;
-                    var var_name_mess = var_name.Split('/');
-                    if (new[] { "conv_sbbox", "conv_mbbox", "conv_lbbox" }.Contains(var_name_mess[0]))
-                        first_stage_trainable_var_list.Add(var);
-                }
-
-                var adam = tf.train.AdamOptimizer(learn_rate);
-                var first_stage_optimizer = adam.minimize(loss, var_list: first_stage_trainable_var_list);
-                tf_with(tf.control_dependencies(tf.get_collection<Operation>(tf.GraphKeys.UPDATE_OPS).ToArray()), delegate
-                {
-                    tf_with(tf.control_dependencies(new ITensorOrOperation[] { first_stage_optimizer, global_step_update }), delegate
-                    {
-                        tf_with(tf.control_dependencies(new[] { moving_ave }), delegate
-                        {
-                            train_op_with_frozen_variables = tf.no_op();
-                        });
-                    });
-                });
-            });
-
-            tf_with(tf.name_scope("define_second_stage_train"), delegate
-            {
-                var second_stage_trainable_var_list = tf.trainable_variables().ToList();
-                var adam = tf.train.AdamOptimizer(learn_rate);
-                var second_stage_optimizer = adam.minimize(loss, var_list: second_stage_trainable_var_list);
-                tf_with(tf.control_dependencies(tf.get_collection<Operation>(tf.GraphKeys.UPDATE_OPS).ToArray()), delegate
-                {
-                    tf_with(tf.control_dependencies(new ITensorOrOperation[] { second_stage_optimizer, global_step_update }), delegate
-                    {
-                        tf_with(tf.control_dependencies(new[] { moving_ave }), delegate
-                        {
-                            train_op_with_all_variables = tf.no_op();
-                        });
-                    });
-                });
-            });
-
-            tf_with(tf.name_scope("loader_and_saver"), delegate
-            {
-                loader = tf.train.Saver(net_var);
-                saver = tf.train.Saver(tf.global_variables(), max_to_keep: 10);
-            });
-
-            tf_with(tf.name_scope("summary"), delegate
-            {
-                tf.summary.scalar("learn_rate", learn_rate);
-                tf.summary.scalar("giou_loss", giou_loss);
-                tf.summary.scalar("conf_loss", conf_loss);
-                tf.summary.scalar("prob_loss", prob_loss);
-                tf.summary.scalar("total_loss", loss);
-            });
-
-            return graph;
-        }
-
-        public override Graph ImportGraph()
-        {
-            loader = tf.train.import_meta_graph(Path.Combine(Config.Name, "yolov3.meta"));
-            var graph = tf.get_default_graph();
-
-            train_op_with_frozen_variables = graph.OperationByName("define_first_stage_train/NoOp");
-            train_op_with_all_variables = graph.OperationByName("define_second_stage_train/NoOp");
-            loss = graph.get_tensor_by_name("define_loss/add_1:0");
-            input_data = graph.get_tensor_by_name("define_input/input_data:0");
-            label_sbbox = graph.get_tensor_by_name("define_input/label_sbbox:0");
-            label_mbbox = graph.get_tensor_by_name("define_input/label_mbbox:0");
-            label_lbbox = graph.get_tensor_by_name("define_input/label_lbbox:0");
-            true_sbboxes = graph.get_tensor_by_name("define_input/sbboxes:0");
-            true_mbboxes = graph.get_tensor_by_name("define_input/mbboxes:0");
-            true_lbboxes = graph.get_tensor_by_name("define_input/lbboxes:0");
-            trainable = graph.get_tensor_by_name("define_input/training:0");
-            // global_step = graph.OperationByName("learn_rate/global_step");
-
-            saver = tf.train.Saver(tf.global_variables(), max_to_keep: 10);
-
-            return graph;
+            }*/
         }
 
         public override void PrepareData()
@@ -299,14 +157,17 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             learn_rate_end = cfg.TRAIN.LEARN_RATE_END;
             first_stage_epochs = cfg.TRAIN.FISRT_STAGE_EPOCHS;
             second_stage_epochs = cfg.TRAIN.SECOND_STAGE_EPOCHS;
-            warmup_periods = cfg.TRAIN.WARMUP_EPOCHS;
             DateTime now = DateTime.Now;
             time = $"{now.Year}-{now.Month}-{now.Day}-{now.Hour}-{now.Minute}-{now.Minute}";
             moving_ave_decay = cfg.YOLO.MOVING_AVE_DECAY;
             max_bbox_per_scale = 150;
             trainset = new Dataset("train", cfg);
             testset = new Dataset("test", cfg);
-            steps_per_period = trainset.Length;
+            steps_per_epoch = trainset.Length;
+
+            global_steps = tf.Variable(1, trainable: false, dtype: tf.int64);
+            warmup_steps = cfg.TRAIN.WARMUP_EPOCHS * steps_per_epoch;
+            total_steps = cfg.TRAIN.EPOCHS * steps_per_epoch;
         }
     }
 }

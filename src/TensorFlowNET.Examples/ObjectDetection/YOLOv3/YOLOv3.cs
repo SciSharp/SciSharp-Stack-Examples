@@ -26,11 +26,10 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         Tensor pred_mbbox;
         Tensor pred_lbbox;
 
-        public YOLOv3(Config cfg_, Tensor input_data_, Tensor trainable_)
+        public YOLOv3(Config cfg_, Tensor input_layer)
         {
             cfg = cfg_;
-            input_data = input_data_;
-            trainable = trainable_;
+            input_data = input_layer;
             classes = Utils.read_class_names(cfg.YOLO.CLASSES);
             num_class = len(classes);
             strides = np.array(cfg.YOLO.STRIDES);
@@ -39,7 +38,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             iou_loss_thresh = cfg.YOLO.IOU_LOSS_THRESH;
             upsample_method = cfg.YOLO.UPSAMPLE_METHOD;
 
-            (conv_lbbox, conv_mbbox, conv_sbbox) = __build_nework(input_data);
+            (conv_lbbox, conv_mbbox, conv_sbbox) = backbone.darknet53(input_layer);
 
             tf_with(tf.variable_scope("pred_sbbox"), scope =>
             {
@@ -60,18 +59,17 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         private (Tensor, Tensor, Tensor) __build_nework(Tensor input_data)
         {
             Tensor route_1, route_2;
-            (route_1, route_2, input_data) = backbone.darknet53(input_data, trainable);
-            input_data = common.convolutional(input_data, new[] { 1, 1, 1024, 512 }, trainable, "conv52");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 512, 1024 }, trainable, "conv53");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 1024, 512 }, trainable, "conv54");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 512, 1024 }, trainable, "conv55");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 1024, 512 }, trainable, "conv56");
+            (route_1, route_2, input_data) = backbone.darknet53(input_data);
+            input_data = common.convolutional(input_data, (1, 1, 1024, 512));
+            input_data = common.convolutional(input_data, (3, 3, 512, 1024));
+            input_data = common.convolutional(input_data, (1, 1, 1024, 512));
+            input_data = common.convolutional(input_data, (3, 3, 512, 1024));
+            input_data = common.convolutional(input_data, (1, 1, 1024, 512));
 
-            var conv_lobj_branch = common.convolutional(input_data, new[] { 3, 3, 512, 1024 }, trainable, name: "conv_lobj_branch");
-            var conv_lbbox = common.convolutional(conv_lobj_branch, new[] { 1, 1, 1024, 3 * (num_class + 5) },
-                                          trainable: trainable, name: "conv_lbbox", activate: false, bn: false);
+            var conv_lobj_branch = common.convolutional(input_data, (3, 3, 512, 1024));
+            var conv_lbbox = common.convolutional(conv_lobj_branch, (1, 1, 1024, 3 * (num_class + 5)), activate: false, bn: false);
 
-            input_data = common.convolutional(input_data, new[] { 1, 1, 512, 256 }, trainable, "conv57");
+            input_data = common.convolutional(input_data, (1, 1, 512, 256));
             input_data = common.upsample(input_data, name: "upsample0", method: upsample_method);
 
             tf_with(tf.variable_scope("route_1"), delegate
@@ -79,17 +77,17 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 input_data = tf.concat(new[] { input_data, route_2 }, axis: -1);
             });
 
-            input_data = common.convolutional(input_data, new[] { 1, 1, 768, 256 }, trainable, "conv58");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 256, 512 }, trainable, "conv59");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 512, 256 }, trainable, "conv60");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 256, 512 }, trainable, "conv61");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 512, 256 }, trainable, "conv62");
+            input_data = common.convolutional(input_data, (1, 1, 768, 256));
+            input_data = common.convolutional(input_data, (3, 3, 256, 512));
+            input_data = common.convolutional(input_data, (1, 1, 512, 256));
+            input_data = common.convolutional(input_data, (3, 3, 256, 512));
+            input_data = common.convolutional(input_data, (1, 1, 512, 256));
 
-            var conv_mobj_branch = common.convolutional(input_data, new[] { 3, 3, 256, 512 }, trainable, name: "conv_mobj_branch");
+            var conv_mobj_branch = common.convolutional(input_data, (3, 3, 256, 512));
             conv_mbbox = common.convolutional(conv_mobj_branch, new[] { 1, 1, 512, 3 * (num_class + 5) },
-                                          trainable: trainable, name: "conv_mbbox", activate: false, bn: false);
+                                          activate: false, bn: false);
 
-            input_data = common.convolutional(input_data, new[] { 1, 1, 256, 128 }, trainable, "conv63");
+            input_data = common.convolutional(input_data, (1, 1, 256, 128));
             input_data = common.upsample(input_data, name: "upsample1", method: upsample_method);
 
             tf_with(tf.variable_scope("route_2"), delegate
@@ -97,15 +95,15 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
                 input_data = tf.concat(new[] { input_data, route_1 }, axis: -1);
             });
 
-            input_data = common.convolutional(input_data, new[] { 1, 1, 384, 128 }, trainable, "conv64");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 128, 256 }, trainable, "conv65");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 256, 128 }, trainable, "conv66");
-            input_data = common.convolutional(input_data, new[] { 3, 3, 128, 256 }, trainable, "conv67");
-            input_data = common.convolutional(input_data, new[] { 1, 1, 256, 128 }, trainable, "conv68");
+            input_data = common.convolutional(input_data, (1, 1, 384, 128));
+            input_data = common.convolutional(input_data, (3, 3, 128, 256));
+            input_data = common.convolutional(input_data, (1, 1, 256, 128));
+            input_data = common.convolutional(input_data, (3, 3, 128, 256));
+            input_data = common.convolutional(input_data, (1, 1, 256, 128));
 
-            var conv_sobj_branch = common.convolutional(input_data, new[] { 3, 3, 128, 256 }, trainable, name: "conv_sobj_branch");
-            conv_sbbox = common.convolutional(conv_sobj_branch, new[] { 1, 1, 256, 3 * (num_class + 5) },
-                                          trainable: trainable, name: "conv_sbbox", activate: false, bn: false);
+            var conv_sobj_branch = common.convolutional(input_data, (3, 3, 128, 256));
+            conv_sbbox = common.convolutional(conv_sobj_branch, (1, 1, 256, 3 * (num_class + 5)),
+                                          activate: false, bn: false);
             
             return (conv_lbbox, conv_mbbox, conv_sbbox);
         }

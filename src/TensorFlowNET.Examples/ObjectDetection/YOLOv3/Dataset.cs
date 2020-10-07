@@ -32,7 +32,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         int num_batchs;
         int batch_count;
 
-        public int Length = 0;
+        public int Length => num_batchs;
 
         public Dataset(string dataset_type, Config cfg)
         {

@@ -28,7 +28,7 @@ namespace TensorFlowNET.Examples
     /// This example is using the MNIST database of handwritten digits
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/logistic_regression.py
     /// </summary>
-    public class LogisticRegressionKeras : SciSharpExample, IExample
+    public class LogisticRegressionEager : SciSharpExample, IExample
     {
         int training_epochs = 1000;
         int? train_size = null;
@@ -46,7 +46,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Logistic Regression (Keras)",
+                Name = "Logistic Regression (Eager)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 7

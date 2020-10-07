@@ -26,7 +26,7 @@ namespace TensorFlowNET.Examples
     /// A linear regression learning algorithm example using TensorFlow library.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/2_BasicModels/linear_regression.ipynb
     /// </summary>
-    public class LinearRegressionKeras : SciSharpExample, IExample
+    public class LinearRegressionEager : SciSharpExample, IExample
     {
         int training_steps = 1000;
 
@@ -41,7 +41,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Linear Regression (Keras)",
+                Name = "Linear Regression (Eager)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 5

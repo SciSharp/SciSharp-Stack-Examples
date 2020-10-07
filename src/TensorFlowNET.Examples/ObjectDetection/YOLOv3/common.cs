@@ -4,59 +4,56 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Tensorflow;
+using Tensorflow.Keras.ArgsDefinition;
+using Tensorflow.Keras.Layers;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples.ImageProcessing.YOLO
 {
     class common
     {
-        public static Tensor convolutional(Tensor input_data, int[] filters_shape, Tensor trainable,
-            string name, bool downsample = false, bool activate = true, 
+        public static Tensor convolutional(Tensor input_layer, TensorShape filters_shape,
+            bool downsample = false, bool activate = true,
             bool bn = true)
         {
-            return tf_with(tf.variable_scope(name), scope =>
+            int strides;
+            string padding;
+
+            if (downsample)
             {
-                int[] strides;
-                string padding;
+                (int pad_h, int pad_w) = ((int)Math.Floor((filters_shape[0] - 2) / 2.0f) + 1, (int)Math.Floor((filters_shape[1] - 2) / 2.0f) + 1);
+                var paddings = tf.constant(new int[,] { { 0, 0 }, { pad_h, pad_h }, { pad_w, pad_w }, { 0, 0 } });
+                input_layer = tf.pad(input_layer, paddings, "CONSTANT");
+                strides = 2;
+                padding = "valid";
+            }
+            else
+            {
+                strides = 1;
+                padding = "same";
+            }
 
-                if (downsample)
+            var conv2d_layer = tf.keras.layers.Conv2D(filters_shape[-1],
+                kernel_size: filters_shape[0],
+                strides: strides,
+                padding: padding,
+                use_bias: !bn,
+                kernel_regularizer: tf.keras.regularizers.l2(0.0005f),
+                kernel_initializer: tf.random_normal_initializer(stddev: 0.01f),
+                bias_initializer: tf.constant_initializer(0f));
+            var conv = conv2d_layer.Apply(input_layer);
+            if (bn)
+            {
+                var batch_layer = new BatchNormalization(new BatchNormalizationArgs
                 {
-                    (int pad_h, int pad_w) = ((int)Math.Floor((filters_shape[0] - 2) / 2.0f) + 1, (int)Math.Floor((filters_shape[1] - 2) / 2.0f) + 1);
-                    var paddings = tf.constant(new int[,] { { 0, 0 }, { pad_h, pad_h }, { pad_w, pad_w }, { 0, 0 } });
-                    input_data = tf.pad(input_data, paddings, "CONSTANT");
-                    strides = new int[] { 1, 2, 2, 1 };
-                    padding = "VALID";
-                }
-                else
-                {
-                    strides = new int[] { 1, 1, 1, 1 };
-                    padding = "SAME";
-                }
+                });
+                conv = batch_layer.Apply(conv);
+            }
 
-                var weight = tf.compat.v1.get_variable(name: "weight", dtype: tf.float32, trainable: true,
-                    shape: filters_shape, initializer: tf.random_normal_initializer(stddev: 0.01f));
+            if (activate)
+                conv = tf.nn.leaky_relu(conv, alpha: 0.1f);
 
-                var conv = tf.nn.conv2d(input: input_data, filter: weight, strides: strides, padding: padding);
-
-                if (bn)
-                {
-                    conv = tf.layers.batch_normalization(conv, beta_initializer: tf.zeros_initializer,
-                                                 gamma_initializer: tf.ones_initializer,
-                                                 moving_mean_initializer: tf.zeros_initializer,
-                                                 moving_variance_initializer: tf.ones_initializer, training: trainable);
-                }
-                else
-                {
-                    var bias = tf.compat.v1.get_variable(name: "bias", shape: filters_shape.Last(), trainable: true,
-                       dtype: tf.float32, initializer: tf.constant_initializer(0.0f));
-                    conv = tf.nn.bias_add(conv, bias);
-                }
-
-                if (activate)
-                    conv = tf.nn.leaky_relu(conv, alpha: 0.1f);
-
-                return conv;
-            });
+            return conv;
         }
 
         public static Tensor upsample(Tensor input_data, string name, string method = "deconv")
@@ -80,16 +77,14 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         }
 
         public static Tensor residual_block(Tensor input_data, int input_channel, int filter_num1, 
-            int filter_num2, Tensor trainable, string name)
+            int filter_num2, string name)
         {
             var short_cut = input_data;
 
             return tf_with(tf.variable_scope(name), scope =>
             {
-                input_data = convolutional(input_data, filters_shape: new int[] { 1, 1, input_channel, filter_num1 },
-                                   trainable: trainable, name: "conv1");
-                input_data = convolutional(input_data, filters_shape: new int[] { 3, 3, filter_num1, filter_num2 },
-                                   trainable: trainable, name: "conv2");
+                input_data = convolutional(input_data, (1, 1, input_channel, filter_num1));
+                input_data = convolutional(input_data, (3, 3, filter_num1, filter_num2));
 
                 var residual_output = input_data + short_cut;
 
