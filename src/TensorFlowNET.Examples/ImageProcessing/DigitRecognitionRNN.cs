@@ -57,7 +57,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST RNN (Graph)",
-                Enabled = false,
+                Enabled = true,
                 IsImportingGraph = false,
                 Priority = 20
             };

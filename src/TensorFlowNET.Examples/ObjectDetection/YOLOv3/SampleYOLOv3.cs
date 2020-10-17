@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Tensorflow;
+using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples.ImageProcessing.YOLO
@@ -42,7 +44,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
         Tensor true_lbboxes;
         Tensor trainable;
 
-        YOLOv3 model;
+        Model model;
         IVariableV1[] net_var;
         Tensor giou_loss, conf_loss, prob_loss;
         IVariableV1 global_step;
@@ -62,7 +64,7 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             => Config = new ExampleConfig
             {
                 Name = "YOLOv3 (Eager)",
-                Enabled = false
+                Enabled = true
             };
 
         public bool Run()
@@ -75,10 +77,37 @@ namespace TensorFlowNET.Examples.ImageProcessing.YOLO
             return true;
         }
 
+        void train_step(NDArray image_data, (NDArray, NDArray)[] target)
+        {
+            using var tape = tf.GradientTape();
+            var pred_result = model.Apply(image_data);
+        }
+
         public override void Train()
         {
             input_tensor = tf.keras.layers.Input((416, 416, 3));
-            var conv_tensors = new YOLOv3(cfg, input_tensor);
+            var yolo = new YOLOv3(cfg);
+            var conv_tensors = yolo.Apply(input_tensor);
+
+            var output_tensors = new List<Tensor>();
+            foreach (var (i, conv_tensor) in enumerate(conv_tensors))
+            {
+                var pred_tensor = yolo.Decode(conv_tensor, i);
+                output_tensors.append(conv_tensor);
+                output_tensors.append(pred_tensor);
+            }
+
+            model = tf.keras.Model(input_tensor, output_tensors);
+            // model.load_weights("./yolov3");
+
+            var optimizer = tf.keras.optimizers.Adam();
+            foreach (var epoch in range(1, 1 + first_stage_epochs + second_stage_epochs))
+            {
+                // tf.print('EPOCH %3d' % (epoch + 1))
+                foreach (var (image_data, target) in trainset)
+                    train_step(image_data, target);
+            }
+
             /* for debug only
             tf.train.export_meta_graph(filename: "yolov3-debug.meta");
             var json = JsonConvert.SerializeObject(graph._nodes_by_name.Select(x => x.Value).ToArray(), Formatting.Indented);
