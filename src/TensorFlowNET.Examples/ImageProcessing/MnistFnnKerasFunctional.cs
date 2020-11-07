@@ -15,14 +15,7 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using Tensorflow;
-using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
-using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples

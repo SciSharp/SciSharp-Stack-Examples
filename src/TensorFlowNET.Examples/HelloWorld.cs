@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text;
-using Tensorflow;
-using static Tensorflow.Binding;
+﻿using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {

@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************************/
 
-using System;
 using System.Diagnostics;
 using System.Linq;
 using Tensorflow;
@@ -51,7 +50,7 @@ namespace TensorFlowNET.Examples
         Tensor X, Y;
         Tensor loss_op, accuracy, prediction;
         Operation train_op;
-        
+
         float accuracy_test = 0f;
         Session sess;
 

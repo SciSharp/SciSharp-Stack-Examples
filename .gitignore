@@ -328,3 +328,4 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 .vscode/tasks.json
+/src/tensorflow2.x-python-tutorial/my_model

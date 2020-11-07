@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Tensorflow;
 using static Tensorflow.Binding;
 
@@ -70,15 +69,18 @@ namespace TensorFlowNET.Examples.Text
                 conv0 = tf.transpose(conv0, new int[] { 0, 1, 3, 2 });
             });
 
-            tf_with(tf.name_scope("conv-block-1"), delegate {
+            tf_with(tf.name_scope("conv-block-1"), delegate
+            {
                 conv1 = conv_block(conv0, 1);
             });
 
-            tf_with(tf.name_scope("conv-block-2"), delegate {
+            tf_with(tf.name_scope("conv-block-2"), delegate
+            {
                 conv2 = conv_block(conv1, 2);
             });
 
-            tf_with(tf.name_scope("conv-block-3"), delegate {
+            tf_with(tf.name_scope("conv-block-3"), delegate
+            {
                 conv3 = conv_block(conv2, 3);
             });
 
@@ -151,7 +153,7 @@ namespace TensorFlowNET.Examples.Text
                         conv = tf.transpose(conv, new int[] { 0, 1, 3, 2 });
                     });
                 }
-                
+
                 if (max_pool)
                 {
                     // Max pooling

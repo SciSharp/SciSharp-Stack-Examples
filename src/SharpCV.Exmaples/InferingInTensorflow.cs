@@ -1,7 +1,4 @@
 ﻿using NumSharp;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static SharpCV.Binding;
 
 namespace SharpCV.Exmaples
@@ -25,7 +22,7 @@ namespace SharpCV.Exmaples
             foreach (var detection in output[0, 0, Slice.All, Slice.All].GetNDArrays())
             {
                 var score = detection.GetSingle(2);
-                if(score > 0.3)
+                if (score > 0.3)
                 {
                     var left = detection.GetSingle(3) * cols;
                     var top = detection.GetSingle(4) * rows;

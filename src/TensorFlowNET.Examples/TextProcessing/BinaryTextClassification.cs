@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using NumSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Tensorflow;
 using System.Linq;
-using NumSharp;
-using Newtonsoft.Json;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -37,7 +36,7 @@ namespace TensorFlowNET.Examples
 
             // A dictionary mapping words to an integer index
             var word_index = GetWordIndex();
-            
+
             /*train_data = keras.preprocessing.sequence.pad_sequences(train_data,
                 value: word_index["<PAD>"],
                 padding: "post",

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Collections.Generic;
 using Tensorflow;
 using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;

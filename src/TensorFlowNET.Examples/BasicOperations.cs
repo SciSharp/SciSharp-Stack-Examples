@@ -1,6 +1,4 @@
-﻿using NumSharp;
-using System;
-using static Tensorflow.Binding;
+﻿using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
@@ -42,7 +40,7 @@ namespace TensorFlowNET.Examples
             var sum = tf.reduce_sum(new[] { a, b, c });
 
             // Access tensors value.
-            
+
             print("mean =", mean.numpy());
             print("sum =", sum.numpy());
 

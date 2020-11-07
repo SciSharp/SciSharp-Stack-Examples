@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.ArgsDefinition;
@@ -119,7 +118,7 @@ namespace TensorFlowNET.Examples
         Layer lstm;
         Layer output;
 
-        public LSTMModel(LSTMModelArgs args) 
+        public LSTMModel(LSTMModelArgs args)
             : base(args)
         {
             optimizer = tf.optimizers.Adam(args.LearningRate);

@@ -14,11 +14,7 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using Tensorflow;
 using static Tensorflow.Binding;
 
@@ -111,7 +107,7 @@ namespace TensorFlowNET.Examples
                 (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
                 sess.run(accuracy, (input, x_input), (y_true, y_input));
             }
-                
+
             print($"Time taken: {sw.Elapsed.TotalSeconds}s");
         }
     }

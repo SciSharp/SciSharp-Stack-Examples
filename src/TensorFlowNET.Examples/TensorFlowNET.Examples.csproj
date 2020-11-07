@@ -51,8 +51,4 @@
   <ItemGroup>
     <Folder Include="TextProcessing\NER\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Core\Tensorflow.Binding.csproj" />
-  </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SharpCV.Exmaples
+﻿namespace SharpCV.Exmaples
 {
     class Program
     {

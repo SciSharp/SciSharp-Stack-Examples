@@ -14,13 +14,13 @@
    limitations under the License.
 ******************************************************************************/
 
+using NumSharp;
 using System;
 using System.Collections.Generic;
-using Tensorflow;
-using NumSharp;
-using static Tensorflow.Binding;
 using System.IO;
+using Tensorflow;
 using TensorFlowNET.Examples.Utility;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
@@ -85,7 +85,7 @@ namespace TensorFlowNET.Examples
                 var curClass = y[i];
                 var l = dic[curClass];
                 var pair = new List<float>();
-                pair.Add(X[i,0]);
+                pair.Add(X[i, 0]);
                 pair.Add(X[i, 1]);
                 l.Add(pair);
                 if (l.Count > maxCount)
@@ -97,7 +97,7 @@ namespace TensorFlowNET.Examples
             float[,,] points = new float[dic.Count, maxCount, X.shape[1]];
             foreach (KeyValuePair<int, List<List<float>>> kv in dic)
             {
-                int j = (int) kv.Key;
+                int j = (int)kv.Key;
                 for (int i = 0; i < maxCount; i++)
                 {
                     for (int k = 0; k < X.shape[1]; k++)
@@ -111,7 +111,7 @@ namespace TensorFlowNET.Examples
             // estimate mean and variance for each class / feature
             // shape : nb_classes * nb_features
             var cons = tf.constant(points_by_class);
-            var tup = tf.nn.moments(cons, new int[]{1});
+            var tup = tf.nn.moments(cons, new int[] { 1 });
             var mean = tup.Item1;
             var variance = tup.Item2;
 
@@ -127,12 +127,12 @@ namespace TensorFlowNET.Examples
             {
                 throw new ArgumentNullException("cant not find the model (normal distribution)!");
             }
-            int nb_classes = (int) dist.scale().shape[0];
+            int nb_classes = (int)dist.scale().shape[0];
             int nb_features = (int)dist.scale().shape[1];
 
             // Conditional probabilities log P(x|c) with shape
             // (nb_samples, nb_classes)
-            var t1= ops.convert_to_tensor(X, TF_DataType.TF_FLOAT);
+            var t1 = ops.convert_to_tensor(X, TF_DataType.TF_FLOAT);
             var t2 = ops.convert_to_tensor(new int[] { 1, nb_classes });
             Tensor tile = tf.tile(t1, t2);
             var t3 = ops.convert_to_tensor(new int[] { -1, nb_classes, nb_features });

@@ -1,5 +1,4 @@
 ﻿using System;
-using Tensorflow;
 
 namespace TensorFlowNET.Examples
 {

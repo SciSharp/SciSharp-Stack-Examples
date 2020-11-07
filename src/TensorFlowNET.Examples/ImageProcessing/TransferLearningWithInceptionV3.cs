@@ -280,7 +280,7 @@ namespace TensorFlowNET.Examples
             tf.train.import_meta_graph("graph/InceptionV3.meta");
             var vars = tf.get_collection<ResourceVariable>(tf.GraphKeys.GLOBAL_VARIABLES);
             Tensor resized_input_tensor = graph.OperationByName(input_tensor_name); //tf.placeholder(tf.float32, new TensorShape(-1, height, width, 3));
-                                                                                // var m = hub.Module(module_spec);
+                                                                                    // var m = hub.Module(module_spec);
             Tensor bottleneck_tensor = graph.OperationByName("module_apply_default/hub_output/feature_vector/SpatialSqueeze");// m(resized_input_tensor);
             var wants_quantization = false;
             return (graph, bottleneck_tensor, resized_input_tensor, wants_quantization);
@@ -382,7 +382,7 @@ namespace TensorFlowNET.Examples
         {
             int how_many_bottlenecks = 0;
             var kvs = image_lists.ToArray();
-            var categories = new string[] {"training", "testing", "validation"};
+            var categories = new string[] { "training", "testing", "validation" };
             Parallel.For(0, kvs.Length, i =>
             {
                 var (label_name, label_lists) = kvs[i];

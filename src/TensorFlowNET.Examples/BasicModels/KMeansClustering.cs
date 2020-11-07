@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
 using System.Diagnostics;
 using Tensorflow;
 using static Tensorflow.Binding;

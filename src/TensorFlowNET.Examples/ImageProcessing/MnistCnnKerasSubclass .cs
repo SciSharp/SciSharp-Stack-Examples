@@ -15,9 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.ArgsDefinition;
@@ -35,7 +32,7 @@ namespace TensorFlowNET.Examples
     public class DigitRecognitionCnnKeras : SciSharpExample, IExample
     {
         // MNIST dataset parameters.
-        int num_classes = 10; 
+        int num_classes = 10;
 
         // Training parameters.
         float learning_rate = 0.001f;
@@ -173,7 +170,7 @@ namespace TensorFlowNET.Examples
             Layer output;
 
             public ConvNet(ConvNetArgs args)
-                :base(args)
+                : base(args)
             {
                 var layers = tf.keras.layers;
 

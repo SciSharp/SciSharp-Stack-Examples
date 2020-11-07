@@ -15,15 +15,15 @@
 ******************************************************************************/
 
 using NumSharp;
+using SharpCV;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Tensorflow;
-using SharpCV;
 using TensorFlowNET.Examples.Utility;
-using static Tensorflow.Binding;
 using static SharpCV.Binding;
-using System.Collections.Generic;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
@@ -35,12 +35,12 @@ namespace TensorFlowNET.Examples
         int input_size = 416;
         int num_classes = 1;
 
-        string[] return_elements = new[] 
-        { 
-            "input/input_data:0", 
-            "pred_sbbox/concat_2:0", 
-            "pred_mbbox/concat_2:0", 
-            "pred_lbbox/concat_2:0" 
+        string[] return_elements = new[]
+        {
+            "input/input_data:0",
+            "pred_sbbox/concat_2:0",
+            "pred_mbbox/concat_2:0",
+            "pred_lbbox/concat_2:0"
         };
 
         Tensor[] return_tensors;
@@ -57,7 +57,7 @@ namespace TensorFlowNET.Examples
         {
             PrepareData();
             Predict();
-            return true;       
+            return true;
         }
 
         public override void PrepareData()
@@ -175,7 +175,7 @@ namespace TensorFlowNET.Examples
             // (1) (x, y, w, h) --> (xmin, ymin, xmax, ymax)
             var pred_coor = np.concatenate((pred_xywh[Slice.All, new Slice(stop: 2)] - pred_xywh[Slice.All, new Slice(2)] * 0.5f,
                                         pred_xywh[Slice.All, new Slice(stop: 2)] + pred_xywh[Slice.All, new Slice(2)] * 0.5f), axis: -1);
-            
+
             // (2) (xmin, ymin, xmax, ymax) -> (xmin_org, ymin_org, xmax_org, ymax_org)
             var (org_h, org_w) = org_img_shape;
             var resize_ratio = min(input_size / org_w, input_size / org_h);
@@ -193,7 +193,7 @@ namespace TensorFlowNET.Examples
             pred_coor[invalid_mask] = 0;
 
             // (4) discard some invalid boxes
-            var coor_diff = pred_coor[Slice.All, new Slice(2, 4)] -pred_coor[Slice.All, new Slice(0, 2)];
+            var coor_diff = pred_coor[Slice.All, new Slice(2, 4)] - pred_coor[Slice.All, new Slice(0, 2)];
             var bboxes_scale = np.sqrt(np.prod(coor_diff, axis: -1));
             var scale_mask = np.logical_and(bboxes_scale > 0d, bboxes_scale < double.MaxValue);
 
@@ -216,7 +216,7 @@ namespace TensorFlowNET.Examples
             {
                 var cls_mask = bboxes[Slice.All, 5] == cls;
                 var cls_bboxes = bboxes[cls_mask];
-                while(len(cls_bboxes) > 0)
+                while (len(cls_bboxes) > 0)
                 {
                     var max_ind = np.argmax(cls_bboxes[Slice.All, 4]);
                     var best_bbox = cls_bboxes[max_ind];
@@ -228,8 +228,8 @@ namespace TensorFlowNET.Examples
                         continue;
 
                     var weight = np.ones(new Shape(len(iou)), dtype: np.float32);
-                    
-                    if(method == "nms")
+
+                    if (method == "nms")
                     {
                         var iou_mask = (iou > iou_threshold).MakeGeneric<bool>();
                         if (iou_mask.ndim == 0)
@@ -281,9 +281,9 @@ namespace TensorFlowNET.Examples
             var (image_h, image_w) = (image.shape[0], image.shape[1]);
             // var hsv_tuples = range(num_classes).Select(x => (rnd.Next(255), rnd.Next(255), rnd.Next(255))).ToArray();
 
-            foreach(var (i, bbox) in enumerate(bboxes))
+            foreach (var (i, bbox) in enumerate(bboxes))
             {
-                var coor = bbox[new Slice(stop:4)].astype(NPTypeCode.Int32);
+                var coor = bbox[new Slice(stop: 4)].astype(NPTypeCode.Int32);
                 var fontScale = 0.5;
                 float score = bbox[4];
                 var class_ind = (float)bbox[5];
@@ -293,7 +293,7 @@ namespace TensorFlowNET.Examples
 
                 // show label;
                 var bbox_mess = $"{classes[(int)class_ind]}: {score.ToString("P")}";
-                var t_size = cv2.getTextSize(bbox_mess,  HersheyFonts.HERSHEY_SIMPLEX, fontScale, thickness: bbox_thick / 2);
+                var t_size = cv2.getTextSize(bbox_mess, HersheyFonts.HERSHEY_SIMPLEX, fontScale, thickness: bbox_thick / 2);
                 cv2.rectangle(image, (coor[0], coor[1]), (coor[0] + t_size.Width, coor[1] - t_size.Height - 3), bbox_color, -1);
                 cv2.putText(image, bbox_mess, (coor[0], coor[1] - 2), HersheyFonts.HERSHEY_SIMPLEX,
                         fontScale, (0, 0, 0), bbox_thick / 2, lineType: LineTypes.LINE_AA);

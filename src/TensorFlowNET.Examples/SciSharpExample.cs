@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Tensorflow;
 using Tensorflow.Keras.Layers;
 using static Tensorflow.Binding;
@@ -35,7 +33,7 @@ namespace TensorFlowNET.Examples
 
         public virtual void Train()
         {
-            
+
         }
 
         public virtual void Test()

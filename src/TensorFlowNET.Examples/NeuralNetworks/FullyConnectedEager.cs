@@ -15,15 +15,8 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Tensorflow;
-using Tensorflow.Keras;
-using Tensorflow.Keras.ArgsDefinition;
-using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
 
@@ -52,7 +45,7 @@ namespace TensorFlowNET.Examples
         IDatasetV2 train_data;
         NDArray x_test, y_test, x_train, y_train;
         IVariableV1 h1, h2, wout, b1, b2, bout;
-        float accuracy_test = 0f; 
+        float accuracy_test = 0f;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig

@@ -16,12 +16,12 @@
 
 using NumSharp;
 using System;
-using System.IO;
-using Tensorflow;
-using TensorFlowNET.Examples.Utility;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
+using Tensorflow;
+using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -126,7 +126,7 @@ namespace TensorFlowNET.Examples
             var scores = resultArr[2].AsIterator<float>();
             var boxes = resultArr[1].GetData<float>();
             var id = np.squeeze(resultArr[3]).GetData<float>();
-            for (int i=0; i< scores.size; i++)
+            for (int i = 0; i < scores.size; i++)
             {
                 float score = scores.MoveNext();
                 if (score > MIN_SCORE)
@@ -144,7 +144,7 @@ namespace TensorFlowNET.Examples
                         Height = (int)(bottom - top)
                     };
 
-                    string name = pbTxtItems.items.Where(w => w.id == id[i]).Select(s=>s.display_name).FirstOrDefault();
+                    string name = pbTxtItems.items.Where(w => w.id == id[i]).Select(s => s.display_name).FirstOrDefault();
 
                     drawObjectOnBitmap(bitmap, rect, score, name);
                 }
@@ -160,7 +160,7 @@ namespace TensorFlowNET.Examples
             using (Graphics graphic = Graphics.FromImage(bmp))
             {
                 graphic.SmoothingMode = SmoothingMode.AntiAlias;
-                
+
                 using (Pen pen = new Pen(Color.Red, 2))
                 {
                     graphic.DrawRectangle(pen, rect);

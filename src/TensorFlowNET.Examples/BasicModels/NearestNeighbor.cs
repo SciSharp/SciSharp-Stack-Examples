@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
 using Tensorflow;
 using static Tensorflow.Binding;
 
@@ -66,7 +65,7 @@ namespace TensorFlowNET.Examples
 
                 PrepareData();
 
-                foreach(int i in range(Xte.shape[0]))
+                foreach (int i in range(Xte.shape[0]))
                 {
                     // Get nearest neighbor
                     long nn_index = sess.run(pred, (xtr, Xtr), (xte, Xte[i]));
@@ -78,7 +77,7 @@ namespace TensorFlowNET.Examples
 
                     // Calculate accuracy
                     if (np.argmax(Ytr[index]) == np.argmax(Yte[i]))
-                        accuracy += 1f/ Xte.shape[0];
+                        accuracy += 1f / Xte.shape[0];
                 }
 
                 print($"Accuracy: {accuracy}");

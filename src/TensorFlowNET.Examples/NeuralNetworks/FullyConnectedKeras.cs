@@ -16,10 +16,7 @@
 
 using NumSharp;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Tensorflow;
 using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
@@ -162,14 +159,14 @@ namespace TensorFlowNET.Examples
             Layer fc2;
             Layer output;
 
-            public NeuralNet(NeuralNetArgs args) : 
+            public NeuralNet(NeuralNetArgs args) :
                 base(args)
             {
                 var layers = tf.keras.layers;
 
                 // First fully-connected hidden layer.
                 fc1 = layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);
-                
+
                 // Second fully-connected hidden layer.
                 fc2 = layers.Dense(args.NeuronOfHidden2, activation: args.Activation2);
 

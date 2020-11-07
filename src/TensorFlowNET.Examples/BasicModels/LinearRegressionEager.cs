@@ -15,9 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
-using Tensorflow;
-using Tensorflow.Gradients;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples

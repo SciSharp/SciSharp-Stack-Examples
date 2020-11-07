@@ -14,16 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using Tensorflow;
-using Tensorflow.Keras;
-using Tensorflow.Keras.ArgsDefinition;
-using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -54,9 +46,9 @@ namespace TensorFlowNET.Examples
         public override Graph BuildGraph()
         {
             var g = tf.get_default_graph();
-            
+
             Tensor z = null;
-            
+
             tf_with(tf.variable_scope("placeholder"), delegate
             {
                 input = tf.placeholder(tf.float32, shape: (-1, 1024));

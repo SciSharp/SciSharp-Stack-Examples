@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using Tensorflow;
-using Tensorflow.Keras.Engine;
 
 namespace TensorFlowNET.Examples
 {

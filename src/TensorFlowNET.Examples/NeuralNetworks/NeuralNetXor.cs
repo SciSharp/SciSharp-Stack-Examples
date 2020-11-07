@@ -14,8 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-using System;
 using NumSharp;
+using System;
 using Tensorflow;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
@@ -42,7 +42,7 @@ namespace TensorFlowNET.Examples
                 Priority = 3
             };
 
-        private (Operation, Tensor, Tensor) make_graph(Tensor features,Tensor labels, int num_hidden = 8)
+        private (Operation, Tensor, Tensor) make_graph(Tensor features, Tensor labels, int num_hidden = 8)
         {
             var stddev = 1 / Math.Sqrt(2);
             var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));

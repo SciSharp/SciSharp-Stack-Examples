@@ -19,15 +19,15 @@ using NumSharp;
 using SharpCV;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Tensorflow;
-using static Tensorflow.Binding;
-using static SharpCV.Binding;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Tensorflow;
+using static SharpCV.Binding;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {

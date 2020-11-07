@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************************/
 
-using System;
 using System.Diagnostics;
 using Tensorflow;
 using static Tensorflow.Binding;
@@ -118,7 +117,7 @@ namespace TensorFlowNET.Examples
                 layer = tf.nn.relu(layer);
 
             return layer;
-        } 
+        }
 
         public override void PrepareData()
         {

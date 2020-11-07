@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
 using System.Diagnostics;
 using System.IO;
 using Tensorflow;
@@ -86,7 +85,7 @@ namespace TensorFlowNET.Examples
 
             Train();
             Test();
-            
+
             return accuracy_test > 0.98;
         }
 
@@ -197,8 +196,8 @@ namespace TensorFlowNET.Examples
 
         public override void Test()
         {
-            using(var graph = tf.Graph().as_default())
-            using(var sess = tf.Session(graph))
+            using (var graph = tf.Graph().as_default())
+            using (var sess = tf.Session(graph))
             {
                 var saver = tf.train.import_meta_graph(Path.Combine(Config.Name, "mnist_cnn.ckpt.meta"));
                 // Restore variables from checkpoint
@@ -230,7 +229,8 @@ namespace TensorFlowNET.Examples
         /// <returns>The output array</returns>
         private Tensor conv_layer(Tensor x, int filter_size, int num_filters, int stride, string name)
         {
-            return tf_with(tf.variable_scope(name), delegate {
+            return tf_with(tf.variable_scope(name), delegate
+            {
 
                 var num_in_channel = x.shape[x.NDims - 1];
                 var shape = new[] { filter_size, filter_size, num_in_channel, num_filters };
@@ -332,8 +332,8 @@ namespace TensorFlowNET.Examples
 
                 return layer;
             });
-        } 
-            
+        }
+
         public override void PrepareData()
         {
             Directory.CreateDirectory(Config.Name);

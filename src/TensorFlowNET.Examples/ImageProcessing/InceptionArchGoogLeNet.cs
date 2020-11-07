@@ -37,7 +37,7 @@ namespace TensorFlowNET.Examples
             PrepareData();
 
             var labels = File.ReadAllLines(Path.Join(dir, labelFile));
-            
+
             var nd = ReadTensorFromImageFile(Path.Join(dir, picFile),
                 input_height: input_height,
                 input_width: input_width,
@@ -97,7 +97,7 @@ namespace TensorFlowNET.Examples
 
             // get model file
             string url = "https://storage.googleapis.com/download.tensorflow.org/models/inception_v3_2016_08_28_frozen.pb.tar.gz";
-            
+
             Utility.Web.Download(url, dir, $"{pbFile}.tar.gz");
 
             Utility.Compress.ExtractTGZ(Path.Join(dir, $"{pbFile}.tar.gz"), dir);

@@ -1,5 +1,4 @@
 ﻿using NumSharp;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -102,7 +101,7 @@ namespace TensorFlowNET.Examples
                     {
                         print("Evaluation...");
                         var sim = sess.run(cosine_sim_op, (X, x_test));
-                        foreach(var i in range(len(eval_words)))
+                        foreach (var i in range(len(eval_words)))
                         {
                             var nearest = (0f - sim[i]).argsort<float>()
                                 .Data<int>()
@@ -138,7 +137,7 @@ namespace TensorFlowNET.Examples
             {
                 var context_words = range(span).Where(x => x != skip_window).ToArray();
                 var words_to_use = new int[] { 1, 6 };
-                foreach(var (j, context_word) in enumerate(words_to_use))
+                foreach (var (j, context_word) in enumerate(words_to_use))
                 {
                     batch[i * num_skips + j] = buffer.ElementAt(skip_window);
                     labels[i * num_skips + j, 0] = buffer.ElementAt(context_word);
@@ -195,9 +194,9 @@ namespace TensorFlowNET.Examples
 
             // Retrieve a word id, or assign it index 0 ('UNK') if not in dictionary
             data = (from word in text_words
-                        join id in word2id on word equals id.Word into wi
-                        from wi2 in wi.DefaultIfEmpty()
-                        select wi2 == null ? 0 : wi2.Id).ToArray();
+                    join id in word2id on word equals id.Word into wi
+                    from wi2 in wi.DefaultIfEmpty()
+                    select wi2 == null ? 0 : wi2.Id).ToArray();
 
             word2id.Insert(0, new WordId { Word = "UNK", Id = 0, Occurrence = data.Count(x => x == 0) });
 

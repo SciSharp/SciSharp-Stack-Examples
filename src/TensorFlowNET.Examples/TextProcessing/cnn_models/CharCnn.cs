@@ -44,7 +44,7 @@ namespace TensorFlowNET.Examples.Text
             {
                 var conv2 = tf.layers.conv2d(pool1,
                     filters: num_filters,
-                    kernel_size: new[] {filter_sizes[1], num_filters },
+                    kernel_size: new[] { filter_sizes[1], num_filters },
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu);
 

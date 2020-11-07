@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
 using System.Diagnostics;
 using System.IO;
 using Tensorflow;
@@ -160,7 +159,7 @@ namespace TensorFlowNET.Examples
         public override void Predict()
         {
             var graph = new Graph().as_default();
-            using(var sess = tf.Session(graph))
+            using (var sess = tf.Session(graph))
             {
                 graph.Import(Path.Join(".resources/logistic_regression", "model.pb"));
 

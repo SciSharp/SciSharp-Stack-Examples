@@ -21,8 +21,8 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using Tensorflow;
-using Console = Colorful.Console;
 using static Tensorflow.Binding;
+using Console = Colorful.Console;
 
 namespace TensorFlowNET.Examples
 {
