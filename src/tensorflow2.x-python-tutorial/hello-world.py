@@ -1,9 +1,12 @@
 
 # https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/1_Introduction/helloworld.ipynb
 
-import tensorflow as tf
-import numpy as np
 
+import numpy as np
+import tensorflow as tf
+
+tf.compat.v1.disable_eager_execution()
+a = tf.constant(-1)
 # Create a `Sequential` model and add a Dense layer as the first layer.
 model = tf.keras.models.Sequential()
 model.add(tf.keras.Input(shape=(16,)))

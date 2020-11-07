@@ -18,7 +18,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Image Classification (Keras)",
-                Enabled = false,
+                Enabled = true,
                 Priority = 18
             };
 
@@ -63,14 +63,14 @@ namespace TensorFlowNET.Examples
             var model = tf.keras.Sequential(new List<Layer>
             {
                 layers.Rescaling(1.0f / 255, input_shape: (img_dim.dims[0], img_dim.dims[1], 3)),
-                layers.Conv2D(16, 3, padding: "same", activation: "relu"),
+                layers.Conv2D(16, 3, padding: "same", activation: tf.keras.activations.Relu),
                 layers.MaxPooling2D(),
                 /*layers.Conv2D(32, 3, padding: "same", activation: "relu"),
                 layers.MaxPooling2D(),
                 layers.Conv2D(64, 3, padding: "same", activation: "relu"),
                 layers.MaxPooling2D(),*/
                 layers.Flatten(),
-                layers.Dense(128, activation: "relu"),
+                layers.Dense(128, activation: tf.keras.activations.Relu),
                 layers.Dense(num_classes)
             });
 

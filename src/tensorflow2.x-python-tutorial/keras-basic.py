@@ -1,6 +1,22 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import layers
+
+inputs = keras.Input(shape=(784,))
+
+dense = layers.Dense(64, activation="relu")
+x = dense(inputs)
+
+dense = layers.Dense(64, activation="relu")
+x = dense(x)
+
+dense = layers.Dense(10)
+outputs = dense(x)
+
+model = keras.Model(inputs=inputs, outputs=outputs, name="mnist_model")
+model.summary();
+
 
 model = tf.keras.Sequential()
 layer = tf.keras.layers.Embedding(7, 2, input_length=4)

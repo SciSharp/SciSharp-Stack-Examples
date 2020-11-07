@@ -165,17 +165,21 @@ namespace TensorFlowNET.Examples
             public NeuralNet(NeuralNetArgs args) : 
                 base(args)
             {
+                var layers = tf.keras.layers;
+
                 // First fully-connected hidden layer.
-                fc1 = Dense(args.NeuronOfHidden1, activation: args.Activation1);
+                fc1 = layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);
                 
                 // Second fully-connected hidden layer.
-                fc2 = Dense(args.NeuronOfHidden2, activation: args.Activation2);
+                fc2 = layers.Dense(args.NeuronOfHidden2, activation: args.Activation2);
 
-                output = Dense(args.NumClasses);
+                output = layers.Dense(args.NumClasses);
+
+                StackLayers(fc1, fc2, output);
             }
 
             // Set forward pass.
-            protected override Tensors call(Tensors inputs, Tensor state = null, bool is_training = false)
+            protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
             {
                 inputs = fc1.Apply(inputs);
                 inputs = fc2.Apply(inputs);

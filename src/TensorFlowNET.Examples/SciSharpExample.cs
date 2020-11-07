@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using Tensorflow;
-using Tensorflow.Keras.Engine;
+using Tensorflow.Keras.Layers;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
     public class SciSharpExample
     {
         public ExampleConfig Config { get; set; }
+        protected KerasApi keras = tf.keras;
+        protected LayersApi layers = tf.keras.layers;
 
         public virtual void BuildModel()
         {

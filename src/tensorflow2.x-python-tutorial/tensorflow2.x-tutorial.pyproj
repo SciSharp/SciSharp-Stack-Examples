@@ -5,7 +5,7 @@
     <ProjectGuid>ac3bde6b-99f0-4a5d-a407-52f3e9d9d740</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>autograph.py</StartupFile>
+    <StartupFile>keras-basic.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -46,6 +46,9 @@
     <Compile Include="keras-basic.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="keras-model-save.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="linear_regression.py">
       <SubType>Code</SubType>
     </Compile>
@@ -56,6 +59,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="neural_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="opencvtest.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="recurrent_network.py">

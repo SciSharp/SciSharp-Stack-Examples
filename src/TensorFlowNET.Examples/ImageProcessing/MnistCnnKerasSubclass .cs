@@ -30,7 +30,7 @@ namespace TensorFlowNET.Examples
     /// <summary>
     /// Build a convolutional neural network with TensorFlow v2.
     /// This example is using a low-level approach to better understand all mechanics behind building convolutional neural networks and the training process.
-    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/convolutional_network_raw.ipynb
+    /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/convolutional_network.ipynb
     /// </summary>
     public class DigitRecognitionCnnKeras : SciSharpExample, IExample
     {
@@ -51,7 +51,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "MNIST CNN (Keras)",
+                Name = "MNIST CNN (Keras Subclass)",
                 Enabled = true,
                 IsImportingGraph = false,
                 Priority = 17
@@ -175,26 +175,31 @@ namespace TensorFlowNET.Examples
             public ConvNet(ConvNetArgs args)
                 :base(args)
             {
+                var layers = tf.keras.layers;
+
                 // Convolution Layer with 32 filters and a kernel size of 5.
-                conv1 = Conv2D(32, kernel_size: 5, activation: tf.nn.relu);
+                conv1 = layers.Conv2D(32, kernel_size: 5, activation: tf.keras.activations.Relu);
+
                 // Max Pooling (down-sampling) with kernel size of 2 and strides of 2.
-                maxpool1 = MaxPooling2D(2, strides: 2);
+                maxpool1 = layers.MaxPooling2D(2, strides: 2);
 
                 // Convolution Layer with 64 filters and a kernel size of 3.
-                conv2 = Conv2D(64, kernel_size: 3, activation: tf.nn.relu);
+                conv2 = layers.Conv2D(64, kernel_size: 3, activation: tf.keras.activations.Relu);
                 // Max Pooling (down-sampling) with kernel size of 2 and strides of 2. 
-                maxpool2 = MaxPooling2D(2, strides: 2);
+                maxpool2 = layers.MaxPooling2D(2, strides: 2);
 
                 // Flatten the data to a 1-D vector for the fully connected layer.
-                flatten = Flatten();
+                flatten = layers.Flatten();
 
                 // Fully connected layer.
-                fc1 = Dense(1024);
+                fc1 = layers.Dense(1024);
                 // Apply Dropout (if is_training is False, dropout is not applied).
-                dropout = Dropout(rate: 0.5f);
+                dropout = layers.Dropout(rate: 0.5f);
 
                 // Output layer, class prediction.
-                output = Dense(args.NumClasses);
+                output = layers.Dense(args.NumClasses);
+
+                StackLayers(conv1, maxpool1, conv2, maxpool2, flatten, fc1, dropout, output);
             }
 
             /// <summary>
@@ -204,7 +209,7 @@ namespace TensorFlowNET.Examples
             /// <param name="is_training"></param>
             /// <param name="state"></param>
             /// <returns></returns>
-            protected override Tensors call(Tensors inputs, Tensor state = null, bool is_training = false)
+            protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
             {
                 inputs = tf.reshape(inputs, (-1, 28, 28, 1));
                 inputs = conv1.Apply(inputs);

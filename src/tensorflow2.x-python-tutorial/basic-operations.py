@@ -5,6 +5,18 @@ import tensorflow as tf
 
 # tf.compat.v1.disable_eager_execution()
 
+image = tf.constant([
+ [1,0,0,0,0],
+ [0,1,0,0,0],
+ [0,0,1,0,0],
+ [0,0,0,1,0],
+ [0,0,0,0,1],
+])
+
+image = image[tf.newaxis, ..., tf.newaxis]
+image = tf.image.resize(image, [3,5])
+image = image[0,...,0]
+
 x = tf.constant([[1.0, -0.5, 3.4], [-2.1, 0, -6.5]])
 a = tf.reduce_sum(x)  # 6
 a = tf.reduce_sum(x, 0)  # [2, 2, 2]

@@ -23,7 +23,7 @@ dotnet run --project src/TensorFlowNET.Examples
 dotnet run --project src/TensorFlowNET.Examples -ex "Linear Regression"
 
 // run in compiled library
-dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN"
+dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN (Eager)"
 ```
 
 
@@ -32,23 +32,25 @@ Example runner will download all the required files like training data and model
 
 * [Hello World](src/TensorFlowNET.Examples/HelloWorld.cs)
 * [Basic Operations](src/TensorFlowNET.Examples/BasicOperations.cs)
-* [Linear Regression](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs)
-* [Logistic Regression](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs)
+* [Linear Regression](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs) in Graph mode
+* [Linear Regression](src/TensorFlowNET.Examples/BasicModels/LinearRegressionEager.cs) in Eager mode
+* [Logistic Regression](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs) in Graph mode
+* [Logistic Regression](src/TensorFlowNET.Examples/BasicModels/LogisticRegressionEager.cs) in Eager mode
 * [Nearest Neighbor](src/TensorFlowNET.Examples/BasicModels/NearestNeighbor.cs)
 * [Naive Bayes Classification](src/TensorFlowNET.Examples/BasicModels/NaiveBayesClassifier.cs)
-* [Full Connected Neural Network](src/TensorFlowNET.Examples/ImageProcess/DigitRecognitionNN.cs)
-* [Image Processing](src/TensorFlowNET.Examples/ImageProcessing)
+* [Full Connected Neural Network](src/TensorFlowNET.Examples/\NeuralNetworks/FullyConnectedEager.cs) in Eager mode
 * [K-means Clustering](src/TensorFlowNET.Examples/BasicModels/KMeansClustering.cs)
-* [NN XOR](src/TensorFlowNET.Examples/BasicModels/NeuralNetXor.cs)
-* [Object Detection](src/TensorFlowNET.Examples/ImageProcessing/ObjectDetection.cs)
-* [Text Classification](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
+* [NN XOR](src/TensorFlowNET.Examples/NeuralNetworks/NeuralNetXor.cs)
+* [Object Detection](src/TensorFlowNET.Examples/ObjectDetection/DetectInMobilenet.cs) in MobileNet
+* [Binary Text Classification](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
 * [CNN Text Classification](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
-* [MNIST CNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs)
+* [MNIST FNN](src/TensorFlowNET.Examples/ImageProcessing/MnistFnnKerasFunctional.cs) in Keras Functional API
+* [MNIST CNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs) in Graph mode
 * [MNIST RNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
 * [MNIST LSTM](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
 * [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
-* [Transfer Learning for Image Classification in InceptionV3](src/TensorFlowNET.Examples/ImageProcessing/RetrainClassifierWithInceptionV3.cs)
-* [CNN In Your Own Dataset](src/TensorFlowNET.Examples/CnnInYourOwnData/CnnInYourOwnData.cs)
+* [Transfer Learning for Image Classification](src/TensorFlowNET.Examples/ImageProcessing/TransferLearningWithInceptionV3.cs) in InceptionV3
+* [CNN In Your Own Dataset](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs)
 
 
 ### Welcome to PR your example to us.

@@ -123,11 +123,13 @@ namespace TensorFlowNET.Examples
             : base(args)
         {
             optimizer = tf.optimizers.Adam(args.LearningRate);
-            lstm = LSTM(args.NumUnits);
-            output = Dense(args.NumClasses);
+
+            var layers = tf.keras.layers;
+            lstm = layers.LSTM(args.NumUnits);
+            output = layers.Dense(args.NumClasses);
         }
 
-        protected override Tensors call(Tensors inputs, Tensor state = null, bool is_training = false)
+        protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
         {
             // LSTM layer.
             inputs = lstm.Apply(inputs);
