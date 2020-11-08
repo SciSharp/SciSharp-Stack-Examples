@@ -15,6 +15,8 @@
 ******************************************************************************/
 
 using NumSharp;
+using System;
+using Tensorflow;
 using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
 
@@ -57,24 +59,29 @@ namespace TensorFlowNET.Examples
 
         public override void BuildModel()
         {
+            // input layer
             var inputs = keras.Input(shape: 784);
 
-            var dense1 = layers.Dense(64, activation: tf.keras.activations.Relu);
-            var outputs1 = dense1.Apply(inputs);
+            // 1st dense layer
+            var outputs = layers.Dense(64, activation: tf.keras.activations.Relu).Apply(inputs);
 
-            var dense2 = layers.Dense(64, activation: tf.keras.activations.Relu);
-            var outputs2 = dense2.Apply(outputs1);
+            // 2nd dense layer
+            outputs = layers.Dense(64, activation: tf.keras.activations.Relu).Apply(outputs);
 
-            var dense3 = layers.Dense(10);
-            var outputs3 = dense3.Apply(outputs2);
+            // output layer
+            outputs = layers.Dense(10).Apply(outputs);
 
-            model = keras.Model(inputs, outputs3, name: "mnist_model");
+            // build keras model
+            model = keras.Model(inputs, outputs, name: "mnist_model");
+            // show model summary
             model.summary();
 
+            // compile keras model into tensorflow's static graph
             model.compile(loss: keras.losses.SparseCategoricalCrossentropy(from_logits: true),
                 optimizer: keras.optimizers.RMSprop(),
                 metrics: new[] { "accuracy" });
 
+            // train model by feeding data and labels.
             model.fit(x_train, y_train, batch_size: 64, epochs: 2, validation_split: 0.2f);
         }
     }
