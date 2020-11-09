@@ -21,6 +21,7 @@ using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -97,7 +98,7 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            ((x_train, y_train), (x_test, y_test)) = keras.datasets.mnist.load_data();
             // Convert to float32.
             // (x_train, x_test) = (np.array(x_train, np.float32), np.array(x_test, np.float32));
             // Normalize images value from [0, 255] to [0, 1].
@@ -121,9 +122,9 @@ namespace TensorFlowNET.Examples
         public LSTMModel(LSTMModelArgs args)
             : base(args)
         {
-            optimizer = tf.optimizers.Adam(args.LearningRate);
+            optimizer = keras.optimizers.Adam(args.LearningRate);
 
-            var layers = tf.keras.layers;
+            var layers = keras.layers;
             lstm = layers.LSTM(args.NumUnits);
             output = layers.Dense(args.NumClasses);
         }

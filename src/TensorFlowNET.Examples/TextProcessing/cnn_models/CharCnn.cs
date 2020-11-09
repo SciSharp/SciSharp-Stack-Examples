@@ -1,5 +1,6 @@
 ﻿using Tensorflow;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples.Text
 {
@@ -28,13 +29,13 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-maxpool-1"), delegate
             {
-                var conv1 = tf.layers.conv2d(x_expanded,
+                var conv1 = keras.layers.conv2d(x_expanded,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[0], alphabet_size },
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu);
 
-                pool1 = tf.layers.max_pooling2d(conv1,
+                pool1 = keras.layers.max_pooling2d(conv1,
                     pool_size: new[] { 3, 1 },
                     strides: new[] { 3, 1 });
                 pool1 = tf.transpose(pool1, new[] { 0, 1, 3, 2 });
@@ -42,13 +43,13 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-maxpool-2"), delegate
             {
-                var conv2 = tf.layers.conv2d(pool1,
+                var conv2 = keras.layers.conv2d(pool1,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[1], num_filters },
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu);
 
-                pool2 = tf.layers.max_pooling2d(conv2,
+                pool2 = keras.layers.max_pooling2d(conv2,
                     pool_size: new[] { 3, 1 },
                     strides: new[] { 3, 1 });
                 pool2 = tf.transpose(pool2, new[] { 0, 1, 3, 2 });
@@ -56,7 +57,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-3"), delegate
             {
-                conv3 = tf.layers.conv2d(pool2,
+                conv3 = keras.layers.conv2d(pool2,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[2], num_filters },
                     kernel_initializer: kernel_initializer,
@@ -66,7 +67,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-4"), delegate
             {
-                conv4 = tf.layers.conv2d(conv3,
+                conv4 = keras.layers.conv2d(conv3,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[3], num_filters },
                     kernel_initializer: kernel_initializer,
@@ -76,7 +77,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-5"), delegate
             {
-                conv5 = tf.layers.conv2d(conv4,
+                conv5 = keras.layers.conv2d(conv4,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[4], num_filters },
                     kernel_initializer: kernel_initializer,
@@ -86,13 +87,13 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-maxpool-6"), delegate
             {
-                conv6 = tf.layers.conv2d(conv5,
+                conv6 = keras.layers.conv2d(conv5,
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[5], num_filters },
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu);
 
-                var pool6 = tf.layers.max_pooling2d(conv6,
+                var pool6 = keras.layers.max_pooling2d(conv6,
                     pool_size: new[] { 3, 1 },
                     strides: new[] { 3, 1 });
                 pool6 = tf.transpose(pool6, new[] { 0, 2, 1, 3 });
@@ -123,7 +124,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("fc-3"), delegate
             {
-                logits = tf.layers.dense(fc2_out,
+                logits = keras.layers.dense(fc2_out,
                     num_class,
                     kernel_initializer: kernel_initializer);
                 predictions = tf.argmax(logits, -1, output_type: tf.int32);

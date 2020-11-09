@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tensorflow;
-using Tensorflow.Keras.Engine;
+using Tensorflow.Keras;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -31,14 +32,14 @@ namespace TensorFlowNET.Examples
             TensorShape img_dim = (180, 180);
 
             var data_dir = @"C:/Users/haipi/.keras/datasets/flower_photos";
-            var train_ds = tf.keras.preprocessing.image_dataset_from_directory(data_dir,
+            var train_ds = keras.preprocessing.image_dataset_from_directory(data_dir,
                 validation_split: 0.2f,
                 subset: "training",
                 seed: 123,
                 image_size: img_dim,
                 batch_size: batch_size);
 
-            var val_ds = tf.keras.preprocessing.image_dataset_from_directory(data_dir,
+            var val_ds = keras.preprocessing.image_dataset_from_directory(data_dir,
                 validation_split: 0.2f,
                 subset: "validation",
                 seed: 123,
@@ -56,22 +57,22 @@ namespace TensorFlowNET.Examples
 
             int num_classes = 5;
             // var normalization_layer = tf.keras.layers.Rescaling(1.0f / 255);
-            var layers = tf.keras.layers;
-            var model = tf.keras.Sequential(new List<Layer>
+            var layers = keras.layers;
+            var model = keras.Sequential(new List<ILayer>
             {
                 layers.Rescaling(1.0f / 255, input_shape: (img_dim.dims[0], img_dim.dims[1], 3)),
-                layers.Conv2D(16, 3, padding: "same", activation: tf.keras.activations.Relu),
+                layers.Conv2D(16, 3, padding: "same", activation: keras.activations.Relu),
                 layers.MaxPooling2D(),
                 /*layers.Conv2D(32, 3, padding: "same", activation: "relu"),
                 layers.MaxPooling2D(),
                 layers.Conv2D(64, 3, padding: "same", activation: "relu"),
                 layers.MaxPooling2D(),*/
                 layers.Flatten(),
-                layers.Dense(128, activation: tf.keras.activations.Relu),
+                layers.Dense(128, activation: keras.activations.Relu),
                 layers.Dense(num_classes)
             });
 
-            model.compile("adam", tf.keras.losses.SparseCategoricalCrossentropy(from_logits: true));
+            model.compile("adam", keras.losses.SparseCategoricalCrossentropy(from_logits: true));
         }
     }
 }

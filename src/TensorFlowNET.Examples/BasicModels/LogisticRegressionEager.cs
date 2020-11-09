@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using Tensorflow;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -64,7 +65,7 @@ namespace TensorFlowNET.Examples
         public void RunEagerMode()
         {
             // Prepare MNIST data.
-            var ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            var ((x_train, y_train), (x_test, y_test)) = keras.datasets.mnist.load_data();
             // Flatten images to 1-D vector of 784 features (28*28).
             (x_train, x_test) = (x_train.reshape((-1, num_features)), x_test.reshape((-1, num_features)));
             // Normalize images value from [0, 255] to [0, 1].
@@ -101,7 +102,7 @@ namespace TensorFlowNET.Examples
             };
 
             // Stochastic gradient descent optimizer.
-            var optimizer = tf.optimizers.SGD(learning_rate);
+            var optimizer = keras.optimizers.SGD(learning_rate);
 
             Action<Tensor, Tensor> run_optimization = (x, y) =>
             {

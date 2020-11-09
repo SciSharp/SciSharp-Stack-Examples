@@ -16,6 +16,7 @@
 
 using NumSharp;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -64,7 +65,7 @@ namespace TensorFlowNET.Examples
             // var rnd2 = rng.randn<float>();
             var W = tf.Variable(-0.06f, name: "weight");
             var b = tf.Variable(-0.73f, name: "bias");
-            var optimizer = tf.optimizers.SGD(learning_rate);
+            var optimizer = keras.optimizers.SGD(learning_rate);
 
             // Run training for the given number of steps.
             foreach (var step in range(1, training_steps + 1))

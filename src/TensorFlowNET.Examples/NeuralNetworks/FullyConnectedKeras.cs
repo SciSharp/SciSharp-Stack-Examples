@@ -22,6 +22,7 @@ using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -57,7 +58,7 @@ namespace TensorFlowNET.Examples
         public override void PrepareData()
         {
             // Prepare MNIST data.
-            ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            ((x_train, y_train), (x_test, y_test)) = keras.datasets.mnist.load_data();
             // Flatten images to 1-D vector of 784 features (28*28).
             (x_train, x_test) = (x_train.reshape((-1, num_features)), x_test.reshape((-1, num_features)));
             // Normalize images value from [0, 255] to [0, 1].
@@ -83,9 +84,9 @@ namespace TensorFlowNET.Examples
             {
                 NumClasses = num_classes,
                 NeuronOfHidden1 = 128,
-                Activation1 = tf.keras.activations.Relu,
+                Activation1 = keras.activations.Relu,
                 NeuronOfHidden2 = 256,
-                Activation2 = tf.keras.activations.Relu
+                Activation2 = keras.activations.Relu
             });
 
             // Cross-Entropy Loss.
@@ -109,7 +110,7 @@ namespace TensorFlowNET.Examples
             };
 
             // Stochastic gradient descent optimizer.
-            var optimizer = tf.optimizers.SGD(learning_rate);
+            var optimizer = keras.optimizers.SGD(learning_rate);
 
             // Optimization process.
             Action<Tensor, Tensor> run_optimization = (x, y) =>
@@ -162,7 +163,7 @@ namespace TensorFlowNET.Examples
             public NeuralNet(NeuralNetArgs args) :
                 base(args)
             {
-                var layers = tf.keras.layers;
+                var layers = keras.layers;
 
                 // First fully-connected hidden layer.
                 fc1 = layers.Dense(args.NeuronOfHidden1, activation: args.Activation1);

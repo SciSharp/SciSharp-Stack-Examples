@@ -15,10 +15,9 @@
 ******************************************************************************/
 
 using NumSharp;
-using System;
-using Tensorflow;
 using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -63,10 +62,10 @@ namespace TensorFlowNET.Examples
             var inputs = keras.Input(shape: 784);
 
             // 1st dense layer
-            var outputs = layers.Dense(64, activation: tf.keras.activations.Relu).Apply(inputs);
+            var outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(inputs);
 
             // 2nd dense layer
-            outputs = layers.Dense(64, activation: tf.keras.activations.Relu).Apply(outputs);
+            outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(outputs);
 
             // output layer
             outputs = layers.Dense(10).Apply(outputs);

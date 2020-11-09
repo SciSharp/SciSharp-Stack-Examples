@@ -19,6 +19,7 @@ using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -74,7 +75,7 @@ namespace TensorFlowNET.Examples
             var trainable_variables = new IVariableV1[] { h1, h2, wout, b1, b2, bout };
 
             // Stochastic gradient descent optimizer.
-            var optimizer = tf.optimizers.SGD(learning_rate);
+            var optimizer = keras.optimizers.SGD(learning_rate);
 
             // Run training for the given number of steps.
             foreach (var (step, (batch_x, batch_y)) in enumerate(train_data, 1))
@@ -157,7 +158,7 @@ namespace TensorFlowNET.Examples
         public override void PrepareData()
         {
             // Prepare MNIST data.
-            ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            ((x_train, y_train), (x_test, y_test)) = keras.datasets.mnist.load_data();
             // Flatten images to 1-D vector of 784 features (28*28).
             (x_train, x_test) = (x_train.reshape((-1, num_features)), x_test.reshape((-1, num_features)));
             // Normalize images value from [0, 255] to [0, 1].

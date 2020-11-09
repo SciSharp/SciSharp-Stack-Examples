@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using Tensorflow;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples.Text
 {
@@ -48,7 +49,7 @@ namespace TensorFlowNET.Examples.Text
             for (int len = 0; len < filter_sizes.Rank; len++)
             {
                 int filter_size = filter_sizes.GetLength(len);
-                var conv = tf.layers.conv2d(
+                var conv = keras.layers.conv2d(
                     x_emb,
                     filters: num_filters,
                     kernel_size: new int[] { filter_size, embedding_size },
@@ -56,7 +57,7 @@ namespace TensorFlowNET.Examples.Text
                     padding: "VALID",
                     activation: tf.nn.relu);
 
-                var pool = tf.layers.max_pooling2d(
+                var pool = keras.layers.max_pooling2d(
                     conv,
                     pool_size: new[] { document_max_len - filter_size + 1, 1 },
                     strides: new[] { 1, 1 },
@@ -77,7 +78,7 @@ namespace TensorFlowNET.Examples.Text
             Tensor predictions = null;
             tf_with(tf.name_scope("output"), delegate
             {
-                logits = tf.layers.dense(h_drop, num_class);
+                logits = keras.layers.dense(h_drop, num_class);
                 predictions = tf.argmax(logits, -1, output_type: tf.int32);
             });
 

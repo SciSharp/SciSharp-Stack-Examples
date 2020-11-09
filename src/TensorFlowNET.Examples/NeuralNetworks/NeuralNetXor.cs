@@ -19,6 +19,7 @@ using System;
 using Tensorflow;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -98,7 +99,7 @@ namespace TensorFlowNET.Examples
 
             var hidden_weights = tf.Variable(tf.random.truncated_normal((2, num_hidden), seed: 1, stddev: (float)stddev));
 
-            var optimizer = tf.optimizers.SGD(learning_rate);
+            var optimizer = keras.optimizers.SGD(learning_rate);
 
             // Run training for the given number of steps.
             foreach (var step in range(1, num_steps + 1))

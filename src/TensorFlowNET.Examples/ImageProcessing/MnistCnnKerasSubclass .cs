@@ -21,6 +21,7 @@ using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples
 {
@@ -67,7 +68,7 @@ namespace TensorFlowNET.Examples
             });
 
             // ADAM optimizer. 
-            var optimizer = tf.optimizers.Adam(learning_rate);
+            var optimizer = keras.optimizers.Adam(learning_rate);
 
             // Run training for the given number of steps.
             foreach (var (step, (batch_x, batch_y)) in enumerate(train_data, 1))
@@ -144,7 +145,7 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            ((x_train, y_train), (x_test, y_test)) = tf.keras.datasets.mnist.load_data();
+            ((x_train, y_train), (x_test, y_test)) = keras.datasets.mnist.load_data();
             // Convert to float32.
             // (x_train, x_test) = (np.array(x_train, np.float32), np.array(x_test, np.float32));
             // Normalize images value from [0, 255] to [0, 1].
@@ -172,16 +173,16 @@ namespace TensorFlowNET.Examples
             public ConvNet(ConvNetArgs args)
                 : base(args)
             {
-                var layers = tf.keras.layers;
+                var layers = keras.layers;
 
                 // Convolution Layer with 32 filters and a kernel size of 5.
-                conv1 = layers.Conv2D(32, kernel_size: 5, activation: tf.keras.activations.Relu);
+                conv1 = layers.Conv2D(32, kernel_size: 5, activation: keras.activations.Relu);
 
                 // Max Pooling (down-sampling) with kernel size of 2 and strides of 2.
                 maxpool1 = layers.MaxPooling2D(2, strides: 2);
 
                 // Convolution Layer with 64 filters and a kernel size of 3.
-                conv2 = layers.Conv2D(64, kernel_size: 3, activation: tf.keras.activations.Relu);
+                conv2 = layers.Conv2D(64, kernel_size: 3, activation: keras.activations.Relu);
                 // Max Pooling (down-sampling) with kernel size of 2 and strides of 2. 
                 maxpool2 = layers.MaxPooling2D(2, strides: 2);
 

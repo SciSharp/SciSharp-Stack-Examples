@@ -1,15 +1,13 @@
 ﻿using System;
 using Tensorflow;
 using Tensorflow.Keras.Layers;
-using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
     public class SciSharpExample
     {
         public ExampleConfig Config { get; set; }
-        protected KerasApi keras = tf.keras;
-        protected LayersApi layers = tf.keras.layers;
+        protected LayersApi layers = new LayersApi();
 
         public virtual void BuildModel()
         {

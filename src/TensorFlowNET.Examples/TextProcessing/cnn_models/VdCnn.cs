@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Tensorflow;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasExt;
 
 namespace TensorFlowNET.Examples.Text
 {
@@ -31,7 +32,7 @@ namespace TensorFlowNET.Examples.Text
             num_filters = new int[] { 64, 64, 128, 256, 512 };
             num_blocks = new int[] { 2, 2, 2, 2 };
             learning_rate = 0.001f;
-            cnn_initializer = tf.keras.initializers.he_normal();
+            cnn_initializer = keras.initializers.he_normal();
             fc_initializer = tf.truncated_normal_initializer(stddev: 0.05f);
 
             x = tf.placeholder(tf.int32, new TensorShape(-1, document_max_len), name: "x");
@@ -60,7 +61,7 @@ namespace TensorFlowNET.Examples.Text
             // First Convolution Layer
             tf_with(tf.variable_scope("conv-0"), delegate
             {
-                conv0 = tf.layers.conv2d(x_expanded,
+                conv0 = keras.layers.conv2d(x_expanded,
                     filters: num_filters[0],
                     kernel_size: new int[] { filter_sizes[0], embedding_size },
                     kernel_initializer: cnn_initializer,
@@ -110,7 +111,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("fc-3"), scope =>
             {
-                logits = tf.layers.dense(fc2_out, num_class, activation: null, kernel_initializer: fc_initializer);
+                logits = keras.layers.dense(fc2_out, num_class, activation: null, kernel_initializer: fc_initializer);
                 predictions = tf.argmax(logits, -1, output_type: tf.int32);
             });
 
@@ -140,14 +141,14 @@ namespace TensorFlowNET.Examples.Text
                     tf_with(tf.variable_scope($"conv-{j}"), delegate
                     {
                         // convolution
-                        conv = tf.layers.conv2d(
+                        conv = keras.layers.conv2d(
                             input,
                             filters: num_filters[i],
                             kernel_size: new int[] { filter_sizes[i], num_filters[i - 1] },
                             kernel_initializer: cnn_initializer,
                             activation: null);
                         // batch normalization
-                        conv = tf.layers.batch_normalization(conv, training: is_training);
+                        conv = keras.layers.batch_normalization(conv, training: is_training);
                         // relu
                         conv = tf.nn.relu(conv);
                         conv = tf.transpose(conv, new int[] { 0, 1, 3, 2 });
@@ -157,7 +158,7 @@ namespace TensorFlowNET.Examples.Text
                 if (max_pool)
                 {
                     // Max pooling
-                    return tf.layers.max_pooling2d(
+                    return keras.layers.max_pooling2d(
                         conv,
                         pool_size: new int[] { 3, 1 },
                         strides: new int[] { 2, 1 },
