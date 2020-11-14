@@ -20,7 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using Tensorflow;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {

@@ -4,8 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {

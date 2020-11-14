@@ -19,7 +19,7 @@ using System;
 using Tensorflow;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {

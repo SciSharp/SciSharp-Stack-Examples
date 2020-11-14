@@ -21,7 +21,7 @@ using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {

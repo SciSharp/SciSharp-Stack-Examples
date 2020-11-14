@@ -19,7 +19,7 @@ using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Optimizers;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Tensorflow;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples.Text
 {

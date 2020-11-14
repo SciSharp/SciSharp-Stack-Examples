@@ -17,7 +17,7 @@
 using NumSharp;
 using Tensorflow.Keras.Engine;
 using static Tensorflow.Binding;
-using static Tensorflow.KerasExt;
+using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {
@@ -82,6 +82,15 @@ namespace TensorFlowNET.Examples
 
             // train model by feeding data and labels.
             model.fit(x_train, y_train, batch_size: 64, epochs: 2, validation_split: 0.2f);
+
+            // evluate the model
+            model.evaluate(x_test, y_test, verbose: 2);
+
+            // save and serialize model
+            model.save("mnist_model");
+
+            // recreate the exact same model purely from the file:
+            // model = keras.models.load_model("path_to_my_model");
         }
     }
 }
