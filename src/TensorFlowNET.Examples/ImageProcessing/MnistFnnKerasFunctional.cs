@@ -45,6 +45,7 @@ namespace TensorFlowNET.Examples
 
             PrepareData();
             BuildModel();
+            Train();
 
             return true;
         }
@@ -79,7 +80,10 @@ namespace TensorFlowNET.Examples
             model.compile(loss: keras.losses.SparseCategoricalCrossentropy(from_logits: true),
                 optimizer: keras.optimizers.RMSprop(),
                 metrics: new[] { "accuracy" });
+        }
 
+        public override void Train()
+        {
             // train model by feeding data and labels.
             model.fit(x_train, y_train, batch_size: 64, epochs: 2, validation_split: 0.2f);
 

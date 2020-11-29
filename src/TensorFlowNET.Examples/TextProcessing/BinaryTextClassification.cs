@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Tensorflow.Keras.Utils;
 using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
@@ -64,8 +65,8 @@ namespace TensorFlowNET.Examples
             // get model file
             string url = $"https://github.com/SciSharp/TensorFlow.NET/raw/master/data/{dataFile}";
 
-            Utility.Web.Download(url, dir, "imdb.zip");
-            Utility.Compress.UnZip(Path.Join(dir, $"imdb.zip"), dir);
+            Web.Download(url, dir, "imdb.zip");
+            Compress.UnZip(Path.Join(dir, $"imdb.zip"), dir);
 
             // prepare training dataset
             var x_train = ReadData(Path.Join(dir, "x_train.txt"));

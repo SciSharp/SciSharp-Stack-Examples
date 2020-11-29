@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Tensorflow.Keras.Utils;
 using TensorFlowNET.Examples.Utility;
 
 namespace TensorFlowNET.Examples
@@ -109,8 +110,8 @@ namespace TensorFlowNET.Examples
         public static (string[], NDArray) load_data_and_labels(string positive_data_file, string negative_data_file)
         {
             Directory.CreateDirectory("CnnTextClassification");
-            Utility.Web.Download(positive_data_file, "CnnTextClassification", "rt -polarity.pos");
-            Utility.Web.Download(negative_data_file, "CnnTextClassification", "rt-polarity.neg");
+            Web.Download(positive_data_file, "CnnTextClassification", "rt -polarity.pos");
+            Web.Download(negative_data_file, "CnnTextClassification", "rt-polarity.neg");
 
             // Load data from files
             var positive_examples = File.ReadAllLines("CnnTextClassification/rt-polarity.pos")

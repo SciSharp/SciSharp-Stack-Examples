@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
