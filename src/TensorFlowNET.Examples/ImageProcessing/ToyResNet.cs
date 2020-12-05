@@ -15,6 +15,7 @@
 ******************************************************************************/
 
 using NumSharp;
+using Tensorflow;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Utils;
 using static Tensorflow.Binding;
@@ -56,16 +57,16 @@ namespace TensorFlowNET.Examples
             var x = layers.Conv2D(32, 3, activation: "relu").Apply(inputs);
             x = layers.Conv2D(64, 3, activation: "relu").Apply(x);
 
-            x = layers.BatchNormalization().Apply(x);
+            // x = layers.BatchNormalization().Apply(x);
             var block_1_output = layers.MaxPooling2D(3).Apply(x);
 
             x = layers.Conv2D(64, 3, activation: "relu", padding: "same").Apply(block_1_output);
             x = layers.Conv2D(64, 3, activation: "relu", padding: "same").Apply(x);
-            var block_2_output = layers.add(x, block_1_output);
+            var block_2_output = layers.Add().Apply(new Tensors(x, block_1_output));
 
             x = layers.Conv2D(64, 3, activation: "relu", padding: "same").Apply(block_2_output);
             x = layers.Conv2D(64, 3, activation: "relu", padding: "same").Apply(x);
-            var block_3_output = layers.add(x, block_2_output);
+            var block_3_output = layers.Add().Apply(new Tensors(x, block_2_output));
 
             x = layers.Conv2D(64, 3, activation: "relu").Apply(block_3_output);
             x = layers.GlobalAveragePooling2D().Apply(x);
