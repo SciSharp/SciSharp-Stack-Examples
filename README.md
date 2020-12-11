@@ -30,27 +30,27 @@ dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN (Eager)"
 
 Example runner will download all the required files like training data and model pb files.
 
-* [Hello World](src/TensorFlowNET.Examples/HelloWorld.cs)
-* [Basic Operations](src/TensorFlowNET.Examples/BasicOperations.cs)
-* [Linear Regression](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs) in Graph mode
-* [Linear Regression](src/TensorFlowNET.Examples/BasicModels/LinearRegressionEager.cs) in Eager mode
-* [Logistic Regression](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs) in Graph mode
-* [Logistic Regression](src/TensorFlowNET.Examples/BasicModels/LogisticRegressionEager.cs) in Eager mode
-* [Nearest Neighbor](src/TensorFlowNET.Examples/BasicModels/NearestNeighbor.cs)
-* [Naive Bayes Classification](src/TensorFlowNET.Examples/BasicModels/NaiveBayesClassifier.cs)
-* [Full Connected Neural Network](src/TensorFlowNET.Examples/\NeuralNetworks/FullyConnectedEager.cs) in Eager mode
-* [K-means Clustering](src/TensorFlowNET.Examples/BasicModels/KMeansClustering.cs)
-* [NN XOR](src/TensorFlowNET.Examples/NeuralNetworks/NeuralNetXor.cs)
-* [Object Detection](src/TensorFlowNET.Examples/ObjectDetection/DetectInMobilenet.cs) in MobileNet
-* [Binary Text Classification](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
-* [CNN Text Classification](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
-* [MNIST FNN](src/TensorFlowNET.Examples/ImageProcessing/MnistFnnKerasFunctional.cs) in Keras Functional API
-* [MNIST CNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs) in Graph mode
-* [MNIST RNN](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
-* [MNIST LSTM](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
-* [Named Entity Recognition](src/TensorFlowNET.Examples/TextProcessing/NER)
-* [Transfer Learning for Image Classification](src/TensorFlowNET.Examples/ImageProcessing/TransferLearningWithInceptionV3.cs) in InceptionV3
-* [CNN In Your Own Dataset](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs)
+* Hello World [C#](src/TensorFlowNET.Examples/HelloWorld.cs)
+* Basic Operations [C#](src/TensorFlowNET.Examples/BasicOperations.cs)
+* Linear Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs) 
+* Linear Regression in Eager mode [C#](src/TensorFlowNET.Examples/BasicModels/LinearRegressionEager.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/LinearRegressionEager.fs)
+* Logistic Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs)
+* Logistic Regression in Eager mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegressionEager.cs) 
+* Nearest Neighbor [C#](src/TensorFlowNET.Examples/BasicModels/NearestNeighbor.cs)
+* Naive Bayes Classification [C#](src/TensorFlowNET.Examples/BasicModels/NaiveBayesClassifier.cs)
+* Full Connected Neural Network in Eager mode [C#](src/TensorFlowNET.Examples/\NeuralNetworks/FullyConnectedEager.cs) 
+* K-means Clustering [C#](src/TensorFlowNET.Examples/BasicModels/KMeansClustering.cs)
+* NN XOR [C#](src/TensorFlowNET.Examples/NeuralNetworks/NeuralNetXor.cs)
+* Object Detection in MobileNet [C#](src/TensorFlowNET.Examples/ObjectDetection/DetectInMobilenet.cs) 
+* Binary Text Classification [C#](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
+* CNN Text Classification [C#](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
+* MNIST FNN in Keras Functional API [C#](src/TensorFlowNET.Examples/ImageProcessing/MnistFnnKerasFunctional.cs) 
+* MNIST CNN in Graph mode [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs) 
+* MNIST RNN [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
+* MNIST LSTM [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
+* Named Entity Recognition [C#](src/TensorFlowNET.Examples/TextProcessing/NER)
+* Transfer Learning for Image Classification in InceptionV3 [C#](src/TensorFlowNET.Examples/ImageProcessing/TransferLearningWithInceptionV3.cs)
+* CNN In Your Own Dataset [C#](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs)
 
 
 ### Welcome to PR your example to us.
