@@ -40,32 +40,33 @@ let run()=
     let n_hidden_layer_2 = 25 // Hidden layer 2
 
     let tf = Binding.New<tensorflow>()
+    tf.enable_eager_execution()
     let x = tf.placeholder(tf.float64, new TensorShape(N_points,n_input))
     let y = tf.placeholder(tf.float64, new TensorShape(n_output))
     
    
     let weights = dict[
-        "hidden_layer_1", tf.Variable(tf.random_normal([|n_input; n_hidden_layer_1|],dtype=tf.float64))
-        "hidden_layer_2", tf.Variable(tf.random_normal([|n_hidden_layer_1; n_hidden_layer_2|],dtype=tf.float64))
-        "out", tf.Variable(tf.random_normal([|n_hidden_layer_2; n_output|],dtype=tf.float64))
+        "hidden_layer_1", tf.Variable(tf.random.normal(TensorShape [|n_input; n_hidden_layer_1|],dtype=tf.float64))
+        "hidden_layer_2", tf.Variable(tf.random.normal(TensorShape [|n_hidden_layer_1; n_hidden_layer_2|],dtype=tf.float64))
+        "out", tf.Variable(tf.random.normal(TensorShape [|n_hidden_layer_2; n_output|],dtype=tf.float64))
     ]
     let biases = dict[
-        "hidden_layer_1", tf.Variable(tf.random_normal([|n_hidden_layer_1|],dtype=tf.float64))
-        "hidden_layer_2", tf.Variable(tf.random_normal([|n_hidden_layer_2|],dtype=tf.float64))
-        "out", tf.Variable(tf.random_normal([|n_output|],dtype=tf.float64))
+        "hidden_layer_1", tf.Variable(tf.random.normal(TensorShape [|n_hidden_layer_1|],dtype=tf.float64))
+        "hidden_layer_2", tf.Variable(tf.random.normal(TensorShape [|n_hidden_layer_2|],dtype=tf.float64))
+        "out", tf.Variable(tf.random.normal(TensorShape [|n_output|],dtype=tf.float64))
     ]
 
  
     // Hidden layer with RELU activation
 
-    let layer_1 = tf.add(tf.matmul(x, weights.["hidden_layer_1"]._AsTensor()),biases.["hidden_layer_1"])
+    let layer_1 = tf.add(tf.matmul(x, weights.["hidden_layer_1"].AsTensor()),biases.["hidden_layer_1"])
     let layer_1 = tf.nn.relu(layer_1)
 
-    let layer_2 = tf.add(tf.matmul(layer_1, weights.["hidden_layer_2"]._AsTensor()),biases.["hidden_layer_2"])
+    let layer_2 = tf.add(tf.matmul(layer_1, weights.["hidden_layer_2"].AsTensor()),biases.["hidden_layer_2"])
     let layer_2 = tf.nn.relu(layer_2)
 
     // Output layer with linear activation
-    let ops = tf.add(tf.matmul(layer_2, weights.["out"]._AsTensor()), biases.["out"])
+    let ops = tf.add(tf.matmul(layer_2, weights.["out"].AsTensor()), biases.["out"])
     
     // Define loss and optimizer
     let cost = tf.reduce_mean(tf.square(tf.squeeze(ops)-y))
@@ -83,7 +84,7 @@ let run()=
         for epoch in [0..training_epochs] do
             // Run optimization process (backprop) and cost function (to get loss value)
 
-            let result=sess.run([|optimizer:>ITensorOrOperation; gs._AsTensor():>ITensorOrOperation; cost:>ITensorOrOperation|], new FeedItem(x, X_train), new FeedItem(y, y_train))
+            let result=sess.run([|optimizer:>ITensorOrOperation; gs.AsTensor():>ITensorOrOperation; cost:>ITensorOrOperation|], new FeedItem(x, X_train), new FeedItem(y, y_train))
 
 
             let loss_value = (double) result.[2];

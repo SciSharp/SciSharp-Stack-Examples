@@ -329,3 +329,5 @@ ASALocalRun/
 .mfractor/
 .vscode/tasks.json
 /src/tensorflow2.x-python-tutorial/my_model
+
+.ionide
