@@ -44,13 +44,11 @@
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
     <PackageReference Include="SharpCV" Version="0.6.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="TensorFlow.Keras" Version="0.2.0" />
+    <PackageReference Include="TensorFlow.NET" Version="0.31.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="TextProcessing\NER\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Keras\Tensorflow.Keras.csproj" />
   </ItemGroup>
 </Project>
