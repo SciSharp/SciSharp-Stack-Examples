@@ -62,7 +62,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "CNN Text Classification (Graph)",
-                Enabled = false,
+                Enabled = true,
                 IsImportingGraph = false
             };
 
