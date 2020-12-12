@@ -32,6 +32,8 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            tf.compat.v1.disable_eager_execution();
+
             PrepareData();
 
             var graph = new Graph();
