@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
+using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -98,14 +100,14 @@ namespace TensorFlowNET.Examples
             // get model file
             string url = "https://storage.googleapis.com/download.tensorflow.org/models/inception_v3_2016_08_28_frozen.pb.tar.gz";
 
-            Utility.Web.Download(url, dir, $"{pbFile}.tar.gz");
+            Web.Download(url, dir, $"{pbFile}.tar.gz");
 
-            Utility.Compress.ExtractTGZ(Path.Join(dir, $"{pbFile}.tar.gz"), dir);
+            Compress.ExtractTGZ(Path.Join(dir, $"{pbFile}.tar.gz"), dir);
 
             // download sample picture
             string pic = "grace_hopper.jpg";
             url = $"https://raw.githubusercontent.com/tensorflow/tensorflow/master/tensorflow/examples/label_image/data/{pic}";
-            Utility.Web.Download(url, dir, pic);
+            Web.Download(url, dir, pic);
         }
     }
 }

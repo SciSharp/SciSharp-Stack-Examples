@@ -29,11 +29,11 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-maxpool-1"), delegate
             {
-                var conv1 = keras.layers.conv2d(x_expanded,
+                var conv1 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[0], alphabet_size },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(x_expanded);
 
                 pool1 = keras.layers.max_pooling2d(conv1,
                     pool_size: new[] { 3, 1 },
@@ -43,11 +43,11 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-maxpool-2"), delegate
             {
-                var conv2 = keras.layers.conv2d(pool1,
+                var conv2 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[1], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(pool1);
 
                 pool2 = keras.layers.max_pooling2d(conv2,
                     pool_size: new[] { 3, 1 },
@@ -57,41 +57,41 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-3"), delegate
             {
-                conv3 = keras.layers.conv2d(pool2,
+                conv3 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[2], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(pool2);
                 conv3 = tf.transpose(conv3, new[] { 0, 1, 3, 2 });
             });
 
             tf_with(tf.name_scope("conv-4"), delegate
             {
-                conv4 = keras.layers.conv2d(conv3,
+                conv4 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[3], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(conv3);
                 conv4 = tf.transpose(conv4, new[] { 0, 1, 3, 2 });
             });
 
             tf_with(tf.name_scope("conv-5"), delegate
             {
-                conv5 = keras.layers.conv2d(conv4,
+                conv5 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[4], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(conv4);
                 conv5 = tf.transpose(conv5, new[] { 0, 1, 3, 2 });
             });
 
             tf_with(tf.name_scope("conv-maxpool-6"), delegate
             {
-                conv6 = keras.layers.conv2d(conv5,
+                conv6 = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[5], num_filters },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(conv5);
 
                 var pool6 = keras.layers.max_pooling2d(conv6,
                     pool_size: new[] { 3, 1 },

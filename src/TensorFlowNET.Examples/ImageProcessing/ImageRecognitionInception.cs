@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using static Tensorflow.Binding;
 using Console = Colorful.Console;
 
@@ -93,17 +94,17 @@ namespace TensorFlowNET.Examples
             // get model file
             string url = "https://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip";
 
-            Utility.Web.Download(url, dir, "inception5h.zip");
+            Web.Download(url, dir, "inception5h.zip");
 
-            Utility.Compress.UnZip(Path.Join(dir, "inception5h.zip"), dir);
+            Compress.UnZip(Path.Join(dir, "inception5h.zip"), dir);
 
             // download sample picture
             Directory.CreateDirectory(Path.Join(dir, "img"));
             url = $"https://raw.githubusercontent.com/tensorflow/tensorflow/master/tensorflow/examples/label_image/data/grace_hopper.jpg";
-            Utility.Web.Download(url, Path.Join(dir, "img"), "grace_hopper.jpg");
+            Web.Download(url, Path.Join(dir, "img"), "grace_hopper.jpg");
 
             url = $"https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/data/shasta-daisy.jpg";
-            Utility.Web.Download(url, Path.Join(dir, "img"), "shasta-daisy.jpg");
+            Web.Download(url, Path.Join(dir, "img"), "shasta-daisy.jpg");
 
             // load image file
             var files = Directory.GetFiles(Path.Join(dir, "img"));

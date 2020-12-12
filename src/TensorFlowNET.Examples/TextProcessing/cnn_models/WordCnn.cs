@@ -49,13 +49,12 @@ namespace TensorFlowNET.Examples.Text
             for (int len = 0; len < filter_sizes.Rank; len++)
             {
                 int filter_size = filter_sizes.GetLength(len);
-                var conv = keras.layers.conv2d(
-                    x_emb,
+                var conv = keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new int[] { filter_size, embedding_size },
                     strides: new int[] { 1, 1 },
                     padding: "VALID",
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(x_emb);
 
                 var pool = keras.layers.max_pooling2d(
                     conv,

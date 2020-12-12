@@ -61,11 +61,11 @@ namespace TensorFlowNET.Examples.Text
             // First Convolution Layer
             tf_with(tf.variable_scope("conv-0"), delegate
             {
-                conv0 = keras.layers.conv2d(x_expanded,
+                conv0 = keras.layers.Conv2D(
                     filters: num_filters[0],
                     kernel_size: new int[] { filter_sizes[0], embedding_size },
                     kernel_initializer: cnn_initializer,
-                    activation: tf.nn.relu);
+                    activation: tf.nn.relu).Apply(x_expanded);
 
                 conv0 = tf.transpose(conv0, new int[] { 0, 1, 3, 2 });
             });
@@ -141,14 +141,13 @@ namespace TensorFlowNET.Examples.Text
                     tf_with(tf.variable_scope($"conv-{j}"), delegate
                     {
                         // convolution
-                        conv = keras.layers.conv2d(
-                            input,
+                        conv = keras.layers.Conv2D(
                             filters: num_filters[i],
                             kernel_size: new int[] { filter_sizes[i], num_filters[i - 1] },
                             kernel_initializer: cnn_initializer,
-                            activation: null);
+                            activation: null).Apply(input);
                         // batch normalization
-                        conv = keras.layers.batch_normalization(conv, training: is_training);
+                        conv = keras.layers.BatchNormalization().Apply(conv);
                         // relu
                         conv = tf.nn.relu(conv);
                         conv = tf.transpose(conv, new int[] { 0, 1, 3, 2 });

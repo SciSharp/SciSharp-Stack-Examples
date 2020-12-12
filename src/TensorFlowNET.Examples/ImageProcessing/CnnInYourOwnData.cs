@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using static SharpCV.Binding;
 using static Tensorflow.Binding;
 
@@ -132,8 +133,8 @@ namespace TensorFlowNET.Examples
         {
             string url = "https://github.com/SciSharp/SciSharp-Stack-Examples/raw/master/data/data_CnnInYourOwnData.zip";
             Directory.CreateDirectory(Config.Name);
-            Utility.Web.Download(url, Config.Name, "data_CnnInYourOwnData.zip");
-            Utility.Compress.UnZip(Config.Name + "\\data_CnnInYourOwnData.zip", Config.Name);
+            Web.Download(url, Config.Name, "data_CnnInYourOwnData.zip");
+            Compress.UnZip(Config.Name + "\\data_CnnInYourOwnData.zip", Config.Name);
 
             FillDictionaryLabel(Config.Name + "\\train");
 

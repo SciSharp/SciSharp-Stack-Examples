@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using Tensorflow.Sessions;
 using TensorFlowNET.Examples.Text;
 using TensorFlowNET.Examples.Utility;
@@ -61,7 +62,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "CNN Text Classification (Graph)",
-                Enabled = true,
+                Enabled = false,
                 IsImportingGraph = false
             };
 

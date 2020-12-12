@@ -17,6 +17,7 @@
 using NumSharp;
 using System;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;

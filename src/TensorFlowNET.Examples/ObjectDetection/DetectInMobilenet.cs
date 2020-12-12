@@ -21,6 +21,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Utils;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
