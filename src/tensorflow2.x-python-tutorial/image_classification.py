@@ -12,6 +12,13 @@ from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 from tensorflow.python.ops import bitwise_ops
 
+"""
+y_true = np.array([[0., 1.], [0., 0.]],dtype='float64')
+y_pred = np.array([[1., 1.], [1., 0.]],dtype='float64')
+mse = tf.keras.losses.MeanSquaredError()
+print(mse(y_true, y_pred).numpy())
+"""
+
 import pathlib
 dataset_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
 data_dir = tf.keras.utils.get_file('flower_photos', origin=dataset_url, untar=True)
@@ -24,14 +31,21 @@ batch_size = 32
 img_height = 180
 img_width = 180
 
+tf.config.run_functions_eagerly(True)
+
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
   subset="training",
   seed=123,
+  shuffle=False,
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
+for img, label in train_ds:     
+  print("batch images: ", img.shape)
+  print("labels: ", label)
+  
 val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
@@ -47,7 +61,7 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
+            
 normalization_layer = layers.experimental.preprocessing.Rescaling(1./255)
 
 normalized_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
@@ -82,8 +96,7 @@ epochs=10
 history = model.fit(
   train_ds,
   validation_data=val_ds,
-  epochs=epochs
-)
+  epochs=epochs)
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
