@@ -76,7 +76,7 @@ namespace TensorFlowNET.Examples
         {
             string fileName = "flower_photos.tgz";
             string url = $"https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz";
-            string data_dir = Path.GetTempPath();
+            string data_dir = Path.Combine(Path.GetTempPath(), "flower_photos");
             Web.Download(url, data_dir, fileName);
             Compress.ExtractTGZ(Path.Join(data_dir, fileName), data_dir);
             data_dir = Path.Combine(data_dir, "flower_photos");
@@ -90,11 +90,11 @@ namespace TensorFlowNET.Examples
                 batch_size: batch_size);
 
             val_ds = keras.preprocessing.image_dataset_from_directory(data_dir,
-                validation_split: 0.2f,
-                subset: "validation",
-                seed: 123,
-                image_size: img_dim,
-                batch_size: batch_size);
+            validation_split: 0.2f,
+            subset: "validation",
+            seed: 123,
+            image_size: img_dim,
+            batch_size: batch_size);
 
             train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size: -1);
             val_ds = val_ds.cache().prefetch(buffer_size: -1);
@@ -102,13 +102,7 @@ namespace TensorFlowNET.Examples
             foreach (var (img, label) in train_ds)
             {
                 print($"images: {img.TensorShape}");
-                var nd = label.numpy();
-                print($"labels: {nd}");
-                var data = nd.Data<int>();
-                if (data.Max() > 4 || data.Min() < 0)
-                {
-                    // exception
-                }
+                print($"labels: {label.numpy()}");
             }
         }
     }

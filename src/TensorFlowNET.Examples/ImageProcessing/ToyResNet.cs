@@ -43,7 +43,7 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             tf.enable_eager_execution();
-
+            
             BuildModel();
             PrepareData();
             Train();

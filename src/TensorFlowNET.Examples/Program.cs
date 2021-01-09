@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using Tensorflow;
 using static Tensorflow.Binding;
+using static Tensorflow.KerasApi;
 using Console = Colorful.Console;
 
 namespace TensorFlowNET.Examples
@@ -100,6 +101,7 @@ namespace TensorFlowNET.Examples
                 }
 
                 finished++;
+                keras.backend.clear_session();
                 Console.WriteLine($"{DateTime.UtcNow} Completed {example.Config.Name}", Color.White);
             }
 
