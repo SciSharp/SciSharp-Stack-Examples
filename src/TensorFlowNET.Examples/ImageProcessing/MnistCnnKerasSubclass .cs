@@ -38,7 +38,7 @@ namespace TensorFlowNET.Examples
         // Training parameters.
         float learning_rate = 0.001f;
         int training_steps = 100;
-        int batch_size = 128;
+        int batch_size = 32;
         int display_step = 10;
 
         float accuracy_test = 0.0f;
@@ -87,12 +87,14 @@ namespace TensorFlowNET.Examples
 
             // Test model on validation set.
             {
+                x_test = x_test["::100"];
+                y_test = y_test["::100"];
                 var pred = conv_net.Apply(x_test);
                 accuracy_test = (float)accuracy(pred, y_test);
                 print($"Test Accuracy: {accuracy_test}");
             }
 
-            return accuracy_test > 0.95;
+            return accuracy_test > 0.90;
         }
 
         void run_optimization(ConvNet conv_net, OptimizerV2 optimizer, Tensor x, Tensor y)

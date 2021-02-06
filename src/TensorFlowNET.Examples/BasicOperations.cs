@@ -17,6 +17,8 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            tf.enable_eager_execution();
+
             // Define tensor constants.
             var a = tf.constant(2);
             var b = tf.constant(3);

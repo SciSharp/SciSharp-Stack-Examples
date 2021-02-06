@@ -1,10 +1,17 @@
 
 # https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/1_Introduction/basic_operations.ipynb
-
+import numpy as np
 import tensorflow as tf
 
 # tf.compat.v1.disable_eager_execution()
+for epoch in range(10):
+    print("Epoch:", epoch)
+    for i in range(10):
+        nd = np.arange(10 * 256 * 256 * 3).reshape((10, 256, 256, 3))
+        variable = tf.Variable(nd)
+        debug = 1
 
+stop = True
 image = tf.constant([
  [1,0,0,0,0],
  [0,1,0,0,0],
@@ -27,11 +34,6 @@ a = tf.reduce_sum(x, [0, 1])  # 6
 const = tf.constant(['map_and_batch_fusion', 'noop_elimination', 'shuffle_and_repeat_fusion'], 
                              dtype=tf.string, 
                              name="optimizations")
-
-sess = tf.compat.v1.Session()
-result = sess.run(const)
-print(result)
-
 
 tensor = tf.linalg.eye(3)
 

@@ -1,4 +1,5 @@
-﻿using static Tensorflow.Binding;
+﻿using NumSharp;
+using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
 {
@@ -17,6 +18,9 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            // Eager model is enabled by default.
+            tf.enable_eager_execution();
+
             /* Create a Constant op
                The op is added as a node to the default graph.
             
@@ -28,7 +32,7 @@ namespace TensorFlowNET.Examples
             // tf.Tensor: shape=(), dtype=string, numpy=b'Hello, TensorFlow.NET!'
             print(hello);
 
-            var tensor = (string)hello.numpy();
+            var tensor = NDArray.AsStringArray(hello.numpy())[0];
 
             return str == tensor;
         }

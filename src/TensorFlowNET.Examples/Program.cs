@@ -102,6 +102,7 @@ namespace TensorFlowNET.Examples
 
                 finished++;
                 keras.backend.clear_session();
+                
                 Console.WriteLine($"{DateTime.UtcNow} Completed {example.Config.Name}", Color.White);
             }
 

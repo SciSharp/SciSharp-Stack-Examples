@@ -3,6 +3,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
+inputs = tf.zeros([10, 5, 20]);
+outputs = keras.layers.LeakyReLU()(inputs);
+outputs = keras.layers.Reshape([20, 5])(outputs);
+
 from tensorflow.python.platform import gfile
 # GRAPH_PB_PATH = 'D:/tmp/TensorflowIssue/TensorflowIssue/model/saved_model.pb'
 GRAPH_PB_PATH = 'D:/tmp/TensorFlow.NET/data/saved_model.pb'
