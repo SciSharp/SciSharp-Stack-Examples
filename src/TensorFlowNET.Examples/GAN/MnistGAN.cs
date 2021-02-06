@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static Tensorflow.Binding;
-using static Tensorflow.KerasApi;
+﻿using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples.GAN
 {

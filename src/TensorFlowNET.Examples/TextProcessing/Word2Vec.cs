@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
-using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -16,7 +15,6 @@ namespace TensorFlowNET.Examples
     public class Word2Vec : SciSharpExample, IExample
     {
         // Training Parameters
-        float learning_rate = 0.1f;
         int batch_size = 128;
         int num_steps = 30000; //3000000;
         int display_step = 1000; //10000;
@@ -29,12 +27,9 @@ namespace TensorFlowNET.Examples
         int[] data;
 
         // Word2Vec Parameters
-        int embedding_size = 200; // Dimension of the embedding vector
-        int max_vocabulary_size = 50000; // Total number of different words in the vocabulary
         int min_occurrence = 10; // Remove all words that does not appears at least n times
         int skip_window = 3; // How many words to consider left and right
         int num_skips = 2; // How many times to reuse an input to generate a label
-        int num_sampled = 64; // Number of negative examples to sample
 
         int data_index = 0;
         int top_k = 8; // number of nearest neighbors

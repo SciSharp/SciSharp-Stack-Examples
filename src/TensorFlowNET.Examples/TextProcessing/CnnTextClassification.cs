@@ -24,7 +24,6 @@ using Tensorflow;
 using Tensorflow.Keras.Utils;
 using Tensorflow.Sessions;
 using TensorFlowNET.Examples.Text;
-using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -37,10 +36,8 @@ namespace TensorFlowNET.Examples
         public int? DataLimit = null;
 
         const string dataDir = "cnn_text";
-        string dataFileName = "dbpedia_csv.tar.gz";
 
         string TRAIN_PATH = $"{dataDir}/dbpedia_csv/train.csv";
-        string TEST_PATH = $"{dataDir}/dbpedia_csv/test.csv";
 
         int NUM_CLASS = 14;
         int BATCH_SIZE = 64;
@@ -185,7 +182,7 @@ namespace TensorFlowNET.Examples
             return graph;
         }
 
-        public Graph BuildGraph()
+        public override Graph BuildGraph()
         {
             var graph = tf.Graph().as_default();
 

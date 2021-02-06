@@ -30,8 +30,6 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class DigitRecognitionCNN : SciSharpExample, IExample
     {
-        string logs_path = "logs";
-
         const int img_h = 28, img_w = 28; // MNIST images are 28x28
         int n_classes = 10; // Number of classes, one class per digit
         int n_channels = 1;

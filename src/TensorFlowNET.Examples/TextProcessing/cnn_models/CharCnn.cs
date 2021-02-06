@@ -102,7 +102,7 @@ namespace TensorFlowNET.Examples.Text
             });
 
             // ============= Fully Connected Layers =============
-            Tensor fc1_out = null, fc2_out = null;
+            Tensor fc2_out = null;
             Tensor logits = null;
             Tensor predictions = null;
 

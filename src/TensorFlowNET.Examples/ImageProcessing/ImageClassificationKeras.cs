@@ -3,7 +3,6 @@ using Tensorflow;
 using Tensorflow.Keras;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
-using System.Linq;
 using Tensorflow.Keras.Utils;
 using System.IO;
 using Tensorflow.Keras.Engine;

@@ -48,10 +48,7 @@ namespace TensorFlowNET.Examples
                 padding: "post",
                 maxlen: 256);*/
 
-            // input shape is the vocabulary count used for the movie reviews (10,000 words)
-            int vocab_size = 10000;
-
-            var model = keras.Sequential();
+            /*var model =*/ keras.Sequential();
             //var layer = tf.keras.layers.Embedding(vocab_size, 16);
             //model.add(layer);
 

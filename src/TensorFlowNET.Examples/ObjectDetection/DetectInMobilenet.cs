@@ -34,8 +34,6 @@ namespace TensorFlowNET.Examples
         string modelDir = "ssd_mobilenet_v1_coco_2018_01_28";
         string imageDir = "images";
         string pbFile = "frozen_inference_graph.pb";
-        string labelFile = "mscoco_label_map.pbtxt";
-        string picFile = "input.jpg";
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
