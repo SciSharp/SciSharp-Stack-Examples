@@ -42,12 +42,10 @@ namespace TensorFlowNET.Examples
     /// </summary>
     class CnnInYourOwnData : SciSharpExample, IExample
     {
-        string logs_path = "logs";
-
         string[] ArrayFileName_Train, ArrayFileName_Validation, ArrayFileName_Test;
         long[] ArrayLabel_Train, ArrayLabel_Validation, ArrayLabel_Test;
         Dictionary<long, string> Dict_Label;
-        NDArray x_train, y_train;
+        NDArray y_train;
         NDArray x_valid, y_valid;
         NDArray x_test, y_test;
         int img_h = 64;// MNIST images are 64x64

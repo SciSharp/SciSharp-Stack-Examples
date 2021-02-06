@@ -24,7 +24,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
-using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -510,7 +509,7 @@ namespace TensorFlowNET.Examples
             File.WriteAllBytes(graph_file_name, output_graph_def.ToByteArray());
         }
 
-        public void PrepareData()
+        public override void PrepareData()
         {
             // get a set of images to teach the network about the new classes
             string fileName = "flower_photos.tgz";
@@ -589,7 +588,7 @@ namespace TensorFlowNET.Examples
             return result;
         }
 
-        public Graph ImportGraph()
+        public override Graph ImportGraph()
         {
             Graph graph;
 

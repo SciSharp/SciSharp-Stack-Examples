@@ -55,7 +55,6 @@ namespace TensorFlowNET.Examples.Text
             Tensor conv3 = null;
             Tensor conv4 = null;
             Tensor h_flat = null;
-            Tensor fc1_out = null;
             Tensor fc2_out = null;
 
             // First Convolution Layer

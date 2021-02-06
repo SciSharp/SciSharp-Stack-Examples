@@ -38,7 +38,6 @@ namespace TensorFlowNET.Examples
         int num_steps = 20; // Total steps to train
         int k = 25; // The number of clusters
         int num_classes = 10; // The 10 digits
-        int num_features = 784; // Each image is 28x28 pixels
 
         float accuray_test = 0f;
 

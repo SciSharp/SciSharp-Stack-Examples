@@ -32,9 +32,6 @@ namespace TensorFlowNET.Examples
     public class LogisticRegressionEager : SciSharpExample, IExample
     {
         int training_epochs = 1000;
-        int? train_size = null;
-        int validation_size = 5000;
-        int? test_size = null;
         int batch_size = 256;
         int num_classes = 10; // 0 to 9 digits
         int num_features = 784; // 28*28
@@ -42,7 +39,7 @@ namespace TensorFlowNET.Examples
         int display_step = 50;
         float accuracy = 0f;
 
-        Datasets<MnistDataSet> mnist;
+        Datasets<MnistDataSet> mnist = null;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
