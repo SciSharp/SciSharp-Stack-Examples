@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowNET.Examples", "s
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TensorFlowNET.Examples.FSharp", "src\TensorFlowNET.Examples.FSharp\TensorFlowNET.Examples.FSharp.fsproj", "{7DA7E4DB-0CA9-4B37-9606-35E1C322C978}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpCV.Exmaples", "src\SharpCV.Exmaples\SharpCV.Exmaples.csproj", "{935764FA-5297-4E49-945C-D04F1EF84EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpCV.Examples", "src\SharpCV.Examples\SharpCV.Examples.csproj", "{935764FA-5297-4E49-945C-D04F1EF84EAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
