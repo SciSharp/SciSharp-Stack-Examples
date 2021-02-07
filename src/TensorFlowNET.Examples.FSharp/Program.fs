@@ -87,7 +87,8 @@ let main argv =
 
     let examples =
         //FunctionApproximation.run() // Still needs updates
-        [ LinearRegression.Example
+        [ BasicOperations.Example
+          LinearRegression.Example
           LinearRegressionEager.Example ]
         |> List.sortBy (fun e -> e.Config.Priority)
 
