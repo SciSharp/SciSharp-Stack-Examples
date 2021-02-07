@@ -22,7 +22,7 @@ Run specific example in shell:
 dotnet run --project src/TensorFlowNET.Examples
 
 :: run specific example
-dotnet run --project src/TensorFlowNET.Examples -ex "Linear Regression"
+dotnet run --project src/TensorFlowNET.Examples -ex "Linear Regression (Graph)"
 
 :: run in compiled library
 dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN (Eager)"
@@ -33,6 +33,12 @@ dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN (Eager)"
 ```bat
 :: run all examples from source code
 dotnet run --project src/TensorFlowNET.Examples.FSharp
+
+:: run specific example
+dotnet run --project src/TensorFlowNET.Examples.FSharp -ex "Linear Regression (Eager)"
+
+:: run in compiled library
+dotnet TensorFlowNET.Examples.FSharp.dll -ex "MNIST CNN (Eager)"
 ```
 
 
