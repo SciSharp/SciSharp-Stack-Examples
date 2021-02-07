@@ -118,7 +118,8 @@ let main argv =
             [ HelloWorld.Example
               BasicOperations.Example
               LinearRegression.Example
-              LinearRegressionEager.Example ]
+              LinearRegressionEager.Example
+              LogisticRegression.Example ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
 

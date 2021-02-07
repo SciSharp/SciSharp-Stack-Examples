@@ -56,6 +56,7 @@ namespace TensorFlowNET.Examples
 
             PrepareData();
             Train();
+            //Predict();
 
             return accuracy > 0.9;
         }
@@ -91,57 +92,55 @@ namespace TensorFlowNET.Examples
 
             var sw = new Stopwatch();
 
-            using (var sess = tf.Session())
+            using var sess = tf.Session();
+            // Run the initializer
+            sess.run(init);
+
+            // Training cycle
+            foreach (var epoch in range(training_epochs))
             {
-                // Run the initializer
-                sess.run(init);
+                sw.Start();
+                var avg_cost = 0.0f;
 
-                // Training cycle
-                foreach (var epoch in range(training_epochs))
+                // Loop over all batches
+                foreach (var i in range(total_batch))
                 {
-                    sw.Start();
-                    var avg_cost = 0.0f;
+                    var start = i * batch_size;
+                    var end = (i + 1) * batch_size;
+                    var (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, end);
+                    // Run optimization op (backprop) and cost op (to get loss value)
+                    (_, float c) = sess.run((optimizer, cost),
+                        (x, batch_xs),
+                        (y, batch_ys));
 
-                    // Loop over all batches
-                    foreach (var i in range(total_batch))
-                    {
-                        var start = i * batch_size;
-                        var end = (i + 1) * batch_size;
-                        var (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, end);
-                        // Run optimization op (backprop) and cost op (to get loss value)
-                        (_, float c) = sess.run((optimizer, cost),
-                            (x, batch_xs),
-                            (y, batch_ys));
-
-                        // Compute average loss
-                        avg_cost += c / total_batch;
-                    }
-
-                    sw.Stop();
-
-                    // Display logs per epoch step
-                    if ((epoch + 1) % display_step == 0)
-                        print($"Epoch: {(epoch + 1):D4} Cost: {avg_cost:G9} Elapse: {sw.ElapsedMilliseconds}ms");
-
-                    sw.Reset();
+                    // Compute average loss
+                    avg_cost += c / total_batch;
                 }
 
-                print("Optimization Finished!");
-                // SaveModel(sess);
+                sw.Stop();
 
-                // Test model
-                var correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1));
-                // Calculate accuracy
-                var acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
-                accuracy = acc.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
-                print($"Accuracy: {accuracy:F4}");
+                // Display logs per epoch step
+                if ((epoch + 1) % display_step == 0)
+                    print($"Epoch: {(epoch + 1):D4} Cost: {avg_cost:G9} Elapsed: {sw.ElapsedMilliseconds}ms");
+
+                sw.Reset();
             }
+
+            print("Optimization Finished!");
+            // SaveModel(sess);
+
+            // Test model
+            var correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1));
+            // Calculate accuracy
+            var acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
+            accuracy = acc.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
+            print($"Accuracy: {accuracy:F4}");
         }
 
         public void SaveModel(Session sess)
         {
             var saver = tf.train.Saver();
-            var save_path = saver.save(sess, ".resources/logistic_regression/model.ckpt");
+            saver.save(sess, ".resources/logistic_regression/model.ckpt");
             tf.train.write_graph(sess.graph, ".resources/logistic_regression", "model.pbtxt", as_text: true);
 
             FreezeGraph.freeze_graph(input_graph: ".resources/logistic_regression/model.pbtxt",
@@ -159,27 +158,25 @@ namespace TensorFlowNET.Examples
         public override void Predict()
         {
             var graph = new Graph().as_default();
-            using (var sess = tf.Session(graph))
-            {
-                graph.Import(Path.Join(".resources/logistic_regression", "model.pb"));
+            using var sess = tf.Session(graph);
+            graph.Import(Path.Join(".resources/logistic_regression", "model.pb"));
 
-                // restoring the model
-                // var saver = tf.train.import_meta_graph("logistic_regression/tensorflowModel.ckpt.meta");
-                // saver.restore(sess, tf.train.latest_checkpoint('logistic_regression'));
-                var pred = graph.OperationByName("Softmax");
-                var output = pred.outputs[0];
-                var x = graph.OperationByName("Placeholder");
-                var input = x.outputs[0];
+            // restoring the model
+            // var saver = tf.train.import_meta_graph("logistic_regression/tensorflowModel.ckpt.meta");
+            // saver.restore(sess, tf.train.latest_checkpoint('logistic_regression'));
+            var pred = graph.OperationByName("Softmax");
+            var output = pred.outputs[0];
+            var x = graph.OperationByName("Placeholder");
+            var input = x.outputs[0];
 
-                // predict
-                var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
-                var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
+            // predict
+            var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
+            var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
 
-                if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())
-                    print("predicted OK!");
-                else
-                    throw new ValueError("predict error, should be 90% accuracy");
-            }
+            if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())
+                print("predicted OK!");
+            else
+                throw new ValueError("predict error, should be 90% accuracy");
         }
     }
 }
