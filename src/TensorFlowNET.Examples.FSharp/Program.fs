@@ -18,6 +18,8 @@ open System
 open System.Diagnostics
 open System.Drawing
 open System.Reflection
+
+open Argu
 open Tensorflow
 open type Tensorflow.Binding
 open type Tensorflow.KerasApi
@@ -81,38 +83,69 @@ let runExamples choice examples =
       Press [Enter] to continue..." |> printfn "%s"
     Console.ReadLine().Length = 0
 
+type Arguments =
+    | [<AltCommandLine("-ex")>] Example of name : string
+
+    interface IArgParserTemplate with
+        member s.Usage =
+            match s with
+            | Example _ -> "name of selected example."
+
 [<EntryPoint>]
 let main argv =
-    printEnv()
+    let parser = ArgumentParser.Create<Arguments>(programName = "TensorFlowNET.Examples.FSharp.exe")
+    let arguments =
+        try
+            let results = parser.Parse argv
+            results.GetAllResults() |> Some
+        with
+        | _ ->
+            parser.PrintUsage() |> printc Color.Red
+            Option.None
 
-    let examples =
-        //FunctionApproximation.run() // Still needs updates
-        [ HelloWorld.Example
-          BasicOperations.Example
-          LinearRegression.Example
-          LinearRegressionEager.Example ]
-        |> List.sortBy (fun e -> e.Config.Priority)
+    match arguments with
+    | None -> 1
 
-    let (|ExampleId|_|) str =
-        match Int32.TryParse(str : string) with
-        | (true,id) ->
-            if id >= 1 && id <= examples.Length then Some(id) else Option.None
-        | _ -> Option.None
+    | Some args ->
+        
+        printEnv()
 
-    let rec loop () =
-        examples |> List.iteri (fun i e -> printfn $"[{i + 1}]: {e.Config.Name}")
+        let isSelected (example: SciSharpExample) =
+            args.Length = 0 || List.contains (Example example.Config.Name) args
 
-        let choice =
-            if examples.Length = 1
-            then Some 1
-            else
-                printc Color.Yellow $"Choose one example to run, hit [Enter] to run all: "
-                match Console.ReadLine() with
-                | ExampleId id -> Some id
+        let examples =
+            //FunctionApproximation.run() // Still needs updates
+            [ HelloWorld.Example
+              BasicOperations.Example
+              LinearRegression.Example
+              LinearRegressionEager.Example ]
+            |> List.where isSelected
+            |> List.sortBy (fun e -> e.Config.Priority)
+
+        if examples.Length = 0 then
+            printc Color.Red "No example found!"
+            1
+        else
+            let (|ExampleId|_|) str =
+                match Int32.TryParse(str : string) with
+                | (true,id) ->
+                    if id >= 1 && id <= examples.Length then Some(id) else Option.None
                 | _ -> Option.None
 
-        if runExamples choice examples then loop()
+            let rec loop () =
+                examples |> List.iteri (fun i e -> printfn $"[{i + 1}]: {e.Config.Name}")
 
-    loop()
+                let choice =
+                    if examples.Length = 1
+                    then Some 1
+                    else
+                        printc Color.Yellow $"Choose one example to run, hit [Enter] to run all: "
+                        match Console.ReadLine() with
+                        | ExampleId id -> Some id
+                        | _ -> Option.None
 
-    0 // return an integer exit code
+                if runExamples choice examples
+                then loop()
+                else 0
+
+            loop()
