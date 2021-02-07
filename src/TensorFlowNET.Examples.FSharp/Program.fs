@@ -45,7 +45,7 @@ let runExamples choice examples =
             try
                 sw.Restart()
                 let isSuccess = example.Run()
-                sw.Stop();
+                sw.Stop()
 
                 $"Example: %s{example.Config.Name} in %f{sw.Elapsed.TotalSeconds}s"
                 |> if isSuccess then Ok else Error
