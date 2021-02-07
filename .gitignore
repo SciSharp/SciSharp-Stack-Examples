@@ -331,3 +331,18 @@ ASALocalRun/
 /src/tensorflow2.x-python-tutorial/my_model
 
 .ionide
+
+# Generated files when running samples
+/CNN in Your Own Data (Graph)
+/cnn_text
+/frozen_model.pb
+/graph/*.meta
+/ImageRecognitionInception
+/images/*.jpg
+/MNIST CNN (Graph)
+/nb/*.npy
+/retrain_images
+/ssd_mobilenet_v1_coco.bin
+/ssd_mobilenet_v1_coco_2018_01_28
+/tfhub_modules
+/word2vec
