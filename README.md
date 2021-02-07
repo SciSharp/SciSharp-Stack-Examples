@@ -15,26 +15,34 @@ Requirements:
 
 Run specific example in shell:
 
-```cs
-// run all examples from source code
+#### C#
+
+```bat
+:: run all examples from source code
 dotnet run --project src/TensorFlowNET.Examples
 
-// run specific example
+:: run specific example
 dotnet run --project src/TensorFlowNET.Examples -ex "Linear Regression"
 
-// run in compiled library
+:: run in compiled library
 dotnet TensorFlowNET.Examples.dll -ex "MNIST CNN (Eager)"
 ```
 
+#### F#
+
+```bat
+:: run all examples from source code
+dotnet run --project src/TensorFlowNET.Examples.FSharp
+```
 
 
 Example runner will download all the required files like training data and model pb files.
 
 #### Basic Model
 
-* Hello World [C#](src/TensorFlowNET.Examples/HelloWorld.cs)
-* Basic Operations [C#](src/TensorFlowNET.Examples/BasicOperations.cs)
-* Linear Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs) 
+* Hello World [C#](src/TensorFlowNET.Examples/HelloWorld.cs), [F#](src/TensorFlowNET.Examples.FSharp/HelloWorld.fs)
+* Basic Operations [C#](src/TensorFlowNET.Examples/BasicOperations.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicOperations.fs)
+* Linear Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LinearRegression.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/LinearRegression.fs)
 * Linear Regression in Eager mode [C#](src/TensorFlowNET.Examples/BasicModels/LinearRegressionEager.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/LinearRegressionEager.fs)
 * Logistic Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs)
 * Logistic Regression in Eager mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegressionEager.cs) 
