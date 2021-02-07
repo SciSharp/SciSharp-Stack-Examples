@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="SciSharpExample.fs" />
+    <Compile Include="HelloWorld.fs" />
     <Compile Include="BasicOperations.fs" />
     <Compile Include="BasicModels\LinearRegression.fs" />
     <Compile Include="BasicModels\LinearRegressionEager.fs" />
