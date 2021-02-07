@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************)
 
-namespace TensorFlow.NET.Examples.FSharp
+namespace TensorFlowNET.Examples.FSharp
 
 open NumSharp
 open Tensorflow
@@ -27,7 +27,7 @@ open type Tensorflow.KerasApi
 /// </summary>
 
 module LinearRegressionEager =
-    let run() =
+    let private run() =
         let tf = New<tensorflow>()
         tf.enable_eager_execution()
         
@@ -49,7 +49,7 @@ module LinearRegressionEager =
         let optimizer = keras.optimizers.SGD(learning_rate)
         
         // Run training for the given number of steps.
-        for step = 1 to  (training_steps + 1) do 
+        for step = 1 to (training_steps + 1) do 
             // Run the optimization to update W and b values.
             // Wrap computation inside a GradientTape for automatic differentiation.
             use g = tf.GradientTape()
@@ -68,5 +68,10 @@ module LinearRegressionEager =
                 let pred = W * train_X + b
                 let loss = tf.reduce_sum(tf.pow(pred-train_Y,2)) / (2 * n_samples)
                 printfn $"step: {step}, loss: {loss.numpy()}, W: {W.numpy()}, b: {b.numpy()}"
-        
-        
+
+        true
+    
+    let Example =
+        { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Eager)", priority0 = 5)
+          Run = run
+        }
