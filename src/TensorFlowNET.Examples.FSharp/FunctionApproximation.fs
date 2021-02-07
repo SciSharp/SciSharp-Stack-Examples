@@ -86,9 +86,9 @@ let run()=
             let result=sess.run([|optimizer:>ITensorOrOperation; gs.AsTensor():>ITensorOrOperation; cost:>ITensorOrOperation|], new FeedItem(x, X_train), new FeedItem(y, y_train))
 
 
-            let loss_value = (double) result.[2];
+            let loss_value = (double) result.[2]
 
-            let step = (int) result.[1];
+            let step = (int) result.[1]
             
             if epoch % 1000 = 0 then
                 sprintf "Step %d loss: %f" step loss_value |> Console.WriteLine

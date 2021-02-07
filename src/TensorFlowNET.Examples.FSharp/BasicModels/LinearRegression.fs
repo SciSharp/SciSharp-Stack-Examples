@@ -38,7 +38,7 @@ module LinearRegression =
         (train_X, train_Y, n_samples)
 
     let private run() =
-        tf.compat.v1.disable_eager_execution();
+        tf.compat.v1.disable_eager_execution()
 
         // Training data
         let train_X, train_Y, n_samples = prepareData()
@@ -49,8 +49,8 @@ module LinearRegression =
 
         // Set model weights 
         // We can set a fixed init value in order to debug
-        // let rnd1 = rng.randn<float>();
-        // let rnd2 = rng.randn<float>();
+        // let rnd1 = rng.randn<float>()
+        // let rnd2 = rng.randn<float>()
         let W = tf.Variable(-0.06f, name = "weight")
         let b = tf.Variable(-0.73f, name = "bias")
 
@@ -77,7 +77,7 @@ module LinearRegression =
         // Fit all training data
         for epoch in 1 .. training_epochs do
             for x, y in zip<float>(train_X, train_Y) do
-                sess.run(optimizer, items [| X, x; Y, y |]);
+                sess.run(optimizer, items [| X, x; Y, y |])
 
             // Display logs per epoch step
             if epoch % display_step = 0 then
@@ -98,7 +98,7 @@ module LinearRegression =
         let diff = Math.Abs(training_cost.GetAtIndex<float32>(0) - testing_cost.GetAtIndex<float32>(0))
         printfn $"Absolute mean square loss difference: {diff}"
 
-        diff < 0.01f;
+        diff < 0.01f
 
     let Example =
         { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Graph)", priority0 = 4)

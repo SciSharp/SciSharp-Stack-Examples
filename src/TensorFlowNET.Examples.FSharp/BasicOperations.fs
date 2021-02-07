@@ -38,7 +38,7 @@ module BasicOperations =
         let matrix2 = tf.constant(array2D [ [ 5; 6 ]; [ 7; 8 ] ])
         let product = tf.matmul(matrix1, matrix2)
         // Convert Tensor to Numpy.
-        print("product =", product.numpy());
+        print("product =", product.numpy())
 
         true
 
