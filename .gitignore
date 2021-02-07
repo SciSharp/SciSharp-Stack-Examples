@@ -332,6 +332,9 @@ ASALocalRun/
 
 .ionide
 
+# Git files
+*.orig
+
 # Generated files when running samples
 /CNN in Your Own Data (Graph)
 /cnn_text
