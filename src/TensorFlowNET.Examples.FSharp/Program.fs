@@ -121,6 +121,7 @@ let main argv =
               LinearRegressionEager.Example
               LogisticRegression.Example
               LogisticRegressionEager.Example
+              NearestNeighbor.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)

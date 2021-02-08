@@ -15,6 +15,7 @@
     <Compile Include="BasicModels\LinearRegressionEager.fs" />
     <Compile Include="BasicModels\LogisticRegression.fs" />
     <Compile Include="BasicModels\LogisticRegressionEager.fs" />
+    <Compile Include="BasicModels\NearestNeighbor.fs" />
     <Compile Include="FunctionApproximation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
