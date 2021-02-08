@@ -100,7 +100,7 @@ namespace TensorFlowNET.Examples
         void run_optimization(ConvNet conv_net, OptimizerV2 optimizer, Tensor x, Tensor y)
         {
             using var g = tf.GradientTape();
-            var pred = conv_net.Apply(x, is_training: true);
+            var pred = conv_net.Apply(x, training: true);
             var loss = cross_entropy_loss(pred, y);
 
             // Compute gradients.
@@ -209,7 +209,7 @@ namespace TensorFlowNET.Examples
             /// <param name="is_training"></param>
             /// <param name="state"></param>
             /// <returns></returns>
-            protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
+            protected override Tensors Call(Tensors inputs, Tensor state = null, bool? training = null)
             {
                 inputs = tf.reshape(inputs, (-1, 28, 28, 1));
                 inputs = conv1.Apply(inputs);
@@ -218,10 +218,10 @@ namespace TensorFlowNET.Examples
                 inputs = maxpool2.Apply(inputs);
                 inputs = flatten.Apply(inputs);
                 inputs = fc1.Apply(inputs);
-                inputs = dropout.Apply(inputs, is_training: is_training);
+                inputs = dropout.Apply(inputs, training: training.Value);
                 inputs = output.Apply(inputs);
 
-                if (!is_training)
+                if (!training.Value)
                     inputs = tf.nn.softmax(inputs);
 
                 return inputs;

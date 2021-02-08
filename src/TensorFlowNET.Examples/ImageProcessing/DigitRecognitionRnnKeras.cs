@@ -129,13 +129,13 @@ namespace TensorFlowNET.Examples
             output = layers.Dense(args.NumClasses);
         }
 
-        protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
+        protected override Tensors Call(Tensors inputs, Tensor state = null, bool? training = null)
         {
             // LSTM layer.
             inputs = lstm.Apply(inputs);
             // Output layer (num_classes).
             inputs = output.Apply(inputs);
-            if (!is_training)
+            if (!training.Value)
                 inputs = tf.nn.softmax(inputs);
             return inputs;
         }
@@ -149,7 +149,7 @@ namespace TensorFlowNET.Examples
         {
             using var g = tf.GradientTape();
             // Forward pass.
-            var pred = Apply(x, is_training: true);
+            var pred = Apply(x, training: true);
             // Compute loss.
             var loss = CrossEntropyLoss(pred, y);
 
@@ -192,7 +192,7 @@ namespace TensorFlowNET.Examples
 
         public Tensor Predict(Tensor x)
         {
-            return Apply(x, is_training: true);
+            return Apply(x, training: true);
         }
     }
 
