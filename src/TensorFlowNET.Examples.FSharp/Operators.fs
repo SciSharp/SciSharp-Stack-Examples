@@ -24,5 +24,8 @@ module TensorflowOperators =
     type ResourceVariable with
         member x.asTensor : Tensor = ResourceVariable.op_Implicit x
 
+    type NDArray with
+        member x.asTensor : Tensor = Tensor.op_Implicit x
+
     type Shape with
         member x.asTensorShape : TensorShape = TensorShape.op_Implicit x
