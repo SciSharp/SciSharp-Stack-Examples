@@ -128,7 +128,7 @@ module FullyConnectedEager =
                 let pred = neural_net batch_x
                 let loss = cross_entropy pred batch_y
                 let acc = accuracy pred batch_y
-                print($"step: {step}, loss: {(float32)loss}, accuracy: {(float32)acc}")
+                print($"step: {step}, loss: {float32 loss}, accuracy: {float32 acc}")
 
         // Test model on validation set.
         let pred = neural_net x_test.asTensor

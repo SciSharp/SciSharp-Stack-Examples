@@ -18,6 +18,7 @@
     <Compile Include="BasicModels\NearestNeighbor.fs" />
     <Compile Include="BasicModels\NaiveBayesClassifier.fs" />
     <Compile Include="NeuralNetworks\FullyConnectedEager.fs" />
+    <Compile Include="NeuralNetworks\FullyConnectedKeras.fs" />
     <Compile Include="FunctionApproximation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
