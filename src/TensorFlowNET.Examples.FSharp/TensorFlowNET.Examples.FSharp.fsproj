@@ -16,6 +16,7 @@
     <Compile Include="BasicModels\LogisticRegression.fs" />
     <Compile Include="BasicModels\LogisticRegressionEager.fs" />
     <Compile Include="BasicModels\NearestNeighbor.fs" />
+    <Compile Include="BasicModels\NaiveBayesClassifier.fs" />
     <Compile Include="FunctionApproximation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

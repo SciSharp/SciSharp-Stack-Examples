@@ -122,6 +122,7 @@ let main argv =
               LogisticRegression.Example
               LogisticRegressionEager.Example
               NearestNeighbor.Example
+              NaiveBayesClassifier.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)

@@ -53,7 +53,7 @@ Example runner will download all the required files like training data and model
 * Logistic Regression in Graph mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegression.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/LogisticRegression.fs)
 * Logistic Regression in Eager mode [C#](src/TensorFlowNET.Examples/BasicModels/LogisticRegressionEager.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/LogisticRegressionEager.fs)
 * Nearest Neighbor [C#](src/TensorFlowNET.Examples/BasicModels/NearestNeighbor.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/NearestNeighbor.fs)
-* Naive Bayes Classification [C#](src/TensorFlowNET.Examples/BasicModels/NaiveBayesClassifier.cs)
+* Naive Bayes Classification [C#](src/TensorFlowNET.Examples/BasicModels/NaiveBayesClassifier.cs), [F#](src/TensorFlowNET.Examples.FSharp/BasicModels/NaiveBayesClassifier.fs)
 * K-means Clustering [C#](src/TensorFlowNET.Examples/BasicModels/KMeansClustering.cs)
 
 #### Neural Network
