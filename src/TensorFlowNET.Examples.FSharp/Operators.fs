@@ -29,3 +29,12 @@ module TensorflowOperators =
 
     type Shape with
         member x.asTensorShape : TensorShape = TensorShape.op_Implicit x
+
+    type Tensors with
+        member x.asTensor : Tensor =
+            match Seq.tryHead x with
+            | Some t -> t
+            | _ -> null
+
+    type Tensor with
+        member x.asTensors : Tensors = new Tensors([| x |])

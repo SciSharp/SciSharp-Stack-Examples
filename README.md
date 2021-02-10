@@ -59,6 +59,7 @@ Example runner will download all the required files like training data and model
 #### Neural Network
 
 * Full Connected Neural Network in Eager mode [C#](src/TensorFlowNET.Examples/NeuralNetworks/FullyConnectedEager.cs), [F#](src/TensorFlowNET.Examples.FSharp/NeuralNetworks/FullyConnectedEager.fs)
+* Full Connected Neural Network (Keras) [C#](src/TensorFlowNET.Examples/NeuralNetworks/FullyConnectedKeras.cs), [F#](src/TensorFlowNET.Examples.FSharp/NeuralNetworks/FullyConnectedKeras.fs)
 * NN XOR [C#](src/TensorFlowNET.Examples/NeuralNetworks/NeuralNetXor.cs)
 * Object Detection in MobileNet [C#](src/TensorFlowNET.Examples/ObjectDetection/DetectInMobilenet.cs) 
 * MNIST FNN in Keras Functional API [C#](src/TensorFlowNET.Examples/ImageProcessing/MnistFnnKerasFunctional.cs) 
