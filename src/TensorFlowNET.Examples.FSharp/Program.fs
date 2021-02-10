@@ -123,6 +123,7 @@ let main argv =
               LogisticRegressionEager.Example
               NearestNeighbor.Example
               NaiveBayesClassifier.Example
+              FullyConnectedEager.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
