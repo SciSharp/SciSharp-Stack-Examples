@@ -38,3 +38,7 @@ module TensorflowOperators =
 
     type Tensor with
         member x.asTensors : Tensors = new Tensors([| x |])
+
+    let feedItems array = Array.map FeedItem array
+
+    let fetches (x : #ITensorOrOperation, y : #ITensorOrOperation) : struct (ITensorOrOperation * ITensorOrOperation) = struct (upcast x, upcast y)

@@ -72,20 +72,18 @@ module LinearRegression =
         // Run the initializer
         sess.run(init)
 
-        let items array = Array.map FeedItem array
-
         // Fit all training data
         for epoch in 1 .. training_epochs do
             for x, y in zip<float>(train_X, train_Y) do
-                sess.run(optimizer, items [| X, x; Y, y |])
+                sess.run(optimizer, feedItems [| X, x; Y, y |])
 
             // Display logs per epoch step
             if epoch % display_step = 0 then
-                let c = sess.run(cost, items [| X, train_X; Y, train_Y |])
+                let c = sess.run(cost, feedItems [| X, train_X; Y, train_Y |])
                 printfn $"Epoch: %i{epoch} cost=%s{c.ToString()} W={sess.run(W).[0]} b={sess.run(b).[0]}"
 
         printfn "Optimization Finished!"
-        let training_cost = sess.run(cost, items [| X, train_X; Y, train_Y |])
+        let training_cost = sess.run(cost, feedItems [| X, train_X; Y, train_Y |])
         printfn $"Training cost=%s{training_cost.ToString()} W={sess.run(W).[0]} b={sess.run(b).[0]}"
 
         // Testing example
@@ -93,7 +91,7 @@ module LinearRegression =
         let test_Y = np.array(1.84f, 2.273f, 3.2f, 2.831f, 2.92f, 3.24f, 1.35f, 1.03f)
         printfn "Testing... (Mean square loss Comparison)"
         let testing_cost = sess.run(tf.reduce_sum(tf.pow(pred - Y, 2.0f)) / (2.0f * float32 test_X.shape.[0]),
-                                                  items [| X, test_X; Y, test_Y |])
+                                                  feedItems [| X, test_X; Y, test_Y |])
         printfn $"Testing cost=%A{testing_cost}"
         let diff = Math.Abs(training_cost.GetAtIndex<float32>(0) - testing_cost.GetAtIndex<float32>(0))
         printfn $"Absolute mean square loss difference: {diff}"

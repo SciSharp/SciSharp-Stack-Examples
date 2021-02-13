@@ -66,12 +66,10 @@ module NearestNeighbor =
 
         let mnist, (Xtr, Ytr), (Xte, Yte) = prepareData()
 
-        let items array = Array.map FeedItem array
-
         for i in range(Xte.shape.[0]) do
 
             // Get nearest neighbor
-            let nn_index = int64 <| sess.run(pred, items [| xtr, Xtr; xte, Xte.[i] |])
+            let nn_index = int64 <| sess.run(pred, feedItems [| xtr, Xtr; xte, Xte.[i] |])
             // Get nearest neighbor class label and compare it to its true label
             let index = int nn_index
 

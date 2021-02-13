@@ -92,8 +92,6 @@ module LogisticRegression =
         // Run the initializer
         sess.run(init)
 
-        let items array = Array.map FeedItem array
-
         // Training cycle
         for epoch in range(training_epochs) do
             sw.Start()
@@ -105,7 +103,7 @@ module LogisticRegression =
                 let ``end`` = (i + 1) * batch_size
                 let struct (batch_xs, batch_ys) = mnist.GetNextBatch(mnist.Train.Data, mnist.Train.Labels, start, ``end``)
                 // Run optimization op (backprop) and cost op (to get loss value)
-                let struct (_, c) = sess.run(struct (optimizer :> ITensorOrOperation, cost :> ITensorOrOperation), items [| x, batch_xs; y, batch_ys |])
+                let struct (_, c) = sess.run(fetches (optimizer, cost), feedItems [| x, batch_xs; y, batch_ys |])
 
                 // Compute average loss
                 avg_cost <- avg_cost + (float32 c) / float32 total_batch
@@ -125,7 +123,7 @@ module LogisticRegression =
         let correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
         // Calculate accuracy
         let acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        let accuracy = acc.eval(sess, items [| x, mnist.Test.Data; y, mnist.Test.Labels |])
+        let accuracy = acc.eval(sess, feedItems [| x, mnist.Test.Data; y, mnist.Test.Labels |])
         print($"Accuracy: {accuracy:F4}")
         float accuracy
 
