@@ -125,6 +125,7 @@ let main argv =
               NaiveBayesClassifier.Example
               FullyConnectedEager.Example
               FullyConnectedKeras.Example
+              DigitRecognitionCNN.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
