@@ -126,6 +126,7 @@ let main argv =
               FullyConnectedEager.Example
               FullyConnectedKeras.Example
               DigitRecognitionCNN.Example
+              DigitRecognitionCnnEager.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)

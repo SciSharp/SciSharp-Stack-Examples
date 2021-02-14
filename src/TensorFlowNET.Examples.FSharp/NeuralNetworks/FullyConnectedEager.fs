@@ -46,7 +46,7 @@ module FullyConnectedEager =
         // Flatten images to 1-D vector of 784 features (28*28).
         let struct (x_train, x_test) = (x_train.reshape(Shape (-1, num_features)), x_test.reshape(Shape (-1, num_features)))
         // Normalize images value from [0, 255] to [0, 1].
-        let (x_train, x_test) = (x_train / 255f, x_test / 255f)
+        let x_train, x_test = x_train / 255f, x_test / 255f
 
         // Use tf.data API to shuffle and batch data.
         let train_data = tf.data.Dataset.from_tensor_slices(x_train.asTensor, y_train.asTensor)
@@ -62,7 +62,7 @@ module FullyConnectedEager =
     let private run () =
         tf.enable_eager_execution()
 
-        let ((x_test, y_test), train_data) = prepareData()
+        let (x_test, y_test), train_data = prepareData()
 
         // Store layers weight & bias
         // A random value generator to initialize weights.
