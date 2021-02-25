@@ -137,6 +137,6 @@ module FullyConnectedEager =
 
         accuracy_test > 0.85f
 
-    let Example = { Config = ExampleConfig.Create("Fully Connected Neural Network (Eager)", priority0 = 11)
+    let Example = { Config = ExampleConfig.Create("Fully Connected Neural Network (Eager)", priority = 11)
                     Run = run }
 

@@ -171,6 +171,6 @@ module MnistCnnKerasSubclass =
 
         accuracy_test > 0.90f
 
-    let Example = { Config = ExampleConfig.Create("MNIST CNN (Keras Subclass)", priority0 = 17)
+    let Example = { Config = ExampleConfig.Create("MNIST CNN (Keras Subclass)", priority = 17)
                     Run = run }
 

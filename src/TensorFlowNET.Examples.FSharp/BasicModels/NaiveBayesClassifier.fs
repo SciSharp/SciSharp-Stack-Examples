@@ -152,6 +152,6 @@ module NaiveBayesClassifier =
 
         true
 
-    let Example = { Config = ExampleConfig.Create("Naive Bayes Classifier", priority0 = 7)
+    let Example = { Config = ExampleConfig.Create("Naive Bayes Classifier", priority = 7)
                     Run = run }
 

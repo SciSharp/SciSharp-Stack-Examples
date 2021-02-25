@@ -26,5 +26,5 @@ module HelloWorld =
         str = tensor
 
     let Example =
-        { Config = ExampleConfig.Create("Hello World", priority0 = 1)
+        { Config = ExampleConfig.Create("Hello World", priority = 1)
           Run = run }

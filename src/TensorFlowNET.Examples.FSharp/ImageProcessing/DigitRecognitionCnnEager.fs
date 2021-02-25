@@ -202,6 +202,6 @@ module DigitRecognitionCnnEager =
 
         accuracy_test >= 0.90f
 
-    let Example = { Config = ExampleConfig.Create("MNIST CNN (Eager)", priority0 = 16 )
+    let Example = { Config = ExampleConfig.Create("MNIST CNN (Eager)", priority = 16 )
                     Run = run }
 

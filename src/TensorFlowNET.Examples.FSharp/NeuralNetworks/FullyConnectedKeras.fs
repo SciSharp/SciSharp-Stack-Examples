@@ -168,6 +168,6 @@ module FullyConnectedKeras =
 
         accuracy > 0.92f
 
-    let Example = { Config = ExampleConfig.Create("Fully Connected Neural Network (Keras)", priority0 = 12)
+    let Example = { Config = ExampleConfig.Create("Fully Connected Neural Network (Keras)", priority = 12)
                     Run = run }
 

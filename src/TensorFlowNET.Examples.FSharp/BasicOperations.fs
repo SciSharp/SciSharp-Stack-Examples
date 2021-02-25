@@ -43,7 +43,7 @@ module BasicOperations =
         true
 
     let Example =
-        { Config = ExampleConfig.Create ("Basic Operations", priority0 = 2)
+        { Config = ExampleConfig.Create ("Basic Operations", priority = 2)
           Run = run
         }
 

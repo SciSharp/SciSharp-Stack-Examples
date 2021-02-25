@@ -160,7 +160,7 @@ module LogisticRegression =
         accuracy > 0.9
 
     let Example =
-        { Config = ExampleConfig.Create("Logistic Regression (Graph)", priority0 = 6)
+        { Config = ExampleConfig.Create("Logistic Regression (Graph)", priority = 6)
           Run = run
         }
 

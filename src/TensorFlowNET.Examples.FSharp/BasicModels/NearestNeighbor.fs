@@ -84,5 +84,5 @@ module NearestNeighbor =
 
         accuracy > 0.8f
 
-    let Example = { Config = ExampleConfig.Create("Nearest Neighbor", priority0 = 8)
+    let Example = { Config = ExampleConfig.Create("Nearest Neighbor", priority = 8)
                     Run = run }
