@@ -72,6 +72,6 @@ module LinearRegressionEager =
         true
     
     let Example =
-        { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Eager)", priority0 = 5)
+        { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Eager)", priority = 5)
           Run = run
         }

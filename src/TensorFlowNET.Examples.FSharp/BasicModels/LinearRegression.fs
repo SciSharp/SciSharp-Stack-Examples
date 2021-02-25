@@ -99,7 +99,7 @@ module LinearRegression =
         diff < 0.01f
 
     let Example =
-        { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Graph)", priority0 = 4)
+        { SciSharpExample.Config = ExampleConfig.Create ("Linear Regression (Graph)", priority = 4)
           Run = run
         }
 

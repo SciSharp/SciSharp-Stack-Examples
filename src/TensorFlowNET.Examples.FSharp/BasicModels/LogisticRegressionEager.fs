@@ -106,6 +106,6 @@ module LogisticRegressionEager =
 
         true
 
-    let Example = { Config = ExampleConfig.Create("Logistic Regression (Eager)", priority0 = 7)
+    let Example = { Config = ExampleConfig.Create("Logistic Regression (Eager)", priority = 7)
                     Run = run }
 

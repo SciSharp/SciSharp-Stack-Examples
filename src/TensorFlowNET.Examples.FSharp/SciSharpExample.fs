@@ -24,10 +24,10 @@ type ExampleConfig =
       /// Set true to import the computation graph instead of building it
       IsImportedGraph : bool
     }
-    static member Create (name, ?priority0, ?enabled0, ?isImportedGraph0) =
-        let priority = defaultArg priority0 100
-        let enabled = defaultArg enabled0 true
-        let isImportedGraph = defaultArg isImportedGraph0 false
+    static member Create (name, ?priority, ?enabled, ?isImportedGraph) =
+        let priority = defaultArg priority 100
+        let enabled = defaultArg enabled true
+        let isImportedGraph = defaultArg isImportedGraph false
         { Name = name
           Priority = priority
           Enabled = enabled

@@ -300,6 +300,6 @@ module DigitRecognitionCNN =
 
         accuracy_test > 0.98f
 
-    let Example = { Config = ExampleConfig.Create(name, priority0 = 15)
+    let Example = { Config = ExampleConfig.Create(name, priority = 15)
                     Run = run }
 
