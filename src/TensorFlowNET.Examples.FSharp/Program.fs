@@ -127,6 +127,7 @@ let main argv =
               FullyConnectedKeras.Example
               DigitRecognitionCNN.Example
               DigitRecognitionCnnEager.Example
+              MnistCnnKerasSubclass.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)

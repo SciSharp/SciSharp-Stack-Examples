@@ -65,6 +65,7 @@ Example runner will download all the required files like training data and model
 * MNIST FNN in Keras Functional API [C#](src/TensorFlowNET.Examples/ImageProcessing/MnistFnnKerasFunctional.cs) 
 * MNIST CNN in Graph mode [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCNN.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/DigitRecognitionCNN.fs)
 * MNIST CNN in Eager mode [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionCnnEager.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/DigitRecognitionCnnEager.fs)
+* MNIST CNN in Keras SubClass [C#](src/TensorFlowNET.Examples/ImageProcessing/MnistCnnKerasSubclass.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/MnistCnnKerasSubclass.fs)
 * MNIST RNN [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
 * MNIST LSTM [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
 * Image Classification in Keras Sequential API [C#](src/TensorFlowNET.Examples/ImageProcessing/ImageClassificationKeras.cs)
