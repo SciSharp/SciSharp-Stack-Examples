@@ -68,7 +68,7 @@ Example runner will download all the required files like training data and model
 * MNIST CNN in Keras SubClass [C#](src/TensorFlowNET.Examples/ImageProcessing/MnistCnnKerasSubclass.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/MnistCnnKerasSubclass.fs)
 * MNIST RNN [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionRNN.cs)
 * MNIST LSTM [C#](src/TensorFlowNET.Examples/ImageProcessing/DigitRecognitionLSTM.cs)
-* Image Classification in Keras Sequential API [C#](src/TensorFlowNET.Examples/ImageProcessing/ImageClassificationKeras.cs)
+* Image Classification in Keras Sequential API [C#](src/TensorFlowNET.Examples/ImageProcessing/ImageClassificationKeras.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/ImageClassificationKeras.fs)
 * Toy ResNet in Keras Functional API [C#](src/TensorFlowNET.Examples/ImageProcessing/ToyResNet.cs)
 * Transfer Learning for Image Classification in InceptionV3 [C#](src/TensorFlowNET.Examples/ImageProcessing/TransferLearningWithInceptionV3.cs)
 * CNN In Your Own Dataset [C#](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs)
