@@ -89,7 +89,7 @@ namespace TensorFlowNET.Examples
 
         NDArray Test_Cls, Test_Data;
 
-        IVariableV1 gloabl_steps;
+        IVariableV1 global_steps;
         IVariableV1 learning_rate;
 
         bool SaverBest = true;
@@ -289,14 +289,14 @@ namespace TensorFlowNET.Examples
             var output_logits = fc_layer(fc1, n_classes, "OUT", use_relu: false);
 
             //Some important parameter saved with graph , easy to load later
-            var img_h_t = tf.constant(img_h, name: "img_h");
-            var img_w_t = tf.constant(img_w, name: "img_w");
-            var img_mean_t = tf.constant(img_mean, name: "img_mean");
-            var img_std_t = tf.constant(img_std, name: "img_std");
-            var channels_t = tf.constant(n_channels, name: "img_channels");
+            //var img_h_t = tf.constant(img_h, name: "img_h");
+            //var img_w_t = tf.constant(img_w, name: "img_w");
+            //var img_mean_t = tf.constant(img_mean, name: "img_mean");
+            //var img_std_t = tf.constant(img_std, name: "img_std");
+            //var channels_t = tf.constant(n_channels, name: "img_channels");
 
             //learning rate decay
-            gloabl_steps = tf.Variable(0, trainable: false);
+            global_steps = tf.Variable(0, trainable: false);
             learning_rate = tf.Variable(learning_rate_base);
 
             //create train images graph
@@ -320,7 +320,7 @@ namespace TensorFlowNET.Examples
 
                 tf_with(tf.variable_scope("Optimizer"), delegate
                 {
-                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss, global_step: gloabl_steps);
+                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss, global_step: global_steps);
                 });
 
                 tf_with(tf.variable_scope("Accuracy"), delegate
@@ -523,7 +523,7 @@ namespace TensorFlowNET.Examples
                 // Run validation after every epoch
                 (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
                 print("CNN：" + "---------------------------------------------------------");
-                print("CNN：" + $"gloabl steps: {sess.run(gloabl_steps) },learning rate: {sess.run(learning_rate)}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
+                print("CNN：" + $"global steps: {sess.run(global_steps)[0]}, learning rate: {sess.run(learning_rate)[0]}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
                 print("CNN：" + "---------------------------------------------------------");
 
                 if (SaverBest)
@@ -532,13 +532,13 @@ namespace TensorFlowNET.Examples
                     {
                         max_accuracy = accuracy_val;
                         saver.save(sess, path_model + "\\CNN_Best");
-                        print("CKPT Model is save.");
+                        print("CKPT Model is saved.");
                     }
                 }
                 else
                 {
                     saver.save(sess, path_model + string.Format("\\CNN_Epoch_{0}_Loss_{1}_Acc_{2}", epoch, loss_val, accuracy_val));
-                    print("CKPT Model is save.");
+                    print("CKPT Model is saved.");
                 }
             }
             Write_Dictionary(path_model + "\\dic.txt", Dict_Label);

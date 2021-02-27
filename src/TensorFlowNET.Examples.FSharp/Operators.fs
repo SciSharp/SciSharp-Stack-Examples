@@ -17,6 +17,7 @@ limitations under the License.
 namespace TensorFlowNET.Examples.FSharp
 
 open NumSharp
+open SharpCV
 open Tensorflow
 
 [<AutoOpen>]
@@ -41,6 +42,9 @@ module TensorflowOperators =
 
     type NDArray with
         member x.asTensors : Tensors = x.asTensor.asTensors
+
+    type Mat with
+        member x.asNDArray : NDArray = Mat.op_Implicit x
 
     let feedItems array = Array.map FeedItem array
 
