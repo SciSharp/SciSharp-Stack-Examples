@@ -71,7 +71,7 @@ Example runner will download all the required files like training data and model
 * Image Classification in Keras Sequential API [C#](src/TensorFlowNET.Examples/ImageProcessing/ImageClassificationKeras.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/ImageClassificationKeras.fs)
 * Toy ResNet in Keras Functional API [C#](src/TensorFlowNET.Examples/ImageProcessing/ToyResNet.cs)
 * Transfer Learning for Image Classification in InceptionV3 [C#](src/TensorFlowNET.Examples/ImageProcessing/TransferLearningWithInceptionV3.cs)
-* CNN In Your Own Dataset [C#](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs)
+* CNN In Your Own Dataset [C#](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/CnnInYourOwnData.fs)
 
 #### Natural Language Processing
 * Binary Text Classification [C#](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)

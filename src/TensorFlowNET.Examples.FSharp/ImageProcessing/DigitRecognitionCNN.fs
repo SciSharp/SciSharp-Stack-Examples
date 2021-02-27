@@ -161,7 +161,7 @@ module DigitRecognitionCNN =
             if use_relu then
                 tf.nn.relu(layer)
             else
-                layer;
+                layer
         )
 
     let private buildGraph graph =

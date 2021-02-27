@@ -130,6 +130,7 @@ let main argv =
               MnistCnnKerasSubclass.Example
               MnistFnnKerasFunctional.Example
               ImageClassificationKeras.Example
+              CnnInYourOwnData.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
