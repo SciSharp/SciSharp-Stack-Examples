@@ -131,6 +131,7 @@ let main argv =
               MnistFnnKerasFunctional.Example
               ImageClassificationKeras.Example
               CnnInYourOwnData.Example
+              ImageRecognitionInception.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
