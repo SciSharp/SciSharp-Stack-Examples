@@ -19,6 +19,7 @@
     <Compile Include="BasicModels\NaiveBayesClassifier.fs" />
     <Compile Include="NeuralNetworks\FullyConnectedEager.fs" />
     <Compile Include="NeuralNetworks\FullyConnectedKeras.fs" />
+    <Compile Include="ImageProcessing\ImageRecognitionInception.fs" />
     <Compile Include="ImageProcessing\CnnInYourOwnData.fs" />
     <Compile Include="ImageProcessing\ImageClassificationKeras.fs" />
     <Compile Include="ImageProcessing\MnistFnnKerasFunctional.fs" />
