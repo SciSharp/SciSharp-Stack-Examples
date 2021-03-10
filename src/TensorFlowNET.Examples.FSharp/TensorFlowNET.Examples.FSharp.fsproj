@@ -26,6 +26,7 @@
     <Compile Include="ImageProcessing\MnistCnnKerasSubclass.fs" />
     <Compile Include="ImageProcessing\DigitRecognitionCNN.fs" />
     <Compile Include="ImageProcessing\DigitRecognitionCnnEager.fs" />
+    <Compile Include="ImageProcessing\ToyResNet.fs" />
     <Compile Include="FunctionApproximation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

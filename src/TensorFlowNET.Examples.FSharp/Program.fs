@@ -132,6 +132,7 @@ let main argv =
               ImageClassificationKeras.Example
               CnnInYourOwnData.Example
               ImageRecognitionInception.Example
+              CIFAR10_CNN.Example
             ]
             |> List.where isSelected
             |> List.sortBy (fun e -> e.Config.Priority)
