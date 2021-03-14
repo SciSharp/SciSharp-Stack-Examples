@@ -15,8 +15,8 @@
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
-    <PackageReference Include="SharpCV" Version="0.6.0" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.4.1" />
+    <PackageReference Include="SharpCV" Version="0.7.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="TensorFlow.Keras" Version="0.4.0" />
   </ItemGroup>

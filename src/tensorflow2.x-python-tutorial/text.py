@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-# import tensorflow_text as text
+import tensorflow_text as text
 print(tf.__version__)
 
 docs = tf.constant([u'Everything not saved will be lost.'])

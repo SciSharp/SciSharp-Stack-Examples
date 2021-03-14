@@ -37,15 +37,15 @@ namespace TensorFlowNET.Examples.GAN
             model.add(layers.LeakyReLU());
             model.add(layers.Reshape((7, 7, 256)));
 
-            model.add(layers.Conv2DTranspose(128, (5, 5), strides: (1, 1), padding: "same", use_bias: false));
+            model.add(layers.Conv2DTranspose(128, (5, 5), strides: (1, 1), output_padding: "same", use_bias: false));
             model.add(layers.BatchNormalization());
             model.add(layers.LeakyReLU());
 
-            model.add(layers.Conv2DTranspose(64, (5, 5), strides: (2, 2), padding: "same", use_bias: false));
+            model.add(layers.Conv2DTranspose(64, (5, 5), strides: (2, 2), output_padding: "same", use_bias: false));
             model.add(layers.BatchNormalization());
             model.add(layers.LeakyReLU());
 
-            model.add(layers.Conv2DTranspose(1, (5, 5), strides: (2, 2), padding: "same", use_bias: false, activation: "tanh"));
+            model.add(layers.Conv2DTranspose(1, (5, 5), strides: (2, 2), output_padding: "same", use_bias: false, activation: "tanh"));
 
             return model;
         }

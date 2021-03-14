@@ -17,7 +17,7 @@ namespace TensorFlowNET.Examples
     public class ImageClassificationKeras : SciSharpExample, IExample
     {
         int batch_size = 32;
-        int epochs = 10;
+        int epochs = 3;
         TensorShape img_dim = (180, 180);
         IDatasetV2 train_ds, val_ds;
         Model model;
@@ -96,8 +96,8 @@ namespace TensorFlowNET.Examples
             image_size: img_dim,
             batch_size: batch_size);
 
-            train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size: -1);
-            val_ds = val_ds.cache().prefetch(buffer_size: -1);
+            train_ds = train_ds.shuffle(1000).prefetch(buffer_size: -1);
+            val_ds = val_ds.prefetch(buffer_size: -1);
 
             foreach (var (img, label) in train_ds)
             {
