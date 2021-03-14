@@ -118,7 +118,7 @@ namespace TensorFlowNET.Examples
                 // Wrap computation inside a GradientTape for automatic differentiation.
                 using var g = tf.GradientTape();
                 // Forward pass.
-                var pred = neural_net.Apply(x, is_training: true);
+                var pred = neural_net.Apply(x, training: true);
                 var loss = cross_entropy_loss(pred, y);
 
                 // Compute gradients.
@@ -137,7 +137,7 @@ namespace TensorFlowNET.Examples
 
                 if (step % display_step == 0)
                 {
-                    var pred = neural_net.Apply(batch_x, is_training: true);
+                    var pred = neural_net.Apply(batch_x, training: true);
                     var loss = cross_entropy_loss(pred, batch_y);
                     var acc = accuracy(pred, batch_y);
                     print($"step: {step}, loss: {(float)loss}, accuracy: {(float)acc}");
@@ -146,7 +146,7 @@ namespace TensorFlowNET.Examples
 
             // Test model on validation set.
             {
-                var pred = neural_net.Apply(x_test, is_training: false);
+                var pred = neural_net.Apply(x_test, training: false);
                 this.accuracy = (float)accuracy(pred, y_test);
                 print($"Test Accuracy: {this.accuracy}");
             }
@@ -177,12 +177,12 @@ namespace TensorFlowNET.Examples
             }
 
             // Set forward pass.
-            protected override Tensors Call(Tensors inputs, Tensor state = null, bool is_training = false)
+            protected override Tensors Call(Tensors inputs, Tensor state = null, bool? training = null)
             {
                 inputs = fc1.Apply(inputs);
                 inputs = fc2.Apply(inputs);
                 inputs = output.Apply(inputs);
-                if (!is_training)
+                if (!training.Value)
                     inputs = tf.nn.softmax(inputs);
                 return inputs;
             }

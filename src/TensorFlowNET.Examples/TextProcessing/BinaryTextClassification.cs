@@ -1,32 +1,30 @@
-﻿using Newtonsoft.Json;
-using NumSharp;
+﻿using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Tensorflow.Keras.Utils;
+using Tensorflow;
+using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
 namespace TensorFlowNET.Examples
 {
     /// <summary>
-    /// This example classifies movie reviews as positive or negative using the text of the review. 
-    /// This is a binary—or two-class—classification, an important and widely applicable kind of machine learning problem.
-    /// https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb
+    /// This tutorial demonstrates text classification starting from plain text files stored on disk.
+    /// You'll train a binary classifier to perform sentiment analysis on an IMDB dataset. 
+    /// At the end of the notebook, there is an exercise for you to try, in which you'll train a 
+    /// multiclass classifier to predict the tag for a programming question on Stack Overflow.
+    /// https://www.tensorflow.org/tutorials/keras/text_classification
     /// </summary>
     public class BinaryTextClassification : SciSharpExample, IExample
     {
-        string dir = "binary_text_classification";
-        string dataFile = "imdb.zip";
         NDArray train_data, train_labels, test_data, test_labels;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
                 Name = "Binary Text Classification",
-                Enabled = false,
-
-                IsImportingGraph = true
+                Enabled = true
             };
 
         public bool Run()
@@ -36,8 +34,6 @@ namespace TensorFlowNET.Examples
             Console.WriteLine($"Training entries: {train_data.shape[0]}, labels: {train_labels.shape[0]}");
 
             // A dictionary mapping words to an integer index
-            var word_index = GetWordIndex();
-
             /*train_data = keras.preprocessing.sequence.pad_sequences(train_data,
                 value: word_index["<PAD>"],
                 padding: "post",
@@ -48,7 +44,9 @@ namespace TensorFlowNET.Examples
                 padding: "post",
                 maxlen: 256);*/
 
-            /*var model =*/ keras.Sequential();
+            // input shape is the vocabulary count used for the movie reviews (10,000 words)
+
+            var model = keras.Sequential();
             //var layer = tf.keras.layers.Embedding(vocab_size, 16);
             //model.add(layer);
 
@@ -57,86 +55,67 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            Directory.CreateDirectory(dir);
+            tf.debugging.set_log_device_placement(true);
+            string url = "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz";
+            var dataset = keras.utils.get_file("aclImdb_v1.tar.gz", url,
+                untar: true,
+                cache_dir: Path.GetTempPath(),
+                cache_subdir: "aclImdb_v1");
+            var data_dir = Path.Combine(dataset, "aclImdb");
+            var train_dir = Path.Combine(data_dir, "train");
 
-            // get model file
-            string url = $"https://github.com/SciSharp/TensorFlow.NET/raw/master/data/{dataFile}";
+            int batch_size = 32;
+            int seed = 42;
+            var raw_train_ds = keras.preprocessing.text_dataset_from_directory(
+                train_dir,
+                batch_size: batch_size,
+                validation_split: 0.2f,
+                subset: "training",
+                seed: seed);
 
-            Web.Download(url, dir, "imdb.zip");
-            Compress.UnZip(Path.Join(dir, $"imdb.zip"), dir);
-
-            // prepare training dataset
-            var x_train = ReadData(Path.Join(dir, "x_train.txt"));
-            var labels_train = ReadData(Path.Join(dir, "y_train.txt"));
-            var indices_train = ReadData(Path.Join(dir, "indices_train.txt"));
-            x_train = x_train[indices_train];
-            labels_train = labels_train[indices_train];
-
-            var x_test = ReadData(Path.Join(dir, "x_test.txt"));
-            var labels_test = ReadData(Path.Join(dir, "y_test.txt"));
-            var indices_test = ReadData(Path.Join(dir, "indices_test.txt"));
-            x_test = x_test[indices_test];
-            labels_test = labels_test[indices_test];
-
-            // not completed
-            var xs = x_train.hstack(x_test);
-            var labels = labels_train.hstack(labels_test);
-
-            var idx = x_train.size;
-            var y_train = labels_train;
-            var y_test = labels_test;
-
-            // convert x_train
-            train_data = new NDArray(np.int32, (x_train.size, 256));
-            /*for (int i = 0; i < x_train.size; i++)
-                train_data[i] = x_train[i].Data<string>()[1].Split(',').Select(x => int.Parse(x)).ToArray();*/
-
-            test_data = new NDArray(np.int32, (x_test.size, 256));
-            /*for (int i = 0; i < x_test.size; i++)
-                test_data[i] = x_test[i].Data<string>()[1].Split(',').Select(x => int.Parse(x)).ToArray();*/
-
-            train_labels = y_train;
-            test_labels = y_test;
-        }
-
-        private NDArray ReadData(string file)
-        {
-            var lines = File.ReadAllLines(file);
-            var nd = new NDArray(lines[0].StartsWith("[") ? typeof(string) : np.int32, new Shape(lines.Length));
-
-            if (lines[0].StartsWith("["))
+            foreach (var (text_batch, label_batch) in raw_train_ds.take(1))
             {
-                for (int i = 0; i < lines.Length; i++)
+                foreach (var i in range(3))
                 {
-                    /*var matches = Regex.Matches(lines[i], @"\d+\s*");
-                    var data = new int[matches.Count];
-                    for (int j = 0; j < data.Length; j++)
-                        data[j] = Convert.ToInt32(matches[j].Value);
-                    nd[i] = data.ToArray();*/
-                    nd[i] = (NDArray)lines[i].Substring(1, lines[i].Length - 2).Replace(" ", string.Empty);
+                    print("Review", text_batch.StringData()[i]);
+                    print("Label", label_batch.numpy()[i]);
                 }
             }
-            else
+
+            print("Label 0 corresponds to", raw_train_ds.class_names[0]);
+            print("Label 1 corresponds to", raw_train_ds.class_names[1]);
+
+            var raw_val_ds = keras.preprocessing.text_dataset_from_directory(
+                train_dir,
+                batch_size: batch_size,
+                validation_split: 0.2f,
+                subset: "validation",
+                seed: seed);
+
+            var test_dir = Path.Combine(data_dir, "test");
+            var raw_test_ds = keras.preprocessing.text_dataset_from_directory(
+                test_dir,
+                batch_size: batch_size);
+
+            var max_features = 10000;
+            var sequence_length = 250;
+
+            Func<Tensor, Tensor> custom_standardization = input_data =>
             {
-                for (int i = 0; i < lines.Length; i++)
-                    nd[i] = Convert.ToInt32(lines[i]);
-            }
-            return nd;
-        }
+                var lowercase = tf.strings.lower(input_data);
+                var stripped_html = tf.strings.regex_replace(lowercase, "<br />", " ");
+                return tf.strings.regex_replace(stripped_html,
+                                                "'[!\"\\#\\$%\\&\'\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}\\~]'",
+                                                "");
+            };
 
-        private Dictionary<string, int> GetWordIndex()
-        {
-            var result = new Dictionary<string, int>();
-            var json = File.ReadAllText(Path.Join(dir, "imdb_word_index.json"));
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+            var vectorize_layer = keras.layers.preprocessing.TextVectorization(standardize: custom_standardization,
+                max_tokens: max_features,
+                output_mode: "int",
+                output_sequence_length: sequence_length);
 
-            dict.Keys.Select(k => result[k] = dict[k] + 3).ToList();
-            result["<PAD>"] = 0;
-            result["<START>"] = 1;
-            result["<UNK>"] = 2; // unknown
-            result["<UNUSED>"] = 3;
-
-            return result;
+            var train_text = raw_train_ds.map(inputs => inputs[0]);
+            vectorize_layer.adapt(train_text);
         }
     }
 }
