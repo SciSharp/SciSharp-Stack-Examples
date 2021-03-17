@@ -77,8 +77,7 @@ namespace TensorFlowNET.Examples
             model = keras.Model(inputs, outputs, name: "toy_resnet");
             model.summary();
 
-            model.compile(
-                optimizer: keras.optimizers.RMSprop(1e-3f),
+            model.compile(optimizer: keras.optimizers.RMSprop(1e-3f),
                 loss: keras.losses.CategoricalCrossentropy(from_logits: true),
                 metrics: new[] { "acc" });
         }

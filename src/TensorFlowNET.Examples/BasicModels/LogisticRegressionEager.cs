@@ -47,7 +47,7 @@ namespace TensorFlowNET.Examples
                 Name = "Logistic Regression (Eager)",
                 Enabled = true,
                 IsImportingGraph = false,
-                Priority = 7
+                Priority = 9
             };
 
         public bool Run()
