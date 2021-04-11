@@ -26,7 +26,7 @@ open type Tensorflow.KerasApi
 
 module ImageClassificationKeras =
     let batch_size = 32
-    let epochs = 10
+    let epochs = 3
     let img_dim = TensorShape (180, 180)
 
     let private prepareData () =
@@ -56,8 +56,8 @@ module ImageClassificationKeras =
                 image_size = img_dim,
                 batch_size = batch_size)
 
-        let train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size = -1)
-        let val_ds = val_ds.cache().prefetch(buffer_size = -1)
+        let train_ds = train_ds.shuffle(1000).prefetch(buffer_size = -1)
+        let val_ds = val_ds.prefetch(buffer_size = -1)
 
         for img, label in train_ds do
             print($"images: {img.TensorShape}")
