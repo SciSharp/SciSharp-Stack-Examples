@@ -69,7 +69,7 @@ module FullyConnectedKeras =
         NumClasses : int
     }
 
-    type NeuralNet(fc1 : Layer, fc2 : Layer, output : Layer) as this =
+    type NeuralNet(fc1 : Layer, fc2 : Layer, output : Layer) =
         inherit Model(ModelArgs())
 
         private new(args : NeuralNetArgs) =
