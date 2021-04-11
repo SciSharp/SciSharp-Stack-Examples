@@ -79,7 +79,7 @@ module MnistCnnKerasSubclass =
 
             // Fully connected layer.
             let fc1 = layers.Dense(1024) :> Layer
-            // Apply Dropout (if is_training is False, dropout is not applied).
+            // Apply Dropout (if training is False, dropout is not applied).
             let dropout = layers.Dropout(rate = 0.5f) :> Layer
 
             // Output layer, class prediction.
@@ -99,9 +99,9 @@ module MnistCnnKerasSubclass =
             cnn
 
         //let state = defaultArg state null
-        //let is_training = defaultArg is_training false
 
-        override x.Call(inputs, state, is_training) =
+        override x.Call(inputs, state, training) =
+            let training = defaultArg (Option.ofNullable training) false
             let inputs = tf.reshape(inputs.asTensor, TensorShape (-1, 28, 28, 1)).asTensors
             let inputs = conv1.Apply(inputs)
             let inputs = maxpool1.Apply(inputs)
@@ -109,9 +109,9 @@ module MnistCnnKerasSubclass =
             let inputs = maxpool2.Apply(inputs)
             let inputs = flatten.Apply(inputs)
             let inputs = fc1.Apply(inputs)
-            let inputs = dropout.Apply(inputs, is_training = is_training)
+            let inputs = dropout.Apply(inputs, training = training)
             let inputs = output.Apply(inputs)
-            if not is_training then tf.nn.softmax(inputs.asTensor).asTensors else inputs
+            if not training then tf.nn.softmax(inputs.asTensor).asTensors else inputs
 
     let cross_entropy_loss x y =
         // Convert labels to int 64 for tf cross-entropy function.
@@ -123,7 +123,7 @@ module MnistCnnKerasSubclass =
 
     let run_optimization (conv_net : ConvNet) (optimizer : OptimizerV2) (x : Tensor) y =
         use g = tf.GradientTape()
-        let pred = conv_net.Apply(x.asTensors, is_training = true)
+        let pred = conv_net.Apply(x.asTensors, training = true)
         let loss = cross_entropy_loss pred.asTensor y
 
         // Compute gradients.
