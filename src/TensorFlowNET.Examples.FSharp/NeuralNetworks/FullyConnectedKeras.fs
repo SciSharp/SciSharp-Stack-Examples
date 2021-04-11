@@ -16,6 +16,8 @@ limitations under the License.
 
 namespace TensorFlowNET.Examples.FSharp
 
+open System
+
 open NumSharp
 open Tensorflow
 open Tensorflow.Keras
@@ -93,11 +95,12 @@ module FullyConnectedKeras =
             x.Call(inputs, null, false)
 
         // Set forward pass.
-        override _.Call(inputs : Tensors, state : Tensor, is_training : bool) =
+        override _.Call(inputs : Tensors, state : Tensor, training : Nullable<bool>) =
+            let training = defaultArg (Option.ofNullable training) false
             let inputs = fc1.Apply(inputs)
             let inputs = fc2.Apply(inputs)
             let inputs = output.Apply(inputs)
-            if not is_training then
+            if not training then
                 tf.nn.softmax(inputs.asTensor).asTensors
             else
                 inputs
@@ -140,7 +143,7 @@ module FullyConnectedKeras =
             // Wrap computation inside a GradientTape for automatic differentiation.
             use g = tf.GradientTape()
             // Forward pass.
-            let pred = neural_net.Apply(x.asTensors, is_training = true)
+            let pred = neural_net.Apply(x.asTensors, training = true)
             let loss = cross_entropy_loss pred.asTensor y
 
             // Compute gradients.
@@ -156,13 +159,13 @@ module FullyConnectedKeras =
             run_optimization batch_x batch_y
 
             if step % display_step = 0 then
-                let pred = neural_net.Apply(batch_x.asTensors, is_training = true)
+                let pred = neural_net.Apply(batch_x.asTensors, training = true)
                 let loss = cross_entropy_loss pred.asTensor batch_y
                 let acc = get_accuracy pred.asTensor batch_y
                 print($"step: {step}, loss: {float32 loss}, accuracy: {float32 acc}")
 
         // Test model on validation set.
-        let pred = neural_net.Apply(x_test.asTensor.asTensors, is_training = false)
+        let pred = neural_net.Apply(x_test.asTensor.asTensors, training = false)
         let accuracy = float32 (get_accuracy pred.asTensor y_test.asTensor)
         print($"Test Accuracy: {accuracy}")
 
