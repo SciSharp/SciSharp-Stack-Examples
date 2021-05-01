@@ -57,7 +57,7 @@ namespace TensorFlowNET.Examples
             var x = layers.Conv2D(32, 3, activation: "relu").Apply(inputs);
             x = layers.Conv2D(64, 3, activation: "relu").Apply(x);
 
-            // x = layers.BatchNormalization().Apply(x);
+            x = layers.BatchNormalization().Apply(x);
             var block_1_output = layers.MaxPooling2D(3).Apply(x);
 
             x = layers.Conv2D(64, 3, activation: "relu", padding: "same").Apply(block_1_output);

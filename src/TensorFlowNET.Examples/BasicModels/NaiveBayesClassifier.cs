@@ -144,7 +144,7 @@ namespace TensorFlowNET.Examples
             {
                 tem[i] = 1.0f / nb_classes;
             }
-            var priors = np.log(np.array<float>(tem));
+            var priors = np.log(np.array(tem));
 
             // posterior log probability, log P(c) + log P(x|c)
             var joint_likelihood = tf.add(ops.convert_to_tensor(priors, TF_DataType.TF_FLOAT), cond_probs);
