@@ -134,7 +134,10 @@ namespace TensorFlowNET.Examples
             foreach (var i in range(batch_size / num_skips))
             {
                 var context_words = range(span).Where(x => x != skip_window).ToArray();
-                var words_to_use = new int[] { 1, 6 };
+                List<int> span_list = Enumerable.Range(0, span).ToList();
+                Random rand = new Random(Guid.NewGuid().GetHashCode());
+                span_list.RemoveAt(skip_window);
+                var words_to_use = span_list.OrderBy(i => rand.Next(0, span_list.Count)).Take(num_skips).ToArray();
                 foreach (var (j, context_word) in enumerate(words_to_use))
                 {
                     batch[i * num_skips + j] = buffer.ElementAt(skip_window);
@@ -148,6 +151,7 @@ namespace TensorFlowNET.Examples
                 }
                 else
                 {
+                    buffer.Dequeue();
                     buffer.Enqueue(data[data_index]);
                     data_index += 1;
                 }
