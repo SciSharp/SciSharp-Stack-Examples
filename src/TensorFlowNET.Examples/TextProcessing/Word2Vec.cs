@@ -1,9 +1,10 @@
-﻿using NumSharp;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -101,8 +102,8 @@ namespace TensorFlowNET.Examples
                         var sim = sess.run(cosine_sim_op, (X, x_test));
                         foreach (var i in range(len(eval_words)))
                         {
-                            var nearest = (0f - sim[i]).argsort<float>()
-                                .Data<int>()
+                            var nearest = np.argsort(0f - sim[i])
+                                .ToArray<int>()
                                 .Skip(1)
                                 .Take(top_k)
                                 .ToArray();

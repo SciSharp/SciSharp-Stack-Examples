@@ -14,12 +14,12 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -49,19 +49,17 @@ namespace TensorFlowNET.Examples
             fit(X, y);
 
             // Create a regular grid and classify each point 
-            float x_min = X.amin(0).Data<float>()[0] - 0.5f;
-            float y_min = X.amin(0).Data<float>()[1] - 0.5f;
-            float x_max = X.amax(0).Data<float>()[1] + 0.5f;
-            float y_max = X.amax(0).Data<float>()[1] + 0.5f;
+            float x_min = np.amin(X, 0).ToArray<float>()[0] - 0.5f;
+            float y_min = np.amin(X, 0).ToArray<float>()[1] - 0.5f;
+            float x_max = np.amax(X, 0).ToArray<float>()[1] + 0.5f;
+            float y_max = np.amax(X, 0).ToArray<float>()[1] + 0.5f;
 
             var (xx, yy) = np.meshgrid(np.linspace(x_min, x_max, 30), np.linspace(y_min, y_max, 30));
             using (var sess = tf.Session())
             {
-                //var samples = np.vstack<float>(xx.ravel(), yy.ravel());
-                //samples = np.transpose(samples);
-                var array = np.Load<double[,]>(Path.Join("nb", "nb_example.npy"));
-                var samples = np.array(array).astype(np.float32);
-                var Z = sess.run(predict(samples));
+                //var array = np.Load<double[,]>(Path.Join("nb", "nb_example.npy"));
+                //var samples = np.array(array).astype(np.float32);
+                //var Z = sess.run(predict(samples));
             }
 
             return true;
@@ -73,14 +71,14 @@ namespace TensorFlowNET.Examples
 
             var dic = new Dictionary<int, List<List<float>>>();
             // Init uy in dic
-            foreach (int uy in unique_y.Data<int>())
+            foreach (int uy in unique_y.ToArray<int>())
             {
                 dic.Add(uy, new List<List<float>>());
             }
             // Separate training points by class 
             // Shape : nb_classes * nb_samples * nb_features
             int maxCount = 0;
-            for (int i = 0; i < y.size; i++)
+            for (int i = 0; i < (int)y.size; i++)
             {
                 var curClass = y[i];
                 var l = dic[curClass];

@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,6 +21,7 @@ using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using Tensorflow.Sessions;
 using TensorFlowNET.Examples.Text;
 using static Tensorflow.Binding;
@@ -80,7 +80,7 @@ namespace TensorFlowNET.Examples
         private (NDArray, NDArray, NDArray, NDArray) train_test_split(NDArray x, NDArray y, float test_size = 0.3f)
         {
             Console.WriteLine("Splitting in Training and Testing data...");
-            int len = x.shape[0];
+            var len = x.shape[0];
             //int classes = y.Data<int>().Distinct().Count();
             //int samples = len / classes;
             int train_size = (int)Math.Round(len * (1 - test_size));
@@ -309,7 +309,7 @@ namespace TensorFlowNET.Examples
                 Tensor prediction = graph.get_operation_by_name("output/ArgMax");
                 // encode text into 100 dimensions
                 var batches = batch_iter(test_x, test_y, BATCH_SIZE, 1).First();
-                var input = batches.Item1[0].reshape(1, 100);
+                var input = batches.Item1[0].reshape((1, 100));
                 var result = sess.run(prediction, (x, input), (is_training, false));
             }
         }

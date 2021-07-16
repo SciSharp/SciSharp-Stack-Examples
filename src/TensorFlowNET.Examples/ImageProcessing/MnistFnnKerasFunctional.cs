@@ -14,8 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using Tensorflow.Keras.Engine;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
@@ -53,8 +53,8 @@ namespace TensorFlowNET.Examples
         public override void PrepareData()
         {
             (x_train, y_train, x_test, y_test) = keras.datasets.mnist.load_data();
-            x_train = x_train.reshape(60000, 784) / 255f;
-            x_test = x_test.reshape(10000, 784) / 255f;
+            x_train = x_train.reshape((60000, 784)) / 255f;
+            x_test = x_test.reshape((10000, 784)) / 255f;
         }
 
         public override void BuildModel()

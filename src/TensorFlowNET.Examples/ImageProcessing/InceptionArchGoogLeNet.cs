@@ -1,9 +1,9 @@
-﻿using NumSharp;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -59,9 +59,9 @@ namespace TensorFlowNET.Examples
 
             results = np.squeeze(results);
 
-            var argsort = results.argsort<float>();
-            var top_k = argsort.Data<float>()
-                .Skip(results.size - 5)
+            var argsort = np.argsort(results);
+            var top_k = argsort.ToArray<float>()
+                .Skip((int)results.size - 5)
                 .Reverse()
                 .ToArray();
 

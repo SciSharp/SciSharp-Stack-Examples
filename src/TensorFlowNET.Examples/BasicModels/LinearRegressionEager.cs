@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
@@ -32,7 +32,6 @@ namespace TensorFlowNET.Examples
         float learning_rate = 0.01f;
         int display_step = 100;
 
-        NumPyRandom rng = np.random;
         NDArray train_X, train_Y;
         int n_samples;
 
@@ -99,7 +98,7 @@ namespace TensorFlowNET.Examples
              7.042f, 10.791f, 5.313f, 7.997f, 5.654f, 9.27f, 3.1f);
             train_Y = np.array(1.7f, 2.76f, 2.09f, 3.19f, 1.694f, 1.573f, 3.366f, 2.596f, 2.53f, 1.221f,
                          2.827f, 3.465f, 1.65f, 2.904f, 2.42f, 2.94f, 1.3f);
-            n_samples = train_X.shape[0];
+            n_samples = (int)train_X.shape[0];
         }
     }
 }

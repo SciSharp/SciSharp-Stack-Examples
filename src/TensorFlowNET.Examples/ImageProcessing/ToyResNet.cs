@@ -14,10 +14,10 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using Tensorflow;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 

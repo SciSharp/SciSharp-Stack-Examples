@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using SharpCV;
 using System;
 using System.Collections.Generic;
@@ -22,6 +21,7 @@ using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static SharpCV.Binding;
 using static Tensorflow.Binding;
 
@@ -93,16 +93,19 @@ namespace TensorFlowNET.Examples
             {
                 var original_image = cv2.imread(@"D:\SciSharp\SciSharp-Stack-Examples\data\images\cat_face.jpg");
                 original_image = cv2.cvtColor(original_image, ColorConversionCodes.COLOR_BGR2RGB);
-                var original_image_size = (original_image.shape[0], original_image.shape[1]);
+                var original_image_size = ((int)original_image.shape[0], (int)original_image.shape[1]);
                 var image_data = image_preporcess(original_image, (input_size, input_size));
                 image_data = image_data[np.newaxis, Slice.Ellipsis];
 
                 var (pred_sbbox, pred_mbbox, pred_lbbox) = sess.run((return_tensors[1], return_tensors[2], return_tensors[3]),
                         (return_tensors[0], image_data));
 
-                var pred_bbox = np.concatenate((np.reshape(pred_sbbox, (-1, 5 + num_classes)),
-                                        np.reshape(pred_mbbox, (-1, 5 + num_classes)),
-                                        np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
+                var pred_bbox = np.concatenate(new[]
+                {
+                    np.reshape(pred_sbbox, (-1, 5 + num_classes)),
+                    np.reshape(pred_mbbox, (-1, 5 + num_classes)),
+                    np.reshape(pred_lbbox, (-1, 5 + num_classes))
+                }, axis: 0);
 
                 var bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.3f);
                 var bboxess = nms(bboxes, 0.75f, method: "nms");
@@ -125,16 +128,19 @@ namespace TensorFlowNET.Examples
                 var (loaded, frame) = vid.read();
                 while (loaded)
                 {
-                    var frame_size = (frame.shape[0], frame.shape[1]);
+                    var frame_size = ((int)frame.shape[0], (int)frame.shape[1]);
                     var image_data = image_preporcess(frame, (input_size, input_size));
                     image_data = image_data[np.newaxis, Slice.Ellipsis];
 
                     var (pred_sbbox, pred_mbbox, pred_lbbox) = sess.run((return_tensors[1], return_tensors[2], return_tensors[3]),
                         (return_tensors[0], image_data));
 
-                    var pred_bbox = np.concatenate((np.reshape(pred_sbbox, (-1, 5 + num_classes)),
-                                        np.reshape(pred_mbbox, (-1, 5 + num_classes)),
-                                        np.reshape(pred_lbbox, (-1, 5 + num_classes))), axis: 0);
+                    var pred_bbox = np.concatenate(new[]
+                    {
+                        np.reshape(pred_sbbox, (-1, 5 + num_classes)),
+                        np.reshape(pred_mbbox, (-1, 5 + num_classes)),
+                        np.reshape(pred_lbbox, (-1, 5 + num_classes))
+                    }, axis: 0);
 
                     var bboxes = postprocess_boxes(pred_bbox, frame_size, input_size, 0.3f);
                     var bboxess = nms(bboxes, 0.45f, method: "nms");
@@ -173,8 +179,11 @@ namespace TensorFlowNET.Examples
             var pred_prob = pred_bbox[Slice.All, new Slice(5)];
 
             // (1) (x, y, w, h) --> (xmin, ymin, xmax, ymax)
-            var pred_coor = np.concatenate((pred_xywh[Slice.All, new Slice(stop: 2)] - pred_xywh[Slice.All, new Slice(2)] * 0.5f,
-                                        pred_xywh[Slice.All, new Slice(stop: 2)] + pred_xywh[Slice.All, new Slice(2)] * 0.5f), axis: -1);
+            var pred_coor = np.concatenate(new[]
+            {
+                pred_xywh[Slice.All, new Slice(stop: 2)] - pred_xywh[Slice.All, new Slice(2)] * 0.5f,
+                pred_xywh[Slice.All, new Slice(stop: 2)] + pred_xywh[Slice.All, new Slice(2)] * 0.5f
+            }, axis: -1);
 
             // (2) (xmin, ymin, xmax, ymax) -> (xmin_org, ymin_org, xmax_org, ymax_org)
             var (org_h, org_w) = org_img_shape;
@@ -186,8 +195,11 @@ namespace TensorFlowNET.Examples
             pred_coor[Slice.All, new Slice(1, step: 2)] = 1.0 * (pred_coor[Slice.All, new Slice(1, step: 2)] - dh) / resize_ratio;
 
             // (3) clip some boxes those are out of range
-            pred_coor = np.concatenate((np.maximum(pred_coor[Slice.All, new Slice(stop: 2)], np.array(new[] { 0, 0 })),
-                np.minimum(pred_coor[Slice.All, new Slice(2)], np.array(new[] { org_w - 1, org_h - 1 }))), axis: -1);
+            pred_coor = np.concatenate(new[]
+            {
+                np.maximum(pred_coor[Slice.All, new Slice(stop: 2)], np.array(new[] { 0, 0 })),
+                np.minimum(pred_coor[Slice.All, new Slice(2)], np.array(new[] { org_w - 1, org_h - 1 })) 
+            }, axis: -1);
 
             var invalid_mask = np.logical_or(pred_coor[Slice.All, 0] > pred_coor[Slice.All, 2], pred_coor[Slice.All, 1] > pred_coor[Slice.All, 3]);
             pred_coor[invalid_mask] = 0;
@@ -210,7 +222,7 @@ namespace TensorFlowNET.Examples
 
         private NDArray[] nms(NDArray bboxes, float iou_threshold, float sigma = 0.3f, string method = "nms")
         {
-            var classes_in_img = bboxes[Slice.All, 5].Data<float>().Distinct().ToArray();
+            var classes_in_img = bboxes[Slice.All, 5].ToArray<float>().Distinct().ToArray();
             var best_bboxes = new List<NDArray>();
             foreach (var cls in classes_in_img)
             {
@@ -231,7 +243,7 @@ namespace TensorFlowNET.Examples
 
                     if (method == "nms")
                     {
-                        var iou_mask = (iou > iou_threshold).MakeGeneric<bool>();
+                        var iou_mask = iou > iou_threshold;
                         if (iou_mask.ndim == 0)
                             iou_mask = iou_mask.reshape(1);
                         if (iou_mask.size > 0)
@@ -283,7 +295,7 @@ namespace TensorFlowNET.Examples
 
             foreach (var (i, bbox) in enumerate(bboxes))
             {
-                var coor = bbox[new Slice(stop: 4)].astype(NPTypeCode.Int32);
+                var coor = bbox[new Slice(stop: 4)].astype(np.int32);
                 var fontScale = 0.5;
                 float score = bbox[4];
                 var class_ind = (float)bbox[5];

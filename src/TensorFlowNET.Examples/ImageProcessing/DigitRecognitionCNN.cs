@@ -14,10 +14,10 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System.Diagnostics;
 using System.IO;
 using Tensorflow;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -140,7 +140,7 @@ namespace TensorFlowNET.Examples
             {
 
                 // Number of training iterations in each epoch
-                var num_tr_iter = y_train.shape[0] / batch_size;
+                var num_tr_iter = (int)y_train.shape[0] / batch_size;
 
                 var init = tf.global_variables_initializer();
                 sess.run(init);
@@ -160,7 +160,7 @@ namespace TensorFlowNET.Examples
                     {
                         var start = iteration * batch_size;
                         var end = (iteration + 1) * batch_size;
-                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
+                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, (int)start, (int)end);
 
                         // Run optimization op (backprop)
                         sess.run(optimizer, (x, x_batch), (y, y_batch));
@@ -230,8 +230,8 @@ namespace TensorFlowNET.Examples
             return tf_with(tf.variable_scope(name), delegate
             {
 
-                var num_in_channel = x.shape[x.NDims - 1];
-                var shape = new[] { filter_size, filter_size, num_in_channel, num_filters };
+                var num_in_channel = x.shape[x.ndim - 1];
+                var shape = new int[] { filter_size, filter_size, (int)num_in_channel, num_filters };
                 var W = weight_variable("W", shape);
                 // var tf.summary.histogram("weight", W);
                 var b = bias_variable("b", new[] { num_filters });
@@ -270,7 +270,7 @@ namespace TensorFlowNET.Examples
         {
             return tf_with(tf.variable_scope("Flatten_layer"), delegate
             {
-                var layer_shape = layer.TensorShape;
+                var layer_shape = layer.shape;
                 var num_features = layer_shape[new Slice(1, 4)].size;
                 var layer_flat = tf.reshape(layer, new[] { -1, num_features });
 
@@ -321,7 +321,7 @@ namespace TensorFlowNET.Examples
             {
                 var in_dim = x.shape[1];
 
-                var W = weight_variable("W_" + name, shape: new[] { in_dim, num_units });
+                var W = weight_variable("W_" + name, shape: new[] { (int)in_dim, num_units });
                 var b = bias_variable("b_" + name, new[] { num_units });
 
                 var layer = tf.matmul(x, W.AsTensor()) + b.AsTensor();
@@ -355,7 +355,7 @@ namespace TensorFlowNET.Examples
         private (NDArray, NDArray) Reformat(NDArray x, NDArray y)
         {
             var (img_size, num_ch, num_class) = (np.sqrt(x.shape[1]).astype(np.int32), 1, len(np.unique(np.argmax(y, 1))));
-            var dataset = x.reshape(x.shape[0], img_size, img_size, num_ch).astype(np.float32);
+            var dataset = x.reshape((x.shape[0], img_size, img_size, num_ch)).astype(np.float32);
             //y[0] = np.arange(num_class) == y[0];
             //var labels = (np.arange(num_class) == y.reshape(y.shape[0], 1, y.shape[1])).astype(np.float32);
             return (dataset, y);

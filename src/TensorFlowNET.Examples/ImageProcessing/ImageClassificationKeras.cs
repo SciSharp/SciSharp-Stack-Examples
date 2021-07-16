@@ -17,7 +17,7 @@ namespace TensorFlowNET.Examples
     {
         int batch_size = 32;
         int epochs = 3;
-        TensorShape img_dim = (180, 180);
+        Shape img_dim = (180, 180);
         IDatasetV2 train_ds, val_ds;
         Model model;
 
@@ -100,7 +100,7 @@ namespace TensorFlowNET.Examples
 
             foreach (var (img, label) in train_ds)
             {
-                print($"images: {img.TensorShape}");
+                print($"images: {img.shape}");
                 print($"labels: {label.numpy()}");
             }
         }

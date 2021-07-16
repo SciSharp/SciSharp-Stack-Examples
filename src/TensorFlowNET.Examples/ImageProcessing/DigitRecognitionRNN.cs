@@ -14,8 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using Tensorflow;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
@@ -102,7 +102,7 @@ namespace TensorFlowNET.Examples
             float accuracy_val = 0f;
 
             // Number of training iterations in each epoch
-            var n_batches = y_train.shape[0] / batch_size;
+            var n_batches = (int)y_train.shape[0] / batch_size;
 
             var init = tf.global_variables_initializer();
             sess.run(init);
@@ -118,7 +118,7 @@ namespace TensorFlowNET.Examples
                     var start = iteration * batch_size;
                     var end = (iteration + 1) * batch_size;
                     var (X_train, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
-                    X_train = X_train.reshape(-1, n_steps, n_inputs);
+                    X_train = X_train.reshape((-1, n_steps, n_inputs));
                     y_batch = np.argmax(y_batch, axis: 1);
                     // Run optimization op (backprop)
                     sess.run(optimizer, new FeedItem(X, X_train), new FeedItem(y, y_batch));
@@ -158,9 +158,9 @@ namespace TensorFlowNET.Examples
             (x_test, y_test) = (mnist.Test.Data, mnist.Test.Labels);
 
             y_valid = np.argmax(y_valid, axis: 1);
-            x_valid = x_valid.reshape(-1, n_steps, n_inputs);
+            x_valid = np.reshape(x_valid, (- 1, n_steps, n_inputs));
             y_test = np.argmax(y_test, axis: 1);
-            x_test = x_test.reshape(-1, n_steps, n_inputs);
+            x_test = np.reshape(x_test, (-1, n_steps, n_inputs));
 
             print("Size of:");
             print($"- Training-set:\t\t{len(mnist.Train.Data)}");

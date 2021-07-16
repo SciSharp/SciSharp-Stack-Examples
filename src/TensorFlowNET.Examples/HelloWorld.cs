@@ -1,4 +1,4 @@
-﻿using NumSharp;
+﻿using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -32,9 +32,9 @@ namespace TensorFlowNET.Examples
             // tf.Tensor: shape=(), dtype=string, numpy=b'Hello, TensorFlow.NET!'
             print(hello);
 
-            var tensor = NDArray.AsStringArray(hello.numpy())[0];
+            var tensor = hello.numpy();
 
-            return str == tensor;
+            return tensor.ToString() == $"'{str}'";
         }
     }
 }

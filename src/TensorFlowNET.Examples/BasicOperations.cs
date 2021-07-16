@@ -32,14 +32,14 @@ namespace TensorFlowNET.Examples
             var div = tf.divide(a, b);
 
             // Access tensors value.
-            print("add =", add.numpy());
-            print("sub =", sub.numpy());
-            print("mul =", mul.numpy());
-            print("div =", div.numpy());
+            print($"{(int)a} + {(int)b} = {(int)add}");
+            print($"{(int)a} - {(int)b} = {(int)sub}");
+            print($"{(int)a} * {(int)b} = {(int)mul}");
+            print($"{(int)a} / {(int)b} = {(double)div}");
 
             // Some more operations.
-            var mean = tf.reduce_mean(new[] { a, b, c });
-            var sum = tf.reduce_sum(new[] { a, b, c });
+            var mean = tf.reduce_mean(tf.constant(new[] { a, b, c }));
+            var sum = tf.reduce_sum(tf.constant(new[] { a, b, c }));
 
             // Access tensors value.
 

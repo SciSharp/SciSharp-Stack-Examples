@@ -15,7 +15,6 @@
 ******************************************************************************/
 
 using Google.Protobuf;
-using NumSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -177,15 +177,15 @@ namespace TensorFlowNET.Examples
         private (Operation, Tensor, Tensor, Tensor, Tensor) add_final_retrain_ops(int class_count, string final_tensor_name,
             Tensor bottleneck_tensor, bool quantize_layer, bool is_training)
         {
-            var (batch_size, bottleneck_tensor_size) = (bottleneck_tensor.TensorShape.dims[0], bottleneck_tensor.TensorShape.dims[1]);
+            var (batch_size, bottleneck_tensor_size) = (bottleneck_tensor.shape.dims[0], bottleneck_tensor.shape.dims[1]);
             tf_with(tf.name_scope("input"), scope =>
             {
                 bottleneck_input = tf.placeholder_with_default(
                     bottleneck_tensor,
-                    shape: bottleneck_tensor.TensorShape.dims,
+                    shape: bottleneck_tensor.shape,
                     name: "BottleneckInputPlaceholder");
 
-                ground_truth_input = tf.placeholder(tf.int64, new TensorShape(batch_size), name: "GroundTruthInput");
+                ground_truth_input = tf.placeholder(tf.int64, new Shape(batch_size), name: "GroundTruthInput");
             });
 
             // Organizing the following ops so they are easier to see in TensorBoard.
@@ -196,7 +196,7 @@ namespace TensorFlowNET.Examples
                 IVariableV1 layer_weights = null;
                 tf_with(tf.name_scope("weights"), delegate
                 {
-                    var initial_value = tf.truncated_normal(new int[] { bottleneck_tensor_size, class_count }, stddev: 0.001f);
+                    var initial_value = tf.truncated_normal((bottleneck_tensor_size, (long)class_count), stddev: 0.001f);
                     layer_weights = tf.Variable(initial_value, name: "final_weights");
                     variable_summaries(layer_weights.AsTensor());
                 });
@@ -204,7 +204,7 @@ namespace TensorFlowNET.Examples
                 IVariableV1 layer_biases = null;
                 tf_with(tf.name_scope("biases"), delegate
                 {
-                    layer_biases = tf.Variable(tf.zeros(new TensorShape(class_count)), name: "final_biases");
+                    layer_biases = tf.Variable(tf.zeros(new Shape(class_count)), name: "final_biases");
                     variable_summaries(layer_biases.AsTensor());
                 });
 
@@ -439,7 +439,7 @@ namespace TensorFlowNET.Examples
             var bottleneck_values = run_bottleneck_on_image(
                 sess, image_data, jpeg_data_tensor, decoded_image_tensor,
                 resized_input_tensor, bottleneck_tensor);
-            var values = bottleneck_values.Data<float>();
+            var values = bottleneck_values.ToArray<float>();
             var bottleneck_string = string.Join(",", values);
             File.WriteAllText(bottleneck_path, bottleneck_string);
         }
@@ -458,7 +458,7 @@ namespace TensorFlowNET.Examples
                             Tensor decoded_image_tensor, Tensor resized_input_tensor, Tensor bottleneck_tensor)
         {
             // First decode the JPEG image, resize it, and rescale the pixel values.
-            var resized_input_values = sess.run(decoded_image_tensor, new FeedItem(image_data_tensor, new Tensor(image_data, TF_DataType.TF_STRING)));
+            var resized_input_values = sess.run(decoded_image_tensor, new FeedItem(image_data_tensor, new NDArray(image_data)));
             // Then run it through the recognition network.
             var bottleneck_values = sess.run(bottleneck_tensor, new FeedItem(resized_input_tensor, resized_input_values))[0];
             bottleneck_values = np.squeeze(bottleneck_values);

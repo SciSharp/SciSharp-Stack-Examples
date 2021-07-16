@@ -1,5 +1,4 @@
-﻿using NumSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using TensorFlowNET.Examples.Utility;
 
 namespace TensorFlowNET.Examples
@@ -165,10 +165,11 @@ namespace TensorFlowNET.Examples
             }
 
             int max_length_sentence = sequences.Select(x => x.Length).Max();
-            (sequence_padded, _) = _pad_sequences(sequences, np.repeat(pad_tok, max_length_word).GetData<int>().ToArray(), max_length_sentence);
-            (sequence_length, _) = _pad_sequences(sequence_length, 0, max_length_sentence);
+            //(sequence_padded, _) = _pad_sequences(sequences, np.repeat(pad_tok, max_length_word).GetData<int>().ToArray(), max_length_sentence);
+            //(sequence_length, _) = _pad_sequences(sequence_length, 0, max_length_sentence);
 
-            return (sequence_padded, sequence_length);
+            //return (sequence_padded, sequence_length);
+            throw new NotImplementedException("");
         }
 
         private static (int[][], int[]) _pad_sequences(int[][] sequences, int pad_tok, int max_length)

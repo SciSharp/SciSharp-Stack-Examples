@@ -30,9 +30,9 @@ namespace TensorFlowNET.Examples.Text
             var filter_sizes = new int[3, 4, 5];
             var num_filters = 100;
 
-            var x = tf.placeholder(tf.int32, new TensorShape(-1, document_max_len), name: "x");
-            var y = tf.placeholder(tf.int32, new TensorShape(-1), name: "y");
-            var is_training = tf.placeholder(tf.@bool, new TensorShape(), name: "is_training");
+            var x = tf.placeholder(tf.int32, (-1, document_max_len), name: "x");
+            var y = tf.placeholder(tf.int32, -1, name: "y");
+            var is_training = tf.placeholder(tf.@bool, Shape.Null, name: "is_training");
             var global_step = tf.Variable(0, trainable: false);
             var keep_prob = tf.where(is_training, 0.5f, 1.0f);
             Tensor x_emb = null;
@@ -66,7 +66,7 @@ namespace TensorFlowNET.Examples.Text
             }
 
             var h_pool = tf.concat(pooled_outputs, 3);
-            var h_pool_flat = tf.reshape(h_pool, new TensorShape(-1, num_filters * filter_sizes.Rank));
+            var h_pool_flat = tf.reshape(h_pool, (-1, num_filters * filter_sizes.Rank));
             Tensor h_drop = null;
             tf_with(tf.name_scope("dropout"), delegate
             {

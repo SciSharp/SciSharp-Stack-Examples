@@ -14,10 +14,10 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System.Diagnostics;
 using System.IO;
 using Tensorflow;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -69,12 +69,12 @@ namespace TensorFlowNET.Examples
         public override void Train()
         {
             // tf Graph Input
-            var x = tf.placeholder(tf.float32, new TensorShape(-1, 784)); // mnist data image of shape 28*28=784
-            var y = tf.placeholder(tf.float32, new TensorShape(-1, 10)); // 0-9 digits recognition => 10 classes
+            var x = tf.placeholder(tf.float32, (-1, 784)); // mnist data image of shape 28*28=784
+            var y = tf.placeholder(tf.float32, (-1, 10)); // 0-9 digits recognition => 10 classes
 
             // Set model weights
-            var W = tf.Variable(tf.zeros(new Shape(784, 10)));
-            var b = tf.Variable(tf.zeros(new Shape(10)));
+            var W = tf.Variable(tf.zeros((784, 10)));
+            var b = tf.Variable(tf.zeros(10));
 
             // Construct model
             var pred = tf.nn.softmax(tf.matmul(x, W) + b); // Softmax
@@ -173,7 +173,7 @@ namespace TensorFlowNET.Examples
             var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
             var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
 
-            if (results[0].argmax() == (batch_ys[0] as NDArray).argmax())
+            if (np.argmax(results[0]) == np.argmax(batch_ys[0]))
                 print("predicted OK!");
             else
                 throw new ValueError("predict error, should be 90% accuracy");

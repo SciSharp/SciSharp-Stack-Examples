@@ -14,10 +14,10 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
@@ -157,7 +157,7 @@ namespace TensorFlowNET.Examples
                 sess.run(init);
                 var step = 0;
 
-                var y_ = np.array(new int[] { 1, 0, 0, 1 }, dtype: np.int32);
+                var y_ = np.array(new int[] { 1, 0, 0, 1 });
                 while (step < num_steps)
                 {
                     // original python:
@@ -179,8 +179,8 @@ namespace TensorFlowNET.Examples
         {
             var graph = tf.Graph().as_default();
 
-            var features = tf.placeholder(tf.float32, new TensorShape(4, 2));
-            var labels = tf.placeholder(tf.int32, new TensorShape(4));
+            var features = tf.placeholder(tf.float32, (4, 2));
+            var labels = tf.placeholder(tf.int32, 4);
 
             var (train_op, loss, gs) = make_graph(features, labels);
 
@@ -193,7 +193,7 @@ namespace TensorFlowNET.Examples
                 sess.run(init);
                 var step = 0;
 
-                var y_ = np.array(new int[] { 1, 0, 0, 1 }, dtype: np.int32);
+                var y_ = np.array(new int[] { 1, 0, 0, 1 });
                 while (step < num_steps)
                 {
                     (_, step, loss_value) = sess.run((train_op, gs, loss), (features, data), (labels, y_));

@@ -133,7 +133,7 @@ namespace TensorFlowNET.Examples
                 var (batch_x, batch_y) = mnist.Train.GetNextBatch(batch_size);
 
                 // Reshape data to get 28 seq of 28 elements
-                batch_x = batch_x.reshape(batch_size, timesteps, num_input);
+                batch_x = batch_x.reshape((batch_size, timesteps, num_input));
 
                 // Run optimization op (backprop)
                 sess.run(train_op, (X, batch_x), (Y, batch_y));
@@ -154,7 +154,7 @@ namespace TensorFlowNET.Examples
         {
             // Calculate accuracy for 128 mnist test images
             var (x_test, y_test) = (mnist.Test.Data[":128"], mnist.Test.Labels[":128"]);
-            x_test = x_test.reshape(-1, timesteps, num_input);
+            x_test = x_test.reshape((-1, timesteps, num_input));
             accuracy_test = sess.run(accuracy, new FeedItem(X, x_test), new FeedItem(Y, y_test));
             print("---------------------------------------------------------");
             print($"Testing Accuracy: {accuracy_test.ToString("P")}");

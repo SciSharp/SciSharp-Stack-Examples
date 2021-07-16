@@ -14,10 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
-using Tensorflow;
-using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
@@ -48,7 +46,9 @@ namespace TensorFlowNET.Examples
             model.add(keras.Input(2));
             model.add(keras.layers.Dense(64, keras.activations.Relu));
             model.add(keras.layers.Dense(1, keras.activations.Sigmoid));
-            model.compile(keras.losses.MeanSquaredError(), keras.optimizers.Adam(), new[] { "accuracy" });
+            model.compile(optimizer: keras.optimizers.Adam(),
+                loss: keras.losses.MeanSquaredError(),
+                new[] { "accuracy" });
             model.fit(x, y, 1, 100);
             print(model.predict(x, 4));
 

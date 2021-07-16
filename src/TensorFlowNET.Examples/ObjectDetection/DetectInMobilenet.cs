@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************************/
 
-using NumSharp;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -22,6 +21,7 @@ using System.IO;
 using System.Linq;
 using Tensorflow;
 using Tensorflow.Keras.Utils;
+using Tensorflow.NumPy;
 using TensorFlowNET.Examples.Utility;
 using static Tensorflow.Binding;
 
@@ -122,12 +122,12 @@ namespace TensorFlowNET.Examples
             // get bitmap
             Bitmap bitmap = new Bitmap(Path.Join(imageDir, "input.jpg"));
 
-            var scores = resultArr[2].AsIterator<float>();
+            var scores = resultArr[2].ToArray<float>();
             var boxes = resultArr[1].GetData<float>();
             var id = np.squeeze(resultArr[3]).GetData<float>();
-            for (int i = 0; i < scores.size; i++)
+            for (int i = 0; i < scores.Length; i++)
             {
-                float score = scores.MoveNext();
+                float score = scores[i];
                 if (score > MIN_SCORE)
                 {
                     float top = boxes[i * 4] * bitmap.Height;
