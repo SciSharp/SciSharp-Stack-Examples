@@ -1,4 +1,3 @@
-using NumSharp;
 using System;
 using System.Linq;
 using Tensorflow;
@@ -6,6 +5,7 @@ using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Datasets;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
+using Tensorflow.NumPy;
 
 namespace TensorFlowNET.Examples.GAN
 {
@@ -125,7 +125,7 @@ namespace TensorFlowNET.Examples.GAN
             NDArray X_train = data.Train.Item1;
             X_train = X_train / 127.5 - 1;
             X_train = np.expand_dims(X_train, 3);
-            X_train = X_train.astype(typeof(float));
+            X_train = X_train.astype(np.float32);
 
             var G = Make_Generator_model();
             var D = Make_Discriminator_model();
@@ -138,14 +138,14 @@ namespace TensorFlowNET.Examples.GAN
 
             for (var i = 0; i <= epochs; i++)
             {
-                var idx = np.random.randint(0, X_train.shape[0], new int[1] { batch_size });
+                var idx = np.random.randint(0, (int)X_train.shape[0], size: batch_size);
                 var imgs = X_train[idx];
 
                 Tensor g_loss, d_loss, d_loss_real, d_loss_fake;
                 using (var tape = tf.GradientTape(true))
                 {
                     var noise = np.random.normal(0, 1, new int[] { batch_size, 100 });
-                    noise = noise.astype(typeof(float));
+                    noise = noise.astype(np.float32);
                     var noise_z = G.Apply(noise);
                     var d_logits = D.Apply(noise_z);
                     var d2_logits = D.Apply(imgs);
@@ -198,7 +198,7 @@ namespace TensorFlowNET.Examples.GAN
             var c = 5;
 
             var noise = np.random.normal(0, 1, new int[] { r * c, latent_dim });
-            noise = noise.astype(typeof(float));
+            noise = noise.astype(np.float32);
             Tensor tensor_result = g.predict(noise);
             var gen_imgs = tensor_result.numpy();
             SaveImage(gen_imgs, step);
@@ -209,25 +209,25 @@ namespace TensorFlowNET.Examples.GAN
             gen_imgs = gen_imgs * 0.5 + 0.5;
             var c = 5;
             var r = gen_imgs.shape[0] / c;
-            NDArray nDArray = np.zeros(img_rows * r, img_cols * c);
+            NDArray nDArray = np.zeros((img_rows * r, img_cols * c));
             for (var i = 0; i < r; i++)
             {
                 for (var j = 0; j < c; j++)
                 {
                     var x = new Slice(i * img_rows, (i + 1) * img_cols);
                     var y = new Slice(j * img_rows, (j + 1) * img_cols);
-                    var v = gen_imgs[i * r + j].reshape(img_rows, img_cols);
+                    var v = gen_imgs[i * r + j].reshape((img_rows, img_cols));
                     nDArray[x, y] = v;
                 }
             }
 
-            var t = nDArray.reshape(new int[] { img_rows * r, img_cols * c }) * 255;
-            GrayToRGB(t.astype(typeof(byte))).ToBitmap().Save(imgpath + "/image" + step + ".jpg");
+            var t = nDArray.reshape((img_rows * r, img_cols * c)) * 255;
+            // GrayToRGB(t.astype(np.uint8)).ToBitmap().Save(imgpath + "/image" + step + ".jpg");
         }
 
         private NDArray GrayToRGB(NDArray img2D)
         {
-            var img4A = np.full_like(img2D, (byte)255);
+            var img4A = np.full_like(img2D, 255);
             var img3D = np.expand_dims(img2D, 2);
             var r = np.dstack(img3D, img3D, img3D, img4A);
             var img4 = np.expand_dims(r, 0);
