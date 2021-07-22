@@ -111,7 +111,7 @@ namespace TensorFlowNET.Examples.Text
             tf_with(tf.name_scope("fc-3"), scope =>
             {
                 logits = keras.layers.dense(fc2_out, num_class, activation: null, kernel_initializer: fc_initializer);
-                predictions = tf.argmax(logits, -1, output_type: tf.int32);
+                predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 
             // ============= Loss and Accuracy =============

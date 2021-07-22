@@ -112,7 +112,7 @@ namespace TensorFlowNET.Examples
             train_op = optimizer.minimize(loss_op);
 
             // Evaluate model (with test logits, for dropout to be disabled)
-            var correct_pred = tf.equal(tf.argmax(prediction, 1), tf.argmax(Y, 1));
+            var correct_pred = tf.equal(tf.math.argmax(prediction, 1), tf.math.argmax(Y, 1));
             accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32));
 
             return graph;

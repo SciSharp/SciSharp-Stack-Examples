@@ -78,7 +78,7 @@ namespace TensorFlowNET.Examples.Text
             tf_with(tf.name_scope("output"), delegate
             {
                 logits = keras.layers.dense(h_drop, num_class);
-                predictions = tf.argmax(logits, -1, output_type: tf.int32);
+                predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 
             tf_with(tf.name_scope("loss"), delegate

@@ -71,7 +71,7 @@ namespace TensorFlowNET.Examples
 
             var dic = new Dictionary<int, List<List<float>>>();
             // Init uy in dic
-            foreach (int uy in unique_y.ToArray<int>())
+            foreach (int uy in unique_y.Item1.ToArray<int>())
             {
                 dic.Add(uy, new List<List<float>>());
             }

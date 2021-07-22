@@ -186,7 +186,7 @@ namespace TensorFlowNET.Examples
         public Tensor Accuracy(Tensor yPred, Tensor yTrue)
         {
             // Predicted class is the index of highest score in prediction vector (i.e. argmax).
-            var correct_prediction = tf.equal(tf.argmax(yPred, 1), tf.cast(yTrue, tf.int64));
+            var correct_prediction = tf.equal(tf.math.argmax(yPred, 1), tf.cast(yTrue, tf.int64));
             return tf.reduce_mean(tf.cast(correct_prediction, tf.float32), axis: -1);
         }
 

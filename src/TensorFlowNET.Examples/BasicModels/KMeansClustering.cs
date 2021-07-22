@@ -18,6 +18,7 @@ using System.Diagnostics;
 using Tensorflow;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
+using System;
 
 namespace TensorFlowNET.Examples
 {
@@ -143,7 +144,8 @@ namespace TensorFlowNET.Examples
             foreach (var i in range(idx.Length))
             {
                 var x = mnist.Train.Labels[i];
-                counts[idx[i]] += x;
+                // counts[idx[i]] += x;
+                throw new NotImplementedException("");
             }
 
             sw.Stop();
@@ -158,7 +160,7 @@ namespace TensorFlowNET.Examples
             var cluster_label = tf.nn.embedding_lookup(labels_map, cluster_idx);
 
             // Compute accuracy
-            var correct_prediction = tf.equal(cluster_label, tf.cast(tf.argmax(Y, 1), tf.int32));
+            var correct_prediction = tf.equal(cluster_label, tf.cast(tf.math.argmax(Y, 1), tf.int32));
             var cast = tf.cast(correct_prediction, tf.float32);
             var accuracy_op = tf.reduce_mean(cast);
 

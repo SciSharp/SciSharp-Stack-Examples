@@ -306,9 +306,10 @@ namespace TensorFlowNET.Examples
                 // show label;
                 var bbox_mess = $"{classes[(int)class_ind]}: {score.ToString("P")}";
                 var t_size = cv2.getTextSize(bbox_mess, HersheyFonts.HERSHEY_SIMPLEX, fontScale, thickness: bbox_thick / 2);
-                cv2.rectangle(image, (coor[0], coor[1]), (coor[0] + t_size.Width, coor[1] - t_size.Height - 3), bbox_color, -1);
+                /*cv2.rectangle(image, (coor[0], coor[1]), (coor[0] + t_size.Width, coor[1] - t_size.Height - 3), bbox_color, -1);
                 cv2.putText(image, bbox_mess, (coor[0], coor[1] - 2), HersheyFonts.HERSHEY_SIMPLEX,
-                        fontScale, (0, 0, 0), bbox_thick / 2, lineType: LineTypes.LINE_AA);
+                        fontScale, (0, 0, 0), bbox_thick / 2, lineType: LineTypes.LINE_AA);*/
+                throw new NotImplementedException("");
             }
 
             return image;

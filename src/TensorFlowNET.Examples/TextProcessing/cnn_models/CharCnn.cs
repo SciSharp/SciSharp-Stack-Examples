@@ -127,7 +127,7 @@ namespace TensorFlowNET.Examples.Text
                 logits = keras.layers.dense(fc2_out,
                     num_class,
                     kernel_initializer: kernel_initializer);
-                predictions = tf.argmax(logits, -1, output_type: tf.int32);
+                predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 
             tf_with(tf.name_scope("loss"), delegate

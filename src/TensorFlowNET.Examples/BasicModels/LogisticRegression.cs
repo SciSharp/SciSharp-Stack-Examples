@@ -52,9 +52,8 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
-            tf.compat.v1.disable_eager_execution();
-
             PrepareData();
+            tf.compat.v1.disable_eager_execution();
             Train();
             //Predict();
 
@@ -130,7 +129,7 @@ namespace TensorFlowNET.Examples
             // SaveModel(sess);
 
             // Test model
-            var correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1));
+            var correct_prediction = tf.equal(tf.math.argmax(pred, 1), tf.math.argmax(y, 1));
             // Calculate accuracy
             var acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32));
             accuracy = acc.eval(sess, (x, mnist.Test.Data), (y, mnist.Test.Labels));
@@ -173,7 +172,7 @@ namespace TensorFlowNET.Examples
             var (batch_xs, batch_ys) = mnist.Train.GetNextBatch(10);
             var results = sess.run(output, new FeedItem(input, batch_xs[np.arange(1)]));
 
-            if (np.argmax(results[0]) == np.argmax(batch_ys[0]))
+            if ((bool)(np.argmax(results[0]) == np.argmax(batch_ys[0])))
                 print("predicted OK!");
             else
                 throw new ValueError("predict error, should be 90% accuracy");

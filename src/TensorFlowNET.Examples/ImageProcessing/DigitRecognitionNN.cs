@@ -88,11 +88,11 @@ namespace TensorFlowNET.Examples
             var logits = tf.nn.softmax_cross_entropy_with_logits(labels: y, logits: output_logits);
             loss = tf.reduce_mean(logits, name: "loss");
             optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss);
-            var correct_prediction = tf.equal(tf.argmax(output_logits, 1), tf.argmax(y, 1), name: "correct_pred");
+            var correct_prediction = tf.equal(tf.math.argmax(output_logits, 1), tf.math.argmax(y, 1), name: "correct_pred");
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name: "accuracy");
 
             // Network predictions
-            var cls_prediction = tf.argmax(output_logits, axis: 1, name: "predictions");
+            var cls_prediction = tf.math.argmax(output_logits, axis: 1, name: "predictions");
 
             return graph;
         }

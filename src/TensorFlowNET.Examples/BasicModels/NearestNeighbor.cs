@@ -76,7 +76,7 @@ namespace TensorFlowNET.Examples
                         print($"Test {i} Prediction: {np.argmax(Ytr[index])} True Class: {np.argmax(Yte[i])}");
 
                     // Calculate accuracy
-                    if (np.argmax(Ytr[index]) == np.argmax(Yte[i]))
+                    if ((bool)(np.argmax(Ytr[index]) == np.argmax(Yte[i])))
                         accuracy += 1f / Xte.shape[0];
                 }
 

@@ -120,13 +120,13 @@ namespace TensorFlowNET.Examples
 
                 tf_with(tf.variable_scope("Accuracy"), delegate
                 {
-                    var correct_prediction = tf.equal(tf.argmax(output_logits, 1), tf.argmax(y, 1), name: "correct_pred");
+                    var correct_prediction = tf.equal(tf.math.argmax(output_logits, 1), tf.math.argmax(y, 1), name: "correct_pred");
                     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name: "accuracy");
                 });
 
                 tf_with(tf.variable_scope("Prediction"), delegate
                 {
-                    cls_prediction = tf.argmax(output_logits, axis: 1, name: "predictions");
+                    cls_prediction = tf.math.argmax(output_logits, axis: 1, name: "predictions");
                 });
             });
 
@@ -152,7 +152,7 @@ namespace TensorFlowNET.Examples
                 sw.Start();
                 foreach (var epoch in range(epochs))
                 {
-                    print($"Training epoch: {epoch + 1}");
+                    print($"Training epochs: {epoch + 1}/{epochs}");
                     // Randomly shuffle the training data at the beginning of each epoch 
                     (x_train, y_train) = mnist.Randomize(x_train, y_train);
 
@@ -160,7 +160,7 @@ namespace TensorFlowNET.Examples
                     {
                         var start = iteration * batch_size;
                         var end = (iteration + 1) * batch_size;
-                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, (int)start, (int)end);
+                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
 
                         // Run optimization op (backprop)
                         sess.run(optimizer, (x, x_batch), (y, y_batch));
@@ -354,7 +354,8 @@ namespace TensorFlowNET.Examples
         /// <returns></returns>
         private (NDArray, NDArray) Reformat(NDArray x, NDArray y)
         {
-            var (img_size, num_ch, num_class) = (np.sqrt(x.shape[1]).astype(np.int32), 1, len(np.unique(np.argmax(y, 1))));
+            var (unique_y, _) = np.unique(np.argmax(y, 1));
+            var (img_size, num_ch, num_class) = ((int)np.sqrt(x.shape[1]).astype(np.int32), 1, len(unique_y));
             var dataset = x.reshape((x.shape[0], img_size, img_size, num_ch)).astype(np.float32);
             //y[0] = np.arange(num_class) == y[0];
             //var labels = (np.arange(num_class) == y.reshape(y.shape[0], 1, y.shape[1])).astype(np.float32);

@@ -123,8 +123,8 @@ namespace TensorFlowNET.Examples
             Bitmap bitmap = new Bitmap(Path.Join(imageDir, "input.jpg"));
 
             var scores = resultArr[2].ToArray<float>();
-            var boxes = resultArr[1].GetData<float>();
-            var id = np.squeeze(resultArr[3]).GetData<float>();
+            var boxes = resultArr[1].ToArray<float>();
+            var id = np.squeeze(resultArr[3]).ToArray<float>();
             for (int i = 0; i < scores.Length; i++)
             {
                 float score = scores[i];

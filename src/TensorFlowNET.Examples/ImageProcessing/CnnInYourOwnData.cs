@@ -111,7 +111,7 @@ namespace TensorFlowNET.Examples
         public bool Run()
         {
             tf.compat.v1.disable_eager_execution();
-
+         
             PrepareData();
             BuildGraph();
 
@@ -158,16 +158,16 @@ namespace TensorFlowNET.Examples
         private void LoadImagesToNDArray()
         {
             //Load labels
-            y_valid = np.eye(Dict_Label.Count)[np.array(ArrayLabel_Validation)];
-            y_test = np.eye(Dict_Label.Count)[np.array(ArrayLabel_Test)];
+            y_valid = np.eye(Dict_Label.Count, dtype: tf.float32)[np.array(ArrayLabel_Validation)];
+            y_test = np.eye(Dict_Label.Count, dtype: tf.float32)[np.array(ArrayLabel_Test)];
             print("Load Labels To NDArray : OK!");
 
             //Load Images
-            x_valid = np.zeros((ArrayFileName_Validation.Length, img_h, img_w, n_channels));
-            x_test = np.zeros((ArrayFileName_Test.Length, img_h, img_w, n_channels));
+            x_valid = np.zeros((ArrayFileName_Validation.Length, img_h, img_w, n_channels), dtype: tf.float32);
+            x_test = np.zeros((ArrayFileName_Test.Length, img_h, img_w, n_channels), dtype: tf.float32);
             LoadImage(ArrayFileName_Validation, x_valid, "validation");
             LoadImage(ArrayFileName_Test, x_test, "test");
-            print("Load Images To NDArray : OK!");
+            print("Loading images finished!");
         }
         private void LoadImage(string[] a, NDArray b, string c)
         {
@@ -176,12 +176,11 @@ namespace TensorFlowNET.Examples
                 for (int i = 0; i < a.Length; i++)
                 {
                     b[i] = ReadTensorFromImageFile(a[i], graph);
-                    Console.Write(".");
+                    Console.WriteLine($"Loading image: {a[i]}");
                 }
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Load Images To NDArray: " + c);
+            Console.WriteLine($"Loaded {a.Length} images for " + c);
         }
 
         private NDArray ReadTensorFromImageFile(string file_name, Graph graph)
@@ -325,13 +324,13 @@ namespace TensorFlowNET.Examples
 
                 tf_with(tf.variable_scope("Accuracy"), delegate
                 {
-                    var correct_prediction = tf.equal(tf.argmax(output_logits, 1), tf.argmax(y, 1), name: "correct_pred");
+                    var correct_prediction = tf.equal(tf.math.argmax(output_logits, 1), tf.math.argmax(y, 1), name: "correct_pred");
                     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name: "accuracy");
                 });
 
                 tf_with(tf.variable_scope("Prediction"), delegate
                 {
-                    cls_prediction = tf.argmax(output_logits, axis: 1, name: "predictions");
+                    cls_prediction = tf.math.argmax(output_logits, axis: 1, name: "predictions");
                     prob = tf.nn.softmax(output_logits, axis: 1, name: "prob");
                 });
             });
@@ -478,7 +477,7 @@ namespace TensorFlowNET.Examples
                 print($"Training epoch: {epoch + 1}");
                 // Randomly shuffle the training data at the beginning of each epoch 
                 (ArrayFileName_Train, ArrayLabel_Train) = ShuffleArray(ArrayLabel_Train.Length, ArrayFileName_Train, ArrayLabel_Train);
-                y_train = np.eye(Dict_Label.Count)[new NDArray(ArrayLabel_Train)];
+                y_train = np.eye(Dict_Label.Count, dtype: tf.float32)[new NDArray(ArrayLabel_Train)];
 
                 //decay learning rate
                 if (learning_rate_step != 0)
@@ -572,7 +571,7 @@ namespace TensorFlowNET.Examples
 
         (NDArray, NDArray) GetNextBatch(Session sess, string[] x, NDArray y, int start, int end)
         {
-            NDArray x_batch = np.zeros((end - start, img_h, img_w, n_channels));
+            NDArray x_batch = np.zeros((end - start, img_h, img_w, n_channels), dtype: tf.float32);
             int n = 0;
             for (int i = start; i < end; i++)
             {

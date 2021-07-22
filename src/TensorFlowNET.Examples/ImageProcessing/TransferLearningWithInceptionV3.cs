@@ -350,7 +350,7 @@ namespace TensorFlowNET.Examples
             {
                 tf_with(tf.name_scope("correct_prediction"), delegate
                 {
-                    prediction = tf.argmax(result_tensor, 1);
+                    prediction = tf.math.argmax(result_tensor, 1);
                     correct_prediction = tf.equal(prediction, ground_truth_tensor);
                 });
 
