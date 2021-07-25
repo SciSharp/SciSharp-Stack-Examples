@@ -43,35 +43,33 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
-            tf.compat.v1.disable_eager_execution();
+            tf.enable_eager_execution();
+
             PrepareData();
 
             fit(X, y);
 
             // Create a regular grid and classify each point 
-            float x_min = np.amin(X, 0).ToArray<float>()[0] - 0.5f;
-            float y_min = np.amin(X, 0).ToArray<float>()[1] - 0.5f;
-            float x_max = np.amax(X, 0).ToArray<float>()[1] + 0.5f;
-            float y_max = np.amax(X, 0).ToArray<float>()[1] + 0.5f;
+            float x_min = np.amin(X, 0)[0] - 0.5f;
+            float y_min = np.amin(X, 0)[1] - 0.5f;
+            float x_max = np.amax(X, 0)[1] + 0.5f;
+            float y_max = np.amax(X, 0)[1] + 0.5f;
 
             var (xx, yy) = np.meshgrid(np.linspace(x_min, x_max, 30), np.linspace(y_min, y_max, 30));
-            using (var sess = tf.Session())
-            {
-                //var array = np.Load<double[,]>(Path.Join("nb", "nb_example.npy"));
-                //var samples = np.array(array).astype(np.float32);
-                //var Z = sess.run(predict(samples));
-            }
+            var array = np.Load<double[,]>(Path.Join("nb", "nb_example.npy"));
+            var samples = np.array(array).astype(np.float32);
+            var Z = predict(samples).eval();
 
             return true;
         }
 
         public void fit(NDArray X, NDArray y)
         {
-            var unique_y = np.unique(y);
+            var (unique_y, _) = np.unique(y);
 
             var dic = new Dictionary<int, List<List<float>>>();
             // Init uy in dic
-            foreach (int uy in unique_y.Item1.ToArray<int>())
+            foreach (int uy in unique_y.ToArray<int>())
             {
                 dic.Add(uy, new List<List<float>>());
             }
@@ -109,14 +107,11 @@ namespace TensorFlowNET.Examples
             // estimate mean and variance for each class / feature
             // shape : nb_classes * nb_features
             var cons = tf.constant(points_by_class);
-            var tup = tf.nn.moments(cons, new int[] { 1 });
-            var mean = tup.Item1;
-            var variance = tup.Item2;
+            var (mean, variance) = tf.nn.moments(cons, new int[] { 1 });
 
             // Create a 3x2 univariate normal distribution with the 
             // Known mean and variance           
-            var dist = tf.distributions.Normal(mean, tf.sqrt(variance));
-            this.dist = dist;
+            dist = tf.distributions.Normal(mean, tf.sqrt(variance));
         }
 
         public Tensor predict(NDArray X)
@@ -145,7 +140,7 @@ namespace TensorFlowNET.Examples
             var priors = np.log(np.array(tem));
 
             // posterior log probability, log P(c) + log P(x|c)
-            var joint_likelihood = tf.add(ops.convert_to_tensor(priors, TF_DataType.TF_FLOAT), cond_probs);
+            var joint_likelihood = ops.convert_to_tensor(priors, TF_DataType.TF_FLOAT) + cond_probs;
             // normalize to get (log)-probabilities
 
             var norm_factor = tf.reduce_logsumexp(joint_likelihood, new int[] { 1 }, keepdims: true);

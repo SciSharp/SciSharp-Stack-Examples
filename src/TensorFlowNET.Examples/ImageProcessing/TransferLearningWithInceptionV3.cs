@@ -291,12 +291,13 @@ namespace TensorFlowNET.Examples
             Tensor jpeg_data_tensor, Tensor decoded_image_tensor, Tensor resized_input_tensor,
             Tensor bottleneck_tensor, string module_name)
         {
-            var bottlenecks = new List<float[]>();
+            float[,] bottlenecks;
             var ground_truths = new List<long>();
             var filenames = new List<string>();
             class_count = image_lists.Keys.Count;
             if (how_many >= 0)
             {
+                bottlenecks = new float[how_many, 2048];
                 // Retrieve a random sample of bottlenecks.
                 foreach (var unused_i in range(how_many))
                 {
@@ -309,14 +310,21 @@ namespace TensorFlowNET.Examples
                       sess, image_lists, label_name, image_index, image_dir, category,
                       bottleneck_dir, jpeg_data_tensor, decoded_image_tensor,
                       resized_input_tensor, bottleneck_tensor, module_name);
-                    bottlenecks.Add(bottleneck);
+                    for (int col = 0; col < bottleneck.Length; col++)
+                        bottlenecks[unused_i, col] = bottleneck[col];
                     ground_truths.Add(label_index);
                     filenames.Add(image_name);
                 }
             }
             else
             {
+                how_many = 0;
                 // Retrieve all bottlenecks.
+                foreach (var (label_index, label_name) in enumerate(image_lists.Keys.ToArray()))
+                    how_many += image_lists[label_name][category].Length;
+                bottlenecks = new float[how_many, 2048];
+
+                var row = 0;
                 foreach (var (label_index, label_name) in enumerate(image_lists.Keys.ToArray()))
                 {
                     foreach (var (image_index, image_name) in enumerate(image_lists[label_name][category]))
@@ -326,14 +334,16 @@ namespace TensorFlowNET.Examples
                             bottleneck_dir, jpeg_data_tensor, decoded_image_tensor,
                             resized_input_tensor, bottleneck_tensor, module_name);
 
-                        bottlenecks.Add(bottleneck);
+                        for (int col = 0; col < bottleneck.Length; col++)
+                            bottlenecks[row, col] = bottleneck[col];
+                        row++;
                         ground_truths.Add(label_index);
                         filenames.Add(image_name);
                     }
                 }
             }
 
-            return (bottlenecks.ToArray(), ground_truths.ToArray(), filenames.ToArray());
+            return (bottlenecks, ground_truths.ToArray(), filenames.ToArray());
         }
 
         /// <summary>

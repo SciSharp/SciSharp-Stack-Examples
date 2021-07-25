@@ -55,7 +55,7 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            tf.debugging.set_log_device_placement(true);
+            // tf.debugging.set_log_device_placement(true);
             string url = "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz";
             var dataset = keras.utils.get_file("aclImdb_v1.tar.gz", url,
                 untar: true,
