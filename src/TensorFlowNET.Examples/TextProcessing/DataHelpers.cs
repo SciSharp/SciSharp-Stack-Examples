@@ -35,26 +35,31 @@ namespace TensorFlowNET.Examples
             return word_dict;
         }
 
-        public static (int[][], int[]) build_word_dataset(string path, Dictionary<string, int> word_dict, int document_max_len)
+        public static (int[,], int[]) build_word_dataset(string path, Dictionary<string, int> word_dict, int document_max_len)
         {
             var contents = File.ReadAllLines(path);
-            var x = contents.Select(c => (clean_str(c) + " <eos>")
-                .Split(' ').Take(document_max_len)
-                .Select(w => word_dict.ContainsKey(w) ? word_dict[w] : word_dict["<unk>"]).ToArray())
-                .ToArray();
-
-            for (int i = 0; i < x.Length; i++)
-                if (x[i].Length == document_max_len)
-                    x[i][document_max_len - 1] = word_dict["<eos>"];
-                else
-                    Array.Resize(ref x[i], document_max_len);
+            var x = new int[contents.Length, document_max_len];
+            for(var row=0; row < contents.Length; row++)
+            {
+                var tokens = (clean_str(contents[row]) + " <eos>").Split(' ')
+                    .Take(document_max_len)
+                    .Select(w => word_dict.ContainsKey(w) ? word_dict[w] : word_dict["<unk>"])
+                    .ToArray();
+                for (var col = 0; col < document_max_len; col++)
+                {
+                    if (col >= tokens.Length)
+                        x[row, col] = word_dict["<eos>"];
+                    else
+                        x[row, col] = tokens[col];
+                }
+            }
 
             var y = contents.Select(c => int.Parse(c.Substring(0, c.IndexOf(','))) - 1).ToArray();
 
             return (x, y);
         }
 
-        public static (int[][], int[], int) build_char_dataset(string path, string model, int document_max_len, int? limit = null, bool shuffle = true)
+        public static (int[,], int[], int) build_char_dataset(string path, string model, int document_max_len, int? limit = null, bool shuffle = true)
         {
             string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:’'\"/|_#$%ˆ&*˜‘+=<>()[]{} ";
             /*if (step == "train")
@@ -70,7 +75,7 @@ namespace TensorFlowNET.Examples
             //File.WriteAllLines("text_classification/dbpedia_csv/train_6400.csv", contents.Take(6400));
             var size = limit == null ? contents.Length : limit.Value;
 
-            var x = new int[size][];
+            var x = new int[size, document_max_len];
             var y = new int[size];
             var tenth = size / 10;
             var percent = 0;
@@ -85,15 +90,13 @@ namespace TensorFlowNET.Examples
                 string[] parts = contents[i].ToLower().Split(",\"").ToArray();
                 string content = parts[2];
                 content = content.Substring(0, content.Length - 1);
-                var a = new int[document_max_len];
                 for (int j = 0; j < document_max_len; j++)
                 {
                     if (j >= content.Length)
-                        a[j] = char_dict["<pad>"];
+                        x[i, j] = char_dict["<pad>"];
                     else
-                        a[j] = char_dict.ContainsKey(content[j].ToString()) ? char_dict[content[j].ToString()] : char_dict["<unk>"];
+                        x[i, j] = char_dict.ContainsKey(content[j].ToString()) ? char_dict[content[j].ToString()] : char_dict["<unk>"];
                 }
-                x[i] = a;
                 y[i] = int.Parse(parts[0]);
             }
 
@@ -138,67 +141,6 @@ namespace TensorFlowNET.Examples
             str = Regex.Replace(str, "[^A-Za-z0-9(),!?]", " ");
             str = Regex.Replace(str, ",", " ");
             return str;
-        }
-
-        /// <summary>
-        /// Padding
-        /// </summary>
-        /// <param name="sequences"></param>
-        /// <param name="pad_tok">the char to pad with</param>
-        /// <returns>a list of list where each sublist has same length</returns>
-        public static (int[][], int[]) pad_sequences(int[][] sequences, int pad_tok = 0)
-        {
-            int max_length = sequences.Select(x => x.Length).Max();
-            return _pad_sequences(sequences, pad_tok, max_length);
-        }
-
-        public static (int[][][], int[][]) pad_sequences(int[][][] sequences, int pad_tok = 0)
-        {
-            int max_length_word = sequences.Select(x => x.Select(w => w.Length).Max()).Max();
-            int[][][] sequence_padded;
-            var sequence_length = new int[sequences.Length][];
-            for (int i = 0; i < sequences.Length; i++)
-            {
-                // all words are same length now
-                var (sp, sl) = _pad_sequences(sequences[i], pad_tok, max_length_word);
-                sequence_length[i] = sl;
-            }
-
-            int max_length_sentence = sequences.Select(x => x.Length).Max();
-            //(sequence_padded, _) = _pad_sequences(sequences, np.repeat(pad_tok, max_length_word).GetData<int>().ToArray(), max_length_sentence);
-            //(sequence_length, _) = _pad_sequences(sequence_length, 0, max_length_sentence);
-
-            //return (sequence_padded, sequence_length);
-            throw new NotImplementedException("");
-        }
-
-        private static (int[][], int[]) _pad_sequences(int[][] sequences, int pad_tok, int max_length)
-        {
-            var sequence_length = new int[sequences.Length];
-            for (int i = 0; i < sequences.Length; i++)
-            {
-                sequence_length[i] = sequences[i].Length;
-                Array.Resize(ref sequences[i], max_length);
-            }
-
-            return (sequences, sequence_length);
-        }
-
-        private static (int[][][], int[]) _pad_sequences(int[][][] sequences, int[] pad_tok, int max_length)
-        {
-            var sequence_length = new int[sequences.Length];
-            for (int i = 0; i < sequences.Length; i++)
-            {
-                sequence_length[i] = sequences[i].Length;
-                Array.Resize(ref sequences[i], max_length);
-                for (int j = 0; j < max_length - sequence_length[i]; j++)
-                {
-                    sequences[i][max_length - j - 1] = new int[pad_tok.Length];
-                    Array.Copy(pad_tok, sequences[i][max_length - j - 1], pad_tok.Length);
-                }
-            }
-
-            return (sequences, sequence_length);
         }
 
         public static string CalculateMD5Hash(string input)

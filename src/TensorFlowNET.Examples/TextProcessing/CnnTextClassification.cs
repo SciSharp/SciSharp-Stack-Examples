@@ -138,7 +138,8 @@ namespace TensorFlowNET.Examples
             Compress.UnZip(Path.Combine(dataDir, "dbpedia_subset.zip"), Path.Combine(dataDir, "dbpedia_csv"));
 
             Console.WriteLine("Building dataset...");
-            var (x, y) = (new int[0][], new int[0]);
+            int[,] x;
+            int[] y;
 
             if (ModelName == "char_cnn")
             {
