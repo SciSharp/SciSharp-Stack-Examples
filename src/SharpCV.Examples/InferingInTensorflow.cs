@@ -1,4 +1,5 @@
-﻿using NumSharp;
+﻿using Tensorflow;
+using Tensorflow.NumPy;
 using static SharpCV.Binding;
 
 namespace SharpCV.Exmaples
@@ -19,16 +20,16 @@ namespace SharpCV.Exmaples
             net.setInput(blob);
             NDArray output = net.forward();
 
-            foreach (var detection in output[0, 0, Slice.All, Slice.All].GetNDArrays())
+            foreach (var detection in output[0, 0, Slice.All, Slice.All])
             {
-                var score = detection.GetSingle(2);
+                float score = detection[2];
                 if (score > 0.3)
                 {
-                    var left = detection.GetSingle(3) * cols;
-                    var top = detection.GetSingle(4) * rows;
-                    var right = detection.GetSingle(5) * cols;
-                    var bottom = detection.GetSingle(6) * rows;
-                    cv2.rectangle(img, ((int)left, (int)top), ((int)right, (int)bottom), (23, 230, 210), thickness: 2);
+                    var left = detection[3] * cols;
+                    var top = detection[4] * rows;
+                    var right = detection[5] * cols;
+                    var bottom = detection[6] * rows;
+                    cv2.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness: 2);
                 }
             }
 
