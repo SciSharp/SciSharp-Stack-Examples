@@ -160,17 +160,14 @@ namespace TensorFlowNET.Examples.GAN
 
                     grad = tape.gradient(g_loss, G.trainable_variables);
                     g_optimizer.apply_gradients(zip(grad, G.trainable_variables.Select(x => x as ResourceVariable)));
-
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
                 }
-                if (i % 10 == 0 && i != 0)
+                if (i % 5 == 0 && i != 0)
                 {
                     var s_d_loss_real = (float)tf.reduce_mean(d_loss_real).numpy();
                     var s_d_loss_fake = (float)tf.reduce_mean(d_loss_fake).numpy();
                     var s_d_loss = (float)tf.reduce_mean(d_loss).numpy();
                     var s_g_loss = (float)tf.reduce_mean(g_loss).numpy();
-                    Console.WriteLine($"step{i} d_loss:{s_d_loss}(Real: {s_d_loss_real} + Fake: {s_d_loss_fake}) g_loss:{s_g_loss}");
+                    print($"step{i} d_loss:{s_d_loss}(Real: {s_d_loss_real} + Fake: {s_d_loss_fake}) g_loss:{s_g_loss}");
                     if (i % showstep == 0)
                         PredictImage(G, i);
                 }
@@ -188,7 +185,7 @@ namespace TensorFlowNET.Examples.GAN
             var count = tf.cast(shape, TF_DataType.TF_FLOAT);
             x = tf.clip_by_value(x, 1e-6f, 1.0f - 1e-6f);
             var z = y * tf.log(x) + (1 - y) * tf.log(1 - x);
-            var result = ((-1.0f / count) * tf.reduce_sum(z));
+            var result = -1.0f / count * tf.reduce_sum(z);
             return result;
         }
 
@@ -209,7 +206,7 @@ namespace TensorFlowNET.Examples.GAN
             gen_imgs = gen_imgs * 0.5 + 0.5;
             var c = 5;
             var r = gen_imgs.shape[0] / c;
-            NDArray nDArray = np.zeros((img_rows * r, img_cols * c));
+            var nDArray = np.zeros((img_rows * r, img_cols * c), dtype: np.float32);
             for (var i = 0; i < r; i++)
             {
                 for (var j = 0; j < c; j++)
