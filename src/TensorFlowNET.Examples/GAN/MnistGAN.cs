@@ -16,7 +16,7 @@ namespace TensorFlowNET.Examples.GAN
     public class MnistGAN : SciSharpExample, IExample
     {
         float LeakyReLU_alpha = 0.2f;
-        int epochs = 100;
+        int epochs = 20;
         //int epochs = 2000; // Better effect, but longer time
         int batch_size = 64;
 

@@ -41,7 +41,7 @@
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.4.0.20200915" />
-    <PackageReference Include="SciSharp.Models.ImageClassification" Version="0.2.0" />
+    <PackageReference Include="SciSharp.Models.ImageClassification" Version="0.3.0" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.6.0" />
     <PackageReference Include="SharpCV" Version="0.10.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />

@@ -94,7 +94,7 @@ namespace TensorFlowNET.Examples
                 print($"Test Accuracy: {accuracy_test}");
             }
 
-            return accuracy_test > 0.90;
+            return accuracy_test > 0.85;
         }
 
         void run_optimization(ConvNet conv_net, OptimizerV2 optimizer, Tensor x, Tensor y)

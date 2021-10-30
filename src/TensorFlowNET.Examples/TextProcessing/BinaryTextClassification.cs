@@ -24,7 +24,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Binary Text Classification",
-                Enabled = true
+                Enabled = false
             };
 
         public bool Run()

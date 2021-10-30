@@ -116,14 +116,37 @@ namespace TensorFlowNET.Examples
             BuildGraph();
 
             sess = tf.Session();
-
             Train();
             Test();
 
             TestDataOutput();
 
-            return accuracy_test > 0.98;
+            FreezeModel();
+            LoadAndPredict();
 
+            return accuracy_test > 0.98;
+        }
+
+        public void LoadAndPredict()
+        {
+            using var graph = tf.Graph().as_default();
+            graph.Import(Path.Combine(Config.Name, "model.pb"));
+            Tensor x = graph.OperationByName("Input/X");
+            Tensor prediction = graph.OperationByName("Train/Prediction/predictions");
+            Tensor probility = graph.OperationByName("Train/Prediction/prob");
+
+            using var sess = tf.Session(graph);
+            var (prediction_result, probility_result) = sess.run((prediction, probility), (x, x_test));
+            print($"Prediction result: {prediction_result}");
+        }
+
+        public override string FreezeModel()
+        {
+            return tf.train.freeze_graph(Config.Name + "\\MODEL", "model", new[]
+            {
+                "Train/Prediction/predictions",
+                "Train/Prediction/prob"
+            });
         }
 
         #region PrepareData

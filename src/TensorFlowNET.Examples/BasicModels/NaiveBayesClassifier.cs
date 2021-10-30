@@ -58,7 +58,7 @@ namespace TensorFlowNET.Examples
             var (xx, yy) = np.meshgrid(np.linspace(x_min, x_max, 30), np.linspace(y_min, y_max, 30));
             var array = np.Load<double[,]>(Path.Join("nb", "nb_example.npy"));
             var samples = np.array(array).astype(np.float32);
-            var Z = predict(samples).eval();
+            var Z = predict(samples);
 
             return true;
         }
@@ -93,7 +93,7 @@ namespace TensorFlowNET.Examples
             float[,,] points = new float[dic.Count, maxCount, X.shape[1]];
             foreach (KeyValuePair<int, List<List<float>>> kv in dic)
             {
-                int j = (int)kv.Key;
+                int j = kv.Key;
                 for (int i = 0; i < maxCount; i++)
                 {
                     for (int k = 0; k < X.shape[1]; k++)

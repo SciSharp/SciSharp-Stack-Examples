@@ -14,8 +14,11 @@
    limitations under the License.
 ******************************************************************************/
 
+using SciSharp.Models;
+using SciSharp.Models.ImageClassification;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Tensorflow;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
@@ -30,37 +33,9 @@ namespace TensorFlowNET.Examples
     /// </summary>
     public class DigitRecognitionCNN : SciSharpExample, IExample
     {
-        const int img_h = 28, img_w = 28; // MNIST images are 28x28
-        int n_classes = 10; // Number of classes, one class per digit
-        int n_channels = 1;
-
-        // Hyper-parameters
-        int epochs = 5; // accuracy > 98%
-        int batch_size = 100;
-        float learning_rate = 0.001f;
         Datasets<MnistDataSet> mnist;
 
-        // Network configuration
-        // 1st Convolutional Layer
-        int filter_size1 = 5;  // Convolution filters are 5 x 5 pixels.
-        int num_filters1 = 16; //  There are 16 of these filters.
-        int stride1 = 1;  // The stride of the sliding window
-
-        // 2nd Convolutional Layer
-        int filter_size2 = 5; // Convolution filters are 5 x 5 pixels.
-        int num_filters2 = 32;// There are 32 of these filters.
-        int stride2 = 1;  // The stride of the sliding window
-
-        // Fully-connected layer.
-        int h1 = 128; // Number of neurons in fully-connected layer.
-
-        Tensor x, y;
-        Tensor loss, accuracy, cls_prediction;
-        Operation optimizer;
-
-        int display_freq = 100;
         float accuracy_test = 0f;
-        float loss_test = 1f;
 
         NDArray x_train, y_train;
         NDArray x_valid, y_valid;
@@ -71,265 +46,68 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST CNN (Graph)",
                 Enabled = true,
-                IsImportingGraph = false,
                 Priority = 15
             };
 
         public bool Run()
         {
-            tf.compat.v1.disable_eager_execution();
-
             PrepareData();
-
-            Train();
+            //Train();
             Test();
+            Predict();
 
-            return accuracy_test > 0.98;
-        }
-
-        public override Graph BuildGraph()
-        {
-            var graph = new Graph().as_default();
-
-            tf_with(tf.name_scope("Input"), delegate
-            {
-                // Placeholders for inputs (x) and outputs(y)
-                x = tf.placeholder(tf.float32, shape: (-1, img_h, img_w, n_channels), name: "X");
-                y = tf.placeholder(tf.float32, shape: (-1, n_classes), name: "Y");
-            });
-
-            var conv1 = conv_layer(x, filter_size1, num_filters1, stride1, name: "conv1");
-            var pool1 = max_pool(conv1, ksize: 2, stride: 2, name: "pool1");
-            var conv2 = conv_layer(pool1, filter_size2, num_filters2, stride2, name: "conv2");
-            var pool2 = max_pool(conv2, ksize: 2, stride: 2, name: "pool2");
-            var layer_flat = flatten_layer(pool2);
-            var fc1 = fc_layer(layer_flat, h1, "FC1", use_relu: true);
-            var output_logits = fc_layer(fc1, n_classes, "OUT", use_relu: false);
-
-            tf_with(tf.variable_scope("Train"), delegate
-            {
-                tf_with(tf.variable_scope("Loss"), delegate
-                {
-                    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels: y, logits: output_logits), name: "loss");
-                });
-
-                tf_with(tf.variable_scope("Optimizer"), delegate
-                {
-                    optimizer = tf.train.AdamOptimizer(learning_rate: learning_rate, name: "Adam-op").minimize(loss);
-                });
-
-                tf_with(tf.variable_scope("Accuracy"), delegate
-                {
-                    var correct_prediction = tf.equal(tf.math.argmax(output_logits, 1), tf.math.argmax(y, 1), name: "correct_pred");
-                    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name: "accuracy");
-                });
-
-                tf_with(tf.variable_scope("Prediction"), delegate
-                {
-                    cls_prediction = tf.math.argmax(output_logits, axis: 1, name: "predictions");
-                });
-            });
-
-            return graph;
+            return accuracy_test > 0.95;
         }
 
         public override void Train()
         {
-            var graph = BuildGraph();
-            using (var sess = tf.Session(graph))
+            // using wizard to train model
+            var wizard = new ModelWizard();
+            var task = wizard.AddImageClassificationTask<CNN>(new TaskOptions
             {
-
-                // Number of training iterations in each epoch
-                var num_tr_iter = (int)y_train.shape[0] / batch_size;
-
-                var init = tf.global_variables_initializer();
-                sess.run(init);
-
-                float loss_val = 100.0f;
-                float accuracy_val = 0f;
-
-                var sw = new Stopwatch();
-                sw.Start();
-                foreach (var epoch in range(epochs))
-                {
-                    print($"Training epochs: {epoch + 1}/{epochs}");
-                    // Randomly shuffle the training data at the beginning of each epoch 
-                    (x_train, y_train) = mnist.Randomize(x_train, y_train);
-
-                    foreach (var iteration in range(num_tr_iter))
-                    {
-                        var start = iteration * batch_size;
-                        var end = (iteration + 1) * batch_size;
-                        var (x_batch, y_batch) = mnist.GetNextBatch(x_train, y_train, start, end);
-
-                        // Run optimization op (backprop)
-                        sess.run(optimizer, (x, x_batch), (y, y_batch));
-
-                        if (iteration % display_freq == 0)
-                        {
-                            // Calculate and display the batch loss and accuracy
-                            (loss_val, accuracy_val) = sess.run((loss, accuracy), new FeedItem(x, x_batch), new FeedItem(y, y_batch));
-                            print($"iter {iteration.ToString("000")}: Loss={loss_val.ToString("0.0000")}, Training Accuracy={accuracy_val.ToString("P")} {sw.ElapsedMilliseconds}ms");
-                            sw.Restart();
-                        }
-                    }
-
-                    // Run validation after every epoch
-                    (loss_val, accuracy_val) = sess.run((loss, accuracy), (x, x_valid), (y, y_valid));
-                    print("---------------------------------------------------------");
-                    print($"Epoch: {epoch + 1}, validation loss: {loss_val.ToString("0.0000")}, validation accuracy: {accuracy_val.ToString("P")}");
-                    print("---------------------------------------------------------");
-                }
-
-                SaveCheckpoint(sess);
-            }
-        }
-
-        public override string FreezeModel()
-        {
-            return tf.train.freeze_graph(Config.Name,
-                "model",
-                new[] { "Train/Loss/loss,Train/Accuracy/accuracy" });
+                InputShape = (28, 28, 1),
+                NumberOfClass = 10,
+            });
+            task.SetModelArgs(new ConvArgs
+            {
+                NumberOfNeurons = 128
+            });
+            task.Train(new TrainingOptions
+            {
+                Epochs = 5,
+                TrainingData = new FeatureAndLabel(x_train, y_train),
+                ValidationData = new FeatureAndLabel(x_valid, y_valid)
+            });
         }
 
         public override void Test()
         {
-            using (var graph = tf.Graph().as_default())
-            using (var sess = tf.Session(graph))
+            var wizard = new ModelWizard();
+            var task = wizard.AddImageClassificationTask<CNN>(new TaskOptions
             {
-                var saver = tf.train.import_meta_graph(Path.Combine(Config.Name, "mnist_cnn.ckpt.meta"));
-                // Restore variables from checkpoint
-                saver.restore(sess, tf.train.latest_checkpoint(Config.Name));
-
-                loss = graph.get_tensor_by_name("Train/Loss/loss:0");
-                accuracy = graph.get_tensor_by_name("Train/Accuracy/accuracy:0");
-                x = graph.get_tensor_by_name("Input/X:0");
-                y = graph.get_tensor_by_name("Input/Y:0");
-
-                //var init = tf.global_variables_initializer();
-                //sess.run(init);
-
-                (loss_test, accuracy_test) = sess.run((loss, accuracy), (x, x_test), (y, y_test));
-                print("---------------------------------------------------------");
-                print($"Test loss: {loss_test.ToString("0.0000")}, test accuracy: {accuracy_test.ToString("P")}");
-                print("---------------------------------------------------------");
-            }
-        }
-
-        /// <summary>
-        /// Create a 2D convolution layer
-        /// </summary>
-        /// <param name="x">input from previous layer</param>
-        /// <param name="filter_size">size of each filter</param>
-        /// <param name="num_filters">number of filters(or output feature maps)</param>
-        /// <param name="stride">filter stride</param>
-        /// <param name="name">layer name</param>
-        /// <returns>The output array</returns>
-        private Tensor conv_layer(Tensor x, int filter_size, int num_filters, int stride, string name)
-        {
-            return tf_with(tf.variable_scope(name), delegate
-            {
-
-                var num_in_channel = x.shape[x.ndim - 1];
-                var shape = new int[] { filter_size, filter_size, (int)num_in_channel, num_filters };
-                var W = weight_variable("W", shape);
-                // var tf.summary.histogram("weight", W);
-                var b = bias_variable("b", new[] { num_filters });
-                // tf.summary.histogram("bias", b);
-                var layer = tf.nn.conv2d(x, W,
-                                     strides: new int[] { 1, stride, stride, 1 },
-                                     padding: "SAME");
-                layer += b.AsTensor();
-                return tf.nn.relu(layer);
+                ModelPath = @"image_classification_cnn_v1\saved_model.pb"
             });
-        }
-
-        /// <summary>
-        /// Create a max pooling layer
-        /// </summary>
-        /// <param name="x">input to max-pooling layer</param>
-        /// <param name="ksize">size of the max-pooling filter</param>
-        /// <param name="stride">stride of the max-pooling filter</param>
-        /// <param name="name">layer name</param>
-        /// <returns>The output array</returns>
-        private Tensor max_pool(Tensor x, int ksize, int stride, string name)
-        {
-            return tf.nn.max_pool(x,
-                ksize: new[] { 1, ksize, ksize, 1 },
-                strides: new[] { 1, stride, stride, 1 },
-                padding: "SAME",
-                name: name);
-        }
-
-        /// <summary>
-        /// Flattens the output of the convolutional layer to be fed into fully-connected layer
-        /// </summary>
-        /// <param name="layer">input array</param>
-        /// <returns>flattened array</returns>
-        private Tensor flatten_layer(Tensor layer)
-        {
-            return tf_with(tf.variable_scope("Flatten_layer"), delegate
+            var result = task.Test(new TestingOptions
             {
-                var layer_shape = layer.shape;
-                var num_features = layer_shape[new Slice(1, 4)].size;
-                var layer_flat = tf.reshape(layer, new[] { -1, num_features });
-
-                return layer_flat;
+                TestingData = new FeatureAndLabel(x_test, y_test)
             });
+            accuracy_test = result.Accuracy;
         }
 
-        /// <summary>
-        /// Create a weight variable with appropriate initialization
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="shape"></param>
-        /// <returns></returns>
-        private IVariableV1 weight_variable(string name, int[] shape)
+        public override void Predict()
         {
-            var initer = tf.truncated_normal_initializer(stddev: 0.01f);
-            return tf.compat.v1.get_variable(name,
-                                   dtype: tf.float32,
-                                   shape: shape,
-                                   initializer: initer);
-        }
-
-        /// <summary>
-        /// Create a bias variable with appropriate initialization
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="shape"></param>
-        /// <returns></returns>
-        private IVariableV1 bias_variable(string name, int[] shape)
-        {
-            var initial = tf.constant(0f, shape: shape, dtype: tf.float32);
-            return tf.compat.v1.get_variable(name,
-                           dtype: tf.float32,
-                           initializer: initial);
-        }
-
-        /// <summary>
-        /// Create a fully-connected layer
-        /// </summary>
-        /// <param name="x">input from previous layer</param>
-        /// <param name="num_units">number of hidden units in the fully-connected layer</param>
-        /// <param name="name">layer name</param>
-        /// <param name="use_relu">boolean to add ReLU non-linearity (or not)</param>
-        /// <returns>The output array</returns>
-        private Tensor fc_layer(Tensor x, int num_units, string name, bool use_relu = true)
-        {
-            return tf_with(tf.variable_scope(name), delegate
+            // predict image
+            var wizard = new ModelWizard();
+            var task = wizard.AddImageClassificationTask<CNN>(new TaskOptions
             {
-                var in_dim = x.shape[1];
-
-                var W = weight_variable("W_" + name, shape: new[] { (int)in_dim, num_units });
-                var b = bias_variable("b_" + name, new[] { num_units });
-
-                var layer = tf.matmul(x, W.AsTensor()) + b.AsTensor();
-                if (use_relu)
-                    layer = tf.nn.relu(layer);
-
-                return layer;
+                LabelPath = @"image_classification_cnn_v1\labels.txt",
+                ModelPath = @"image_classification_cnn_v1\saved_model.pb"
             });
+
+            var input = x_test["0:1"];
+            var result = task.Predict(input);
+            long output = np.argmax(y_test[0]);
+            Debug.Assert(result.Label == output.ToString());
         }
 
         public override void PrepareData()
@@ -344,6 +122,10 @@ namespace TensorFlowNET.Examples
             print("Size of:");
             print($"- Training-set:\t\t{len(mnist.Train.Data)}");
             print($"- Validation-set:\t{len(mnist.Validation.Data)}");
+
+            // generate labels
+            var labels = range(0, 9).Select(x => x.ToString());
+            File.WriteAllLines(@"image_classification_cnn_v1\labels.txt", labels);
         }
 
         /// <summary>
@@ -360,12 +142,6 @@ namespace TensorFlowNET.Examples
             //y[0] = np.arange(num_class) == y[0];
             //var labels = (np.arange(num_class) == y.reshape(y.shape[0], 1, y.shape[1])).astype(np.float32);
             return (dataset, y);
-        }
-
-        public void SaveCheckpoint(Session sess)
-        {
-            var saver = tf.train.Saver();
-            saver.save(sess, Path.Combine(Config.Name, "mnist_cnn.ckpt"));
         }
     }
 }

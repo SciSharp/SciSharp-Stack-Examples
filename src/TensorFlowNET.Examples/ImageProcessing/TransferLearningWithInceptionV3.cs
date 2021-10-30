@@ -65,7 +65,10 @@ namespace TensorFlowNET.Examples
             {
                 DataDir = @"image_classification_v1\flower_photos",
             });
-            task.Train(new TrainingOptions());
+            task.Train(new TrainingOptions
+            {
+                TrainingSteps = 100
+            });
         }
 
         /// <summary>
@@ -100,7 +103,9 @@ namespace TensorFlowNET.Examples
                 DataDir = @"image_classification_v1\flower_photos",
                 ModelPath = @"image_classification_v1\saved_model.pb"
             });
-            var result = task.Test();
+            var result = task.Test(new TestingOptions
+            {
+            });
             accuracy = result.Accuracy;
         }
     }
