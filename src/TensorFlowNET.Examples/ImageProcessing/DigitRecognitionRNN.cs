@@ -58,8 +58,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST RNN (Graph)",
                 Enabled = false,
-                IsImportingGraph = false,
-                Priority = 20
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -152,7 +151,8 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
+            var loader = new MnistModelLoader();
+            mnist = loader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
             (x_train, y_train) = (mnist.Train.Data, mnist.Train.Labels);
             (x_valid, y_valid) = (mnist.Validation.Data, mnist.Validation.Labels);
             (x_test, y_test) = (mnist.Test.Data, mnist.Test.Labels);

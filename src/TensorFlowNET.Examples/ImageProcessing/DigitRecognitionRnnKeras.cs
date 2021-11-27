@@ -44,8 +44,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST RNN (Keras)",
                 Enabled = false,
-                IsImportingGraph = false,
-                Priority = 21
+                IsImportingGraph = false
             };
 
         public bool Run()

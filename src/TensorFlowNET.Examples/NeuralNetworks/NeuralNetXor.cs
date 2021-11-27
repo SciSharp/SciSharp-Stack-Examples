@@ -39,8 +39,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "NN XOR",
                 Enabled = false,
-                IsImportingGraph = false,
-                Priority = 3
+                IsImportingGraph = false
             };
 
         private (Operation, Tensor, Tensor) make_graph(Tensor features, Tensor labels, int num_hidden = 8)

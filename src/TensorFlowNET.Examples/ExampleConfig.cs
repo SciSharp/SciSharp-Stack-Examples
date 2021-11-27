@@ -2,8 +2,6 @@
 {
     public class ExampleConfig
     {
-        public int Priority { get; set; } = 100;
-
         /// <summary>
         /// Example name
         /// </summary>

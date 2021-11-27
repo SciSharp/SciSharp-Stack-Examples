@@ -35,14 +35,8 @@ namespace TensorFlowNET.Examples
 
             var examples = Assembly.GetEntryAssembly().GetTypes()
                 .Where(x => x.GetInterfaces().Contains(typeof(IExample)))
-                .Select(x => (IExample)Activator.CreateInstance(x))
-                .Where(x => x.InitConfig() != null)
-                .Where(x => x.Config.Enabled)
-                .OrderBy(x => x.Config.Priority)
+                // .Where(x => x.Name == nameof(ToyResNet))
                 .ToArray();
-
-            if (parsedArgs.ContainsKey("ex"))
-                examples = examples.Where(x => x.Config.Name == parsedArgs["ex"]).ToArray();
 
             Console.WriteLine(Environment.OSVersion, Color.Yellow);
             Console.WriteLine($"64Bit Operating System: {Environment.Is64BitOperatingSystem}", Color.Yellow);
@@ -52,58 +46,26 @@ namespace TensorFlowNET.Examples
             Console.WriteLine($"TensorFlow.Keras v{Assembly.GetAssembly(typeof(KerasApi)).GetName().Version}", Color.Yellow);
             Console.WriteLine(Environment.CurrentDirectory, Color.Yellow);
 
-            while (true)
-            {
-                for (var i = 0; i < examples.Length; i++)
-                    Console.WriteLine($"[{i + 1}]: {examples[i].Config.Name}");
-
-                var key = "1";
-
-                if (examples.Length > 1)
-                {
-                    Console.Write($"Choose one example to run, hit [Enter] to run all: ", Color.Yellow);
-                    key = Console.ReadLine();
-                }
-
-                RunExamples(key, examples);
-            }
-        }
-
-        private static void RunExamples(string key, IExample[] examples)
-        {
             int finished = 0;
             var errors = new List<string>();
             var success = new List<string>();
 
             var sw = new Stopwatch();
+
             for (var i = 0; i < examples.Length; i++)
             {
-                if ((i + 1).ToString() != key && key != "") continue;
+                var (isSuccess, name) = (true, "");
+                sw.Restart();
+                (isSuccess, name) = RunExamples(examples[i], parsedArgs);
+                sw.Stop();
 
-                var example = examples[i];
-                Console.WriteLine($"{DateTime.UtcNow} Starting {example.Config.Name}", Color.White);
-
-                try
-                {
-                    sw.Restart();
-                    bool isSuccess = example.Run();
-                    sw.Stop();
-
-                    if (isSuccess)
-                        success.Add($"Example: {example.Config.Name} in {sw.Elapsed.TotalSeconds}s");
-                    else
-                        errors.Add($"Example: {example.Config.Name} in {sw.Elapsed.TotalSeconds}s");
-                }
-                catch (Exception ex)
-                {
-                    errors.Add($"Example: {example.Config.Name}");
-                    Console.WriteLine(ex);
-                }
+                if (isSuccess)
+                    success.Add($"Example: {name} in {sw.Elapsed.TotalSeconds}s");
+                else
+                    errors.Add($"Example: {name} in {sw.Elapsed.TotalSeconds}s");
 
                 finished++;
                 keras.backend.clear_session();
-                
-                Console.WriteLine($"{DateTime.UtcNow} Completed {example.Config.Name}", Color.White);
             }
 
             success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.Green));
@@ -113,8 +75,35 @@ namespace TensorFlowNET.Examples
             Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}");
             Console.WriteLine($"TensorFlow.Keras v{Assembly.GetAssembly(typeof(KerasApi)).GetName().Version}");
             Console.WriteLine($"{finished} of {examples.Length} example(s) are completed.");
-            Console.Write("Press [Enter] to continue...");
             Console.ReadLine();
+        }
+
+        private static (bool, string) RunExamples(Type example, Dictionary<string, string> args)
+        {
+            var instance = (IExample)Activator.CreateInstance(example);
+            instance.InitConfig();
+            var name = instance.Config.Name;
+
+            Console.WriteLine($"{DateTime.UtcNow} Starting {name}", Color.White);
+
+            // if (args.ContainsKey("ex") && name != args["ex"])
+                // return (false, "");
+
+            if (!instance.Config.Enabled)
+                return (true, name);
+
+            bool ret = false;
+            try
+            {
+                ret = instance.Run();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
+            Console.WriteLine($"{DateTime.UtcNow} Completed {name}", Color.White);
+            return (ret, name);
         }
 
         private static Dictionary<string, string> ParseArgs(string[] args)

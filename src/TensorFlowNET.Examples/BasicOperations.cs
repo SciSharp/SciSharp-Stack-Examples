@@ -11,8 +11,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Basic Operations",
-                Priority = 2
+                Name = "Basic Operations"
             };
 
         public bool Run()

@@ -45,14 +45,13 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST CNN (Graph)",
-                Enabled = true,
-                Priority = 15
+                Enabled = true
             };
 
         public bool Run()
         {
             PrepareData();
-            //Train();
+            Train();
             Test();
             Predict();
 
@@ -113,8 +112,8 @@ namespace TensorFlowNET.Examples
         public override void PrepareData()
         {
             Directory.CreateDirectory(Config.Name);
-
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
+            var loader = new MnistModelLoader();
+            mnist = loader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
             (x_train, y_train) = Reformat(mnist.Train.Data, mnist.Train.Labels);
             (x_valid, y_valid) = Reformat(mnist.Validation.Data, mnist.Validation.Labels);
             (x_test, y_test) = Reformat(mnist.Test.Data, mnist.Test.Labels);

@@ -59,8 +59,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST LSTM (Graph)",
                 Enabled = false,
-                IsImportingGraph = false,
-                Priority = 25
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -163,7 +162,8 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
+            var loader = new MnistModelLoader();
+            mnist = loader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
 
             print("Size of:");
             print($"- Training-set:\t\t{len(mnist.Train.Data)}");

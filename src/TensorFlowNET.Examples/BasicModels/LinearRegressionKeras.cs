@@ -29,8 +29,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Linear Regression (Keras)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 6
+                IsImportingGraph = false
             };
 
         public bool Run()

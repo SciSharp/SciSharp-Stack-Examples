@@ -40,8 +40,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Linear Regression (Graph)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 4
+                IsImportingGraph = false
             };
 
         public bool Run()

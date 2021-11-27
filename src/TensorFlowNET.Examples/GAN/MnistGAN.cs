@@ -34,8 +34,7 @@ namespace TensorFlowNET.Examples.GAN
             => Config = new ExampleConfig
             {
                 Name = "GAN MNIST",
-                Enabled = true,
-                Priority = 50
+                Enabled = true
             };
 
         public bool Run()

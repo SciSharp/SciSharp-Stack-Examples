@@ -51,8 +51,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Fully Connected Neural Network (Keras)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 12
+                IsImportingGraph = false
             };
 
         public override void PrepareData()

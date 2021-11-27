@@ -40,8 +40,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Linear Regression (Eager)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 5
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -51,12 +50,12 @@ namespace TensorFlowNET.Examples
             // Training Data
             PrepareData();
 
-            RunModelInEagerMode();
+            Train();
 
             return true;
         }
 
-        public void RunModelInEagerMode()
+        public override void Train()
         {
             // Set model weights 
             // We can set a fixed init value in order to debug
@@ -75,7 +74,10 @@ namespace TensorFlowNET.Examples
                 // Linear regression (Wx + b).
                 var pred = W * train_X + b;
                 // Mean square error.
-                var loss = tf.reduce_sum(tf.pow(pred - train_Y, 2)) / (2 * n_samples);
+                var sub = pred - train_Y;
+                var p = tf.pow(sub, 2);
+                var s = tf.reduce_sum(p);
+                var loss = s / (2 * n_samples);
                 // should stop recording
                 // Compute gradients.
                 var gradients = g.gradient(loss, (W, b));

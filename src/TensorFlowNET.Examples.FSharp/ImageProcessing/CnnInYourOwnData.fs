@@ -116,7 +116,7 @@ module CnnInYourOwnData =
         use graph = tf.Graph().as_default()
         for i in 0 .. a.Length - 1 do
             let indices : obj[] = [| i |]
-            b.[indices] <- ReadTensorFromImageFile a.[i] graph
+            // b.[indices] <- ReadTensorFromImageFile a.[i] graph
             Console.Write(".")
         Console.WriteLine()
         Console.WriteLine("Load Images To NDArray: " + c)

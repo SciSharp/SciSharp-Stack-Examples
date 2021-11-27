@@ -15,9 +15,7 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Basic Eager",
-                Enabled = false,
-                IsImportingGraph = false
+                Name = "Basic Eager"
             };
 
         public bool Run()

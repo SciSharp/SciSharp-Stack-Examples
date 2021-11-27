@@ -47,8 +47,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "K-means Clustering",
                 Enabled = false,
-                IsImportingGraph = true,
-                Priority = 7
+                IsImportingGraph = true
             };
 
         public bool Run()

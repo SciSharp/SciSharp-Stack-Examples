@@ -31,8 +31,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "NN XOR in Keras",
-                Enabled = true,
-                Priority = 3
+                Enabled = true
             };
 
         public bool Run()

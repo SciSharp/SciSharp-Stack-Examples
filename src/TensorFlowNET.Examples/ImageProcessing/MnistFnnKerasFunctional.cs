@@ -35,8 +35,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST FNN (Keras Functional)",
-                Enabled = true,
-                Priority = 17
+                Enabled = true
             };
 
         public bool Run()

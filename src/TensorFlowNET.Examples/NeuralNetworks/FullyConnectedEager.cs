@@ -53,8 +53,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Fully Connected Neural Network (Eager)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 11
+                IsImportingGraph = false
             };
 
         public bool Run()

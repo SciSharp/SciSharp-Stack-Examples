@@ -53,8 +53,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Digits Recognition Neural Network",
                 Enabled = false,
-                IsImportingGraph = false,
-                Priority = 9
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -121,7 +120,8 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
+            var loader = new MnistModelLoader();
+            mnist = loader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
         }
 
         public override void Train()

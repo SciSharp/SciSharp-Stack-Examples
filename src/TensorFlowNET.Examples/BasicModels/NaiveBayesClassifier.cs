@@ -37,8 +37,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Naive Bayes Classifier",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 7
+                IsImportingGraph = false
             };
 
         public bool Run()

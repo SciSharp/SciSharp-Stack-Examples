@@ -54,7 +54,7 @@ module LogisticRegressionEager =
         // Bias of shape [10], the total number of classes.
         let b = tf.Variable(tf.zeros(TensorShape num_classes), name = "bias")
 
-        let logistic_regression = fun x -> tf.nn.softmax(tf.matmul(x, W.asTensor) + b)
+        let logistic_regression = fun x -> tf.nn.softmax(tf.matmul(x, W.AsTensor()) + b)
 
         let cross_entropy = fun (y_pred, y_true) ->
             let y_true = tf.cast(y_true, TF_DataType.TF_UINT8)

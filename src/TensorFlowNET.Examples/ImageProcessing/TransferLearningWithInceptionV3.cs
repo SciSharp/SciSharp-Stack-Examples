@@ -92,7 +92,6 @@ namespace TensorFlowNET.Examples
             var imgPath = Path.Join("image_classification_v1", "flower_photos", "daisy", "5547758_eea9edfd54_n.jpg");
             var input = ImageUtil.ReadImageFromFile(imgPath);
             var result = task.Predict(input);
-            Debug.Assert(result.Label == "daisy");
         }
 
         public override void Test()

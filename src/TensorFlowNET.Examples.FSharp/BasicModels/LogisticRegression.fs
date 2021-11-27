@@ -73,7 +73,7 @@ module LogisticRegression =
         let b = tf.Variable(tf.zeros(Shape(10).asTensorShape))
 
         // Construct model
-        let pred = tf.nn.softmax(tf.matmul(x, W.asTensor) + b) // Softmax
+        let pred = tf.nn.softmax(tf.matmul(x, W.AsTensor()) + b) // Softmax
 
         // Minimize error using cross entropy
         let cost = tf.reduce_mean(-tf.reduce_sum(y * tf.log(pred), reduction_indices = 1))

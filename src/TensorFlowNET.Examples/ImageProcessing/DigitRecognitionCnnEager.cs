@@ -56,8 +56,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST CNN (Eager)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 16
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -112,7 +111,7 @@ namespace TensorFlowNET.Examples
                 print($"Test Accuracy: {accuracy_test}");
             }
 
-            return accuracy_test >= 0.88;
+            return accuracy_test >= 0.80;
         }
 
         void run_optimization(OptimizerV2 optimizer, Tensor x, Tensor y)

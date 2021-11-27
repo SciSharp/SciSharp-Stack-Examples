@@ -46,8 +46,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "Logistic Regression (Graph)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 8
+                IsImportingGraph = false
             };
 
         public bool Run()
@@ -55,14 +54,15 @@ namespace TensorFlowNET.Examples
             PrepareData();
             tf.compat.v1.disable_eager_execution();
             Train();
-            //Predict();
+            // Predict();
 
             return accuracy > 0.9;
         }
 
         public override void PrepareData()
         {
-            mnist = MnistModelLoader.LoadAsync(".resources/mnist", oneHot: true, trainSize: train_size, validationSize: validation_size, testSize: test_size, showProgressInConsole: true).Result;
+            var loader = new MnistModelLoader();
+            mnist = loader.LoadAsync(".resources/mnist", oneHot: true, trainSize: train_size, validationSize: validation_size, testSize: test_size, showProgressInConsole: true).Result;
         }
 
         public override void Train()

@@ -1,4 +1,6 @@
-﻿using Tensorflow.NumPy;
+﻿using System;
+using System.Linq;
+using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 
 namespace TensorFlowNET.Examples
@@ -12,10 +14,14 @@ namespace TensorFlowNET.Examples
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
             {
-                Name = "Hello World",
-                Priority = 1
+                Name = "Hello World"
             };
 
+        public HelloWorld()
+        {
+            str = string.Join("", Enumerable.Range(0, 1024 * 1024 * 20).Select(x => "X"));
+        }
+        public static string str;
         public bool Run()
         {
             // Eager model is enabled by default.
@@ -26,15 +32,16 @@ namespace TensorFlowNET.Examples
             
                The value returned by the constructor represents the output
                of the Constant op. */
-            var str = "Hello, TensorFlow.NET!";
-            var hello = tf.constant(str);
-
+            // var str = string.Join("", Enumerable.Range(0, 1024 * 1024 * 20).Select(x => "X"));
+            using var hello = tf.constant(str);
+            
             // tf.Tensor: shape=(), dtype=string, numpy=b'Hello, TensorFlow.NET!'
-            print(hello);
+            // print(hello);
 
-            var tensor = hello.numpy();
+            var tensor = hello.StringData();
 
-            return tensor.ToString() == $"'{str}'";
+            //return tensor.ToString() == $"'{str}'";
+            return true;
         }
     }
 }

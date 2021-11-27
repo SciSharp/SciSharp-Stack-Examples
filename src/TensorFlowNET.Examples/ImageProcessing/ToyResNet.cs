@@ -27,7 +27,7 @@ namespace TensorFlowNET.Examples
     /// A toy ResNet model
     /// https://keras.io/guides/functional_api/
     /// </summary>
-    public class CIFAR10_CNN : SciSharpExample, IExample
+    public class ToyResNet : SciSharpExample, IExample
     {
         Model model;
         NDArray x_train, y_train;

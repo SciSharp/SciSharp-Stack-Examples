@@ -51,8 +51,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "MNIST CNN (Keras Subclass)",
                 Enabled = true,
-                IsImportingGraph = false,
-                Priority = 17
+                IsImportingGraph = false
             };
 
         public bool Run()
