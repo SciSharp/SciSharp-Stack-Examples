@@ -96,12 +96,6 @@ namespace TensorFlowNET.Examples
 
             train_ds = train_ds.shuffle(1000).prefetch(buffer_size: -1);
             val_ds = val_ds.prefetch(buffer_size: -1);
-
-            foreach (var (img, label) in train_ds)
-            {
-                print($"images: {img.shape}");
-                print($"labels: {label.numpy()}");
-            }
         }
     }
 }

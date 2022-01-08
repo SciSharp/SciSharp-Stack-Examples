@@ -111,7 +111,7 @@ namespace TensorFlowNET.Examples
 
         Tensor conv2d(Tensor x, IVariableV1 W, IVariableV1 b, int strides = 1)
         {
-            x = tf.nn.conv2d(x, W, new int[] { 1, strides, strides, 1 }, padding: "SAME");
+            x = tf.nn.conv2d(x, W.AsTensor(), new int[] { 1, strides, strides, 1 }, padding: "SAME");
             x = tf.nn.bias_add(x, b);
             return tf.nn.relu(x);
         }

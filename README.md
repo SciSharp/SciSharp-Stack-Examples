@@ -1,17 +1,14 @@
 # SciSharp STACK Examples
+
 This repo contains many practical examples written in SciSharp's machine learning libraries. If you still don't know how to use .NET for deep learning, getting started from these examples is your best choice.
 
 [![Join the chat at https://gitter.im/publiclab/publiclab](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sci-sharp/community)
 
-
-
 Requirements:
 
-* [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+* [.NET Core 5.0](https://dotnet.microsoft.com/download/dotnet-core/5.0)
 
 * [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) or [Visual Studio Code](https://code.visualstudio.com/)
-
-
 
 Run specific example in shell:
 
@@ -40,7 +37,6 @@ dotnet run --project src/TensorFlowNET.Examples.FSharp -ex "Linear Regression (E
 :: run in compiled library
 dotnet TensorFlowNET.Examples.FSharp.dll -ex "MNIST CNN (Eager)"
 ```
-
 
 Example runner will download all the required files like training data and model pb files.
 
@@ -76,12 +72,17 @@ Example runner will download all the required files like training data and model
 * CNN In Your Own Dataset [C#](src/TensorFlowNET.Examples/ImageProcessing/CnnInYourOwnData.cs), [F#](src/TensorFlowNET.Examples.FSharp/ImageProcessing/CnnInYourOwnData.fs)
 
 #### Natural Language Processing
+
 * Binary Text Classification [C#](src/TensorFlowNET.Examples/TextProcessing/BinaryTextClassification.cs)
 * CNN Text Classification [C#](src/TensorFlowNET.Examples/TextProcessing/cnn_models/VdCnn.cs)
 * Named Entity Recognition [C#](src/TensorFlowNET.Examples/TextProcessing/NER)
 
+#### Time Series
+
+* Weather Prediction [C#](src/TensorFlowNET.Examples/TimeSeries/WeatherPrediction.cs)
 
 #### Welcome to PR your example to us.
+
 Your contribution will make .NET community better than ever.
 <br>
 <a href="http://scisharpstack.org"><img src="https://github.com/SciSharp/SciSharp/blob/master/art/scisharp-stack.png" width="391" height="100" /></a>

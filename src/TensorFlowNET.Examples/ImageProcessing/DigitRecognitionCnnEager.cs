@@ -64,9 +64,14 @@ namespace TensorFlowNET.Examples
             tf.enable_eager_execution();
 
             PrepareData();
+            Train();
+            Test();
+            
+            return accuracy_test >= 0.80;
+        }
 
-            // Store layers weight & bias
-
+        public override void Train()
+        {
             // A random value generator to initialize weights.
             var random_normal = tf.initializers.random_normal_initializer();
 
@@ -101,17 +106,16 @@ namespace TensorFlowNET.Examples
                     print($"step: {step}, loss: {(float)loss}, accuracy: {(float)acc}");
                 }
             }
+        }
 
+        public override void Test()
+        {
             // Test model on validation set.
-            {
-                x_test = x_test["::100"];
-                y_test = y_test["::100"];
-                var pred = conv_net(x_test);
-                accuracy_test = (float)accuracy(pred, y_test);
-                print($"Test Accuracy: {accuracy_test}");
-            }
-
-            return accuracy_test >= 0.80;
+            x_test = x_test["::100"];
+            y_test = y_test["::100"];
+            var pred = conv_net(x_test);
+            accuracy_test = (float)accuracy(pred, y_test);
+            print($"Test Accuracy: {accuracy_test}");
         }
 
         void run_optimization(OptimizerV2 optimizer, Tensor x, Tensor y)
@@ -130,7 +134,7 @@ namespace TensorFlowNET.Examples
 
         Tensor conv2d(Tensor x, IVariableV1 W, IVariableV1 b, int strides = 1)
         {
-            x = tf.nn.conv2d(x, W, new int[] { 1, strides, strides, 1 }, padding: "SAME");
+            x = tf.nn.conv2d(x, W.AsTensor(), new int[] { 1, strides, strides, 1 }, padding: "SAME");
             x = tf.nn.bias_add(x, b);
             return tf.nn.relu(x);
         }

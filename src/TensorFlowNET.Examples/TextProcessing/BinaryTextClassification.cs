@@ -31,7 +31,7 @@ namespace TensorFlowNET.Examples
         {
             PrepareData();
 
-            Console.WriteLine($"Training entries: {train_data.shape[0]}, labels: {train_labels.shape[0]}");
+            // Console.WriteLine($"Training entries: {train_data.shape[0]}, labels: {train_labels.shape[0]}");
 
             // A dictionary mapping words to an integer index
             /*train_data = keras.preprocessing.sequence.pad_sequences(train_data,

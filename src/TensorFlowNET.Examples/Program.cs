@@ -35,7 +35,7 @@ namespace TensorFlowNET.Examples
 
             var examples = Assembly.GetEntryAssembly().GetTypes()
                 .Where(x => x.GetInterfaces().Contains(typeof(IExample)))
-                // .Where(x => x.Name == nameof(ToyResNet))
+                // .Where(x => x.Name == nameof(WeatherPrediction))
                 .ToArray();
 
             Console.WriteLine(Environment.OSVersion, Color.Yellow);
@@ -68,7 +68,7 @@ namespace TensorFlowNET.Examples
                 keras.backend.clear_session();
             }
 
-            success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.Green));
+            success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.White));
             errors.ForEach(x => Console.WriteLine($"{x} is Failed!", Color.Red));
 
             Console.WriteLine($"TensorFlow Binary v{tf.VERSION}");

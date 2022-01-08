@@ -107,6 +107,11 @@ namespace TensorFlowNET.Examples
             var result = task.Predict(input);
             long output = np.argmax(y_test[0]);
             Debug.Assert(result.Label == output.ToString());
+
+            input = x_test["1:2"];
+            result = task.Predict(input);
+            output = np.argmax(y_test[1]);
+            Debug.Assert(result.Label == output.ToString());
         }
 
         public override void PrepareData()
