@@ -38,7 +38,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "NN XOR",
-                Enabled = false,
+                Enabled = true,
                 IsImportingGraph = false
             };
 

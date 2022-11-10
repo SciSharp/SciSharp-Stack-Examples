@@ -41,8 +41,8 @@ let run()=
 
     let tf = Binding.New<tensorflow>()
     tf.enable_eager_execution()
-    let x = tf.placeholder(tf.float64, new TensorShape(N_points,n_input))
-    let y = tf.placeholder(tf.float64, new TensorShape(n_output))
+    let x = tf.placeholder(tf.float64, TensorShape [|N_points; n_input|])
+    let y = tf.placeholder(tf.float64, TensorShape n_output)
     
    
     let weights = dict[

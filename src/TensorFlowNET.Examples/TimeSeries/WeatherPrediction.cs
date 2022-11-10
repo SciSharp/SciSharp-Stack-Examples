@@ -19,7 +19,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "Weather Prediction",
-                Enabled = true
+                Enabled = false
             };
 
         public bool Run()

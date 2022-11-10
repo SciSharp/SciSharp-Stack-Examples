@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
@@ -10,6 +10,7 @@
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.4.0.20200915" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.7.0" />
     <PackageReference Include="SharpCV" Version="0.11.0" />
+    <PackageReference Include="TensorFlow.NET" Version="0.70.2" />
   </ItemGroup>
 
 </Project>

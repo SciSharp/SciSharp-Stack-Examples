@@ -116,7 +116,7 @@ namespace TensorFlowNET.Examples
 
         public override void PrepareData()
         {
-            Directory.CreateDirectory(Config.Name);
+            Directory.CreateDirectory("image_classification_cnn_v1");
             var loader = new MnistModelLoader();
             mnist = loader.LoadAsync(".resources/mnist", oneHot: true, showProgressInConsole: true).Result;
             (x_train, y_train) = Reformat(mnist.Train.Data, mnist.Train.Labels);

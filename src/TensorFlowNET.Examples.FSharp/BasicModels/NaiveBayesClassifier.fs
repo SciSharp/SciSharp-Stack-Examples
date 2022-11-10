@@ -114,7 +114,7 @@ module NaiveBayesClassifier =
         let tile = tf.tile(t1, t2)
         let t3 = ops.convert_to_tensor([| -1; nb_classes; nb_features |])
         let r = tf.reshape(tile, t3)
-        let cond_probs = tf.reduce_sum(dist.log_prob(r), 2)
+        let cond_probs = tf.reduce_sum(dist.log_prob(r), TensorShape 2)
         // uniform priors
         let tem = np.array<float32>(Array.create nb_classes (1.0f / float32 nb_classes))
         let priors = np.log(&tem)

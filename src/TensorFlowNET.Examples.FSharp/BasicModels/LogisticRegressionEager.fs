@@ -63,7 +63,7 @@ module LogisticRegressionEager =
             // Clip prediction values to avoid log(0) error.
             let y_pred = tf.clip_by_value(y_pred, 1e-9f, 1.0f)
             // Compute cross-entropy.
-            tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred), 1))
+            tf.reduce_mean(-tf.reduce_sum(y_true * tf.math.log(y_pred), TensorShape 1))
 
         let get_accuracy = fun (y_pred, y_true) ->
             // Predicted class is the index of highest score in prediction vector (i.e. argmax).
