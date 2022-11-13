@@ -35,7 +35,8 @@ namespace TensorFlowNET.Examples
 
             var examples = Assembly.GetEntryAssembly().GetTypes()
                 .Where(x => x.GetInterfaces().Contains(typeof(IExample)))
-                // .Where(x => x.Name == nameof(WeatherPrediction))
+                //.Where(x => x.Name == nameof(WeatherPrediction))
+                // .Where(x => x.Name == nameof(MnistInYOLOv3))
                 .ToArray();
 
             Console.WriteLine(Environment.OSVersion, Color.Yellow);
@@ -71,6 +72,9 @@ namespace TensorFlowNET.Examples
             success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.White));
             errors.ForEach(x => Console.WriteLine($"{x} is Failed!", Color.Red));
 
+            Console.WriteLine(Environment.OSVersion, Color.Yellow);
+            Console.WriteLine($"64Bit Operating System: {Environment.Is64BitOperatingSystem}", Color.Yellow);
+            Console.WriteLine($".NET CLR: {Environment.Version}", Color.Yellow);
             Console.WriteLine($"TensorFlow Binary v{tf.VERSION}");
             Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}");
             Console.WriteLine($"TensorFlow.Keras v{Assembly.GetAssembly(typeof(KerasApi)).GetName().Version}");

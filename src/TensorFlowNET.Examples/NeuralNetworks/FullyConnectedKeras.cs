@@ -155,9 +155,9 @@ namespace TensorFlowNET.Examples
 
         public class NeuralNet : Model
         {
-            Layer fc1;
-            Layer fc2;
-            Layer output;
+            ILayer fc1;
+            ILayer fc2;
+            ILayer output;
 
             public NeuralNet(NeuralNetArgs args) :
                 base(args)

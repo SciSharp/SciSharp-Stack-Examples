@@ -60,7 +60,7 @@ namespace TensorFlowNET.Examples
             {
                 Name = "CNN Text Classification (Graph)",
                 Enabled = true,
-                IsImportingGraph = false
+                IsImportingGraph = true
             };
 
         public bool Run()

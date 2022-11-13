@@ -31,7 +31,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST in YOLOv3",
-                Enabled = false
+                Enabled = true
             };
 
         public bool Run()

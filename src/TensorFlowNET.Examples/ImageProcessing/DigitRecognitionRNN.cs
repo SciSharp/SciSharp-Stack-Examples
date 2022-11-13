@@ -84,7 +84,7 @@ namespace TensorFlowNET.Examples
             y = tf.placeholder(tf.int32, new[] { -1 });
             var cell = tf.nn.rnn_cell.BasicRNNCell(num_units: n_neurons);
             var (output, state) = tf.nn.dynamic_rnn(cell, X, dtype: tf.float32);
-            var logits = keras.layers.dense(state, n_outputs);
+            var logits = tf.keras.layers.Dense(n_outputs).Apply(state);
             var cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels: y, logits: logits);
             loss = tf.reduce_mean(cross_entropy);
             var adam = tf.train.AdamOptimizer(learning_rate: learning_rate);

@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
@@ -162,14 +163,14 @@ namespace TensorFlowNET.Examples
 
         public class ConvNet : Model
         {
-            Layer conv1;
-            Layer maxpool1;
-            Layer conv2;
-            Layer maxpool2;
-            Layer flatten;
-            Layer fc1;
-            Layer dropout;
-            Layer output;
+            ILayer conv1;
+            ILayer maxpool1;
+            ILayer conv2;
+            ILayer maxpool2;
+            ILayer flatten;
+            ILayer fc1;
+            ILayer dropout;
+            ILayer output;
 
             public ConvNet(ConvNetArgs args)
                 : base(args)
@@ -217,7 +218,7 @@ namespace TensorFlowNET.Examples
                 inputs = maxpool2.Apply(inputs);
                 inputs = flatten.Apply(inputs);
                 inputs = fc1.Apply(inputs);
-                inputs = dropout.Apply(inputs, training: training.Value);
+                inputs = dropout.Apply(inputs, is_training: training.Value);
                 inputs = output.Apply(inputs);
 
                 if (!training.Value)

@@ -35,9 +35,9 @@ namespace TensorFlowNET.Examples.Text
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(x_expanded);
 
-                pool1 = keras.layers.max_pooling2d(conv1,
-                    pool_size: new[] { 3, 1 },
-                    strides: new[] { 3, 1 });
+                pool1 = tf.keras.layers.MaxPooling2D(
+                    pool_size: (3, 1 ),
+                    strides: (3, 1)).Apply(conv1);
                 pool1 = tf.transpose(pool1, new[] { 0, 1, 3, 2 });
             });
 
@@ -45,21 +45,21 @@ namespace TensorFlowNET.Examples.Text
             {
                 var conv2 = keras.layers.Conv2D(
                     filters: num_filters,
-                    kernel_size: new[] { filter_sizes[1], num_filters },
+                    kernel_size: (filter_sizes[1], num_filters),
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(pool1);
 
-                pool2 = keras.layers.max_pooling2d(conv2,
-                    pool_size: new[] { 3, 1 },
-                    strides: new[] { 3, 1 });
+                pool2 = tf.keras.layers.MaxPooling2D(
+                    pool_size: (3, 1),
+                    strides: (3, 1)).Apply(conv2);
                 pool2 = tf.transpose(pool2, new[] { 0, 1, 3, 2 });
             });
 
             tf_with(tf.name_scope("conv-3"), delegate
             {
-                conv3 = keras.layers.Conv2D(
+                conv3 = tf.keras.layers.Conv2D(
                     filters: num_filters,
-                    kernel_size: new[] { filter_sizes[2], num_filters },
+                    kernel_size: (filter_sizes[2], num_filters),
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(pool2);
                 conv3 = tf.transpose(conv3, new[] { 0, 1, 3, 2 });
@@ -67,9 +67,9 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("conv-4"), delegate
             {
-                conv4 = keras.layers.Conv2D(
+                conv4 = tf.keras.layers.Conv2D(
                     filters: num_filters,
-                    kernel_size: new[] { filter_sizes[3], num_filters },
+                    kernel_size: (filter_sizes[3], num_filters),
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(conv3);
                 conv4 = tf.transpose(conv4, new[] { 0, 1, 3, 2 });
@@ -79,7 +79,7 @@ namespace TensorFlowNET.Examples.Text
             {
                 conv5 = keras.layers.Conv2D(
                     filters: num_filters,
-                    kernel_size: new[] { filter_sizes[4], num_filters },
+                    kernel_size: (filter_sizes[4], num_filters),
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(conv4);
                 conv5 = tf.transpose(conv5, new[] { 0, 1, 3, 2 });
@@ -89,13 +89,13 @@ namespace TensorFlowNET.Examples.Text
             {
                 conv6 = keras.layers.Conv2D(
                     filters: num_filters,
-                    kernel_size: new[] { filter_sizes[5], num_filters },
+                    kernel_size: (filter_sizes[5], num_filters),
                     kernel_initializer: kernel_initializer,
                     activation: tf.nn.relu).Apply(conv5);
 
-                var pool6 = keras.layers.max_pooling2d(conv6,
-                    pool_size: new[] { 3, 1 },
-                    strides: new[] { 3, 1 });
+                var pool6 = keras.layers.MaxPooling2D(
+                    pool_size: (3, 1),
+                    strides: (3, 1)).Apply(conv6);
                 pool6 = tf.transpose(pool6, new[] { 0, 2, 1, 3 });
 
                 h_pool = tf.reshape(pool6, new[] { -1, 34 * num_filters });
@@ -124,9 +124,9 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("fc-3"), delegate
             {
-                logits = keras.layers.dense(fc2_out,
+                logits = tf.keras.layers.Dense(
                     num_class,
-                    kernel_initializer: kernel_initializer);
+                    kernel_initializer: kernel_initializer).Apply(fc2_out);
                 predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 

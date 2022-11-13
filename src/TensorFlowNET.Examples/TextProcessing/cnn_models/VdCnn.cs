@@ -110,7 +110,7 @@ namespace TensorFlowNET.Examples.Text
 
             tf_with(tf.name_scope("fc-3"), scope =>
             {
-                logits = keras.layers.dense(fc2_out, num_class, activation: null, kernel_initializer: fc_initializer);
+                logits = tf.keras.layers.Dense(num_class, activation: null, kernel_initializer: fc_initializer).Apply(fc2_out);
                 predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 
@@ -140,7 +140,7 @@ namespace TensorFlowNET.Examples.Text
                     tf_with(tf.variable_scope($"conv-{j}"), delegate
                     {
                         // convolution
-                        conv = keras.layers.Conv2D(
+                        conv = tf.keras.layers.Conv2D(
                             filters: num_filters[i],
                             kernel_size: new int[] { filter_sizes[i], num_filters[i - 1] },
                             kernel_initializer: cnn_initializer,
@@ -156,11 +156,10 @@ namespace TensorFlowNET.Examples.Text
                 if (max_pool)
                 {
                     // Max pooling
-                    return keras.layers.max_pooling2d(
-                        conv,
+                    return tf.keras.layers.MaxPooling2D(
                         pool_size: new int[] { 3, 1 },
                         strides: new int[] { 2, 1 },
-                        padding: "SAME");
+                        padding: "SAME").Apply(conv).First();
                 }
                 else
                 {

@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
@@ -115,8 +116,8 @@ namespace TensorFlowNET.Examples
     internal class LSTMModel : Model
     {
         OptimizerV2 optimizer;
-        Layer lstm;
-        Layer output;
+        ILayer lstm;
+        ILayer output;
 
         public LSTMModel(LSTMModelArgs args)
             : base(args)

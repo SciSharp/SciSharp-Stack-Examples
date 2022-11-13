@@ -49,18 +49,17 @@ namespace TensorFlowNET.Examples.Text
             for (int len = 0; len < filter_sizes.Rank; len++)
             {
                 int filter_size = filter_sizes.GetLength(len);
-                var conv = keras.layers.Conv2D(
+                var conv = tf.keras.layers.Conv2D(
                     filters: num_filters,
                     kernel_size: new int[] { filter_size, embedding_size },
                     strides: new int[] { 1, 1 },
                     padding: "VALID",
                     activation: tf.nn.relu).Apply(x_emb);
 
-                var pool = keras.layers.max_pooling2d(
-                    conv,
+                var pool = tf.keras.layers.MaxPooling2D(
                     pool_size: new[] { document_max_len - filter_size + 1, 1 },
                     strides: new[] { 1, 1 },
-                    padding: "VALID");
+                    padding: "VALID").Apply(conv);
 
                 pooled_outputs.Add(pool);
             }
@@ -77,7 +76,7 @@ namespace TensorFlowNET.Examples.Text
             Tensor predictions = null;
             tf_with(tf.name_scope("output"), delegate
             {
-                logits = keras.layers.dense(h_drop, num_class);
+                logits = tf.keras.layers.Dense(num_class).Apply(h_drop);
                 predictions = tf.math.argmax(logits, -1, output_type: tf.int32);
             });
 
