@@ -193,15 +193,16 @@ namespace TensorFlowNET.Examples
         }
         private void LoadImage(string[] a, NDArray b, string c)
         {
-            using (var graph = tf.Graph().as_default())
+            using var graph = tf.Graph().as_default();
+            
+            for (int i = 0; i < a.Length; i++)
             {
-                for (int i = 0; i < a.Length; i++)
-                {
-                    b[i] = ReadTensorFromImageFile(a[i], graph);
-                    Console.WriteLine($"Loading image: {a[i]}");
-                }
+                b[i] = ReadTensorFromImageFile(a[i], graph);
+                Console.Write($"Loading image: {a[i]}...");
+                Console.CursorLeft = 0;
             }
 
+            Console.WriteLine();
             Console.WriteLine($"Loaded {a.Length} images for " + c);
         }
 

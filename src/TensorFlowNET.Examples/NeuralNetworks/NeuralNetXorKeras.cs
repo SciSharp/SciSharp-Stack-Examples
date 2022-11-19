@@ -15,6 +15,8 @@
 ******************************************************************************/
 
 using System;
+using System.Linq;
+using Tensorflow;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
@@ -43,15 +45,15 @@ namespace TensorFlowNET.Examples
 
             var model = keras.Sequential();
             model.add(keras.Input(2));
-            model.add(keras.layers.Dense(64, keras.activations.Relu));
+            model.add(keras.layers.Dense(32, keras.activations.Relu));
             model.add(keras.layers.Dense(1, keras.activations.Sigmoid));
             model.compile(optimizer: keras.optimizers.Adam(),
                 loss: keras.losses.MeanSquaredError(),
                 new[] { "accuracy" });
             model.fit(x, y, 1, 100);
-            print(model.predict(x, 4));
-
-            return true;
+            model.evaluate(x, y);
+            Tensor result = model.predict(x, 4);
+            return result.ToArray<float>() is [< 0.5f, > 0.5f, > 0.5f, < 0.5f];
         }
     }
 }
