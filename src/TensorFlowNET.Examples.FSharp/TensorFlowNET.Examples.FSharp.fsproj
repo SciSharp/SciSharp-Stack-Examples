@@ -39,7 +39,7 @@
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.4.1" />
     <PackageReference Include="SharpCV" Version="0.7.0" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.4.0.20200915" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="TensorFlow.Keras" Version="0.5.1" />
   </ItemGroup>
 
