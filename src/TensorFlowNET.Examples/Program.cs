@@ -37,7 +37,7 @@ namespace TensorFlowNET.Examples
                 .Where(x => x.GetInterfaces().Contains(typeof(IExample)))
                 //.Where(x => x.Name == nameof(WeatherPrediction))
                 //.Where(x => x.Name == nameof(NeuralNetXorEager))
-                //.Where(x => x.Name == nameof(DigitRecognitionCnnKeras))
+                .Where(x => x.Name == nameof(MnistInYOLOv3))
                 .ToArray();
 
             Console.WriteLine(Environment.OSVersion, Color.Yellow);
