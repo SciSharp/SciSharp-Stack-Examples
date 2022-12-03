@@ -16,8 +16,12 @@ namespace TensorFlowNET.Examples.GAN
     public class MnistGAN : SciSharpExample, IExample
     {
         float LeakyReLU_alpha = 0.2f;
+
+#if GPU
+        int epochs = 2000; // Better effect, but longer time
+#else
         int epochs = 20;
-        //int epochs = 2000; // Better effect, but longer time
+#endif
         int batch_size = 64;
 
         string imgpath = "dcgan\\imgs";
@@ -65,7 +69,8 @@ namespace TensorFlowNET.Examples.GAN
             Tensorflow.Keras.Activation activation = null;
 
             var model = keras.Sequential();
-            model.add(keras.layers.Dense(img_rows / 4 * img_cols / 4 * 256, activation: activation, input_shape: 100));
+            model.add(keras.layers.Input(shape: 100));
+            model.add(keras.layers.Dense(img_rows / 4 * img_cols / 4 * 256, activation: activation));
             model.add(keras.layers.BatchNormalization(momentum: 0.8f));
             model.add(keras.layers.LeakyReLU(LeakyReLU_alpha));
             model.add(keras.layers.Reshape((7, 7, 256)));

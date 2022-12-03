@@ -61,6 +61,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.ImageClassification\SciSharp.Models.ImageClassification.csproj" />
     <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.ObjectDetection\SciSharp.Models.ObjectDetection.csproj" />
+    <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.TextClassification\SciSharp.Models.TextClassification.csproj" />
     <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.TimeSeries\SciSharp.Models.TimeSeries.csproj" />
     <ProjectReference Include="..\..\..\SharpCV\src\SharpCV\SharpCV.csproj" />
     <ProjectReference Include="..\..\..\TensorFlow.NET\src\TensorFlowNET.Core\Tensorflow.Binding.csproj" />

@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpCV", "..\SharpCV\src\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciSharp.Models.ImageClassification", "..\SciSharp.Models\SciSharp.Models.ImageClassification\SciSharp.Models.ImageClassification.csproj", "{FA0B3C1B-9364-40D9-A7E8-54A6045F7B67}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciSharp.Models.TextClassification", "..\SciSharp.Models\SciSharp.Models.TextClassification\SciSharp.Models.TextClassification.csproj", "{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -216,6 +218,24 @@ Global
 		{FA0B3C1B-9364-40D9-A7E8-54A6045F7B67}.Release|x64.Build.0 = Release|Any CPU
 		{FA0B3C1B-9364-40D9-A7E8-54A6045F7B67}.Release|x86.ActiveCfg = Release|Any CPU
 		{FA0B3C1B-9364-40D9-A7E8-54A6045F7B67}.Release|x86.Build.0 = Release|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|x64.ActiveCfg = Debug|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|x64.Build.0 = Debug|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|Any CPU.Build.0 = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|x64.ActiveCfg = Debug|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|x64.Build.0 = Debug|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|x86.ActiveCfg = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.GPU|x86.Build.0 = Debug|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x64.ActiveCfg = Release|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x64.Build.0 = Release|x64
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

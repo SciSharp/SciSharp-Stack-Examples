@@ -31,7 +31,7 @@ namespace TensorFlowNET.Examples
             => Config = new ExampleConfig
             {
                 Name = "MNIST in YOLOv3",
-                Enabled = true
+                Enabled = false
             };
 
         public bool Run()
@@ -39,6 +39,7 @@ namespace TensorFlowNET.Examples
             cfg = new YoloConfig("YOLOv3");
             (trainingData, testingData) = PrepareData();
             Train();
+            Test();
             return true;
         }
 
@@ -67,6 +68,7 @@ namespace TensorFlowNET.Examples
             {
                 ModelPath = @"./YOLOv3/yolov3.h5"
             });
+            task.SetModelArgs(cfg);
             var result = task.Test(new TestingOptions
             {
                 
