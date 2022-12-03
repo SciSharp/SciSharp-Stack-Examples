@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciSharp.Models.ImageClassi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciSharp.Models.TextClassification", "..\SciSharp.Models\SciSharp.Models.TextClassification\SciSharp.Models.TextClassification.csproj", "{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SciSharp.WebApi", "src\SciSharp.WebApi\SciSharp.WebApi.csproj", "{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -236,6 +238,24 @@ Global
 		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x64.Build.0 = Release|x64
 		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{D5243F2C-4EAE-45AD-849C-A7FD79B599C5}.Release|x86.Build.0 = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Debug|x86.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|Any CPU.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|x64.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|x64.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|x86.ActiveCfg = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.GPU|x86.Build.0 = Debug|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|x64.Build.0 = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|x86.ActiveCfg = Release|Any CPU
+		{E1D6E827-3FC6-476A-8875-1FF8C1D398CE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
