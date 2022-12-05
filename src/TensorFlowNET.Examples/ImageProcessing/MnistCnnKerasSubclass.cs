@@ -31,7 +31,7 @@ namespace TensorFlowNET.Examples
     /// This example is using a low-level approach to better understand all mechanics behind building convolutional neural networks and the training process.
     /// https://github.com/aymericdamien/TensorFlow-Examples/blob/master/tensorflow_v2/notebooks/3_NeuralNetworks/convolutional_network.ipynb
     /// </summary>
-    public class DigitRecognitionCnnKeras : SciSharpExample, IExample
+    public class MnistCnnKerasSubclass : SciSharpExample, IExample
     {
         // MNIST dataset parameters.
         int num_classes = 10;
@@ -39,7 +39,7 @@ namespace TensorFlowNET.Examples
         // Training parameters.
         float learning_rate = 0.001f;
         int training_steps = 100;
-        int batch_size = 32;
+        int batch_size = 128;
         int display_step = 10;
 
         float accuracy_test = 0.0f;
@@ -61,6 +61,14 @@ namespace TensorFlowNET.Examples
 
             PrepareData();
 
+            Train();
+            Test();
+
+            return accuracy_test > 0.85;
+        }
+
+        public override void Train()
+        {
             // Build neural network model.
             var conv_net = new ConvNet(new ConvNetArgs
             {
@@ -94,7 +102,26 @@ namespace TensorFlowNET.Examples
                 print($"Test Accuracy: {accuracy_test}");
             }
 
-            return accuracy_test > 0.85;
+            conv_net.save_weights("model.weights");
+        }
+
+        public override void Test()
+        {
+            var conv_net = new ConvNet(new ConvNetArgs
+            {
+                NumClasses = num_classes
+            });
+
+            conv_net.load_weights("model.weights");
+
+            // Test model on validation set.
+            {
+                x_test = x_test["::100"];
+                y_test = y_test["::100"];
+                var pred = conv_net.Apply(x_test);
+                accuracy_test = (float)accuracy(pred, y_test);
+                print($"Test Accuracy: {accuracy_test}");
+            }
         }
 
         void run_optimization(ConvNet conv_net, OptimizerV2 optimizer, Tensor x, Tensor y)
@@ -108,24 +135,6 @@ namespace TensorFlowNET.Examples
 
             // Update W and b following gradients.
             optimizer.apply_gradients(zip(gradients, conv_net.trainable_variables.Select(x => x as ResourceVariable)));
-        }
-
-        Tensor conv2d(Tensor x, IVariableV1 W, IVariableV1 b, int strides = 1)
-        {
-            x = tf.nn.conv2d(x, W.AsTensor(), new int[] { 1, strides, strides, 1 }, padding: "SAME");
-            x = tf.nn.bias_add(x, b);
-            return tf.nn.relu(x);
-        }
-
-        /// <summary>
-        /// MaxPool2D wrapper.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="k"></param>
-        /// <returns></returns>
-        Tensor maxpool2d(Tensor x, int k = 2)
-        {
-            return tf.nn.max_pool(x, ksize: new[] { 1, k, k, 1 }, strides: new[] { 1, k, k, 1 }, padding: "SAME");
         }
 
         Tensor cross_entropy_loss(Tensor x, Tensor y)
