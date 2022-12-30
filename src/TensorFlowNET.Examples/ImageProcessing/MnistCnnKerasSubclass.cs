@@ -62,7 +62,8 @@ namespace TensorFlowNET.Examples
             PrepareData();
 
             Train();
-            Test();
+
+            // Test();
 
             return accuracy_test > 0.85;
         }
@@ -102,7 +103,7 @@ namespace TensorFlowNET.Examples
                 print($"Test Accuracy: {accuracy_test}");
             }
 
-            conv_net.save_weights("model.weights");
+            conv_net.save_weights("weights.h5");
         }
 
         public override void Test()
@@ -112,12 +113,14 @@ namespace TensorFlowNET.Examples
                 NumClasses = num_classes
             });
 
-            conv_net.load_weights("model.weights");
-
-            // Test model on validation set.
+            // Test model on testing set.
             {
                 x_test = x_test["::100"];
                 y_test = y_test["::100"];
+
+                conv_net.build(x_test.shape);
+                conv_net.load_weights("weights.h5");
+
                 var pred = conv_net.Apply(x_test);
                 accuracy_test = (float)accuracy(pred, y_test);
                 print($"Test Accuracy: {accuracy_test}");

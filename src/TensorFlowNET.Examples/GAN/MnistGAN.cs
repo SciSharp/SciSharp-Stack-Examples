@@ -18,11 +18,12 @@ namespace TensorFlowNET.Examples.GAN
         float LeakyReLU_alpha = 0.2f;
 
 #if GPU
-        int epochs = 2000; // Better effect, but longer time
+        int epochs = 1000; // Better effect, but longer time
+        int batch_size = 16;
 #else
         int epochs = 20;
-#endif
         int batch_size = 64;
+#endif
 
         string imgpath = "dcgan\\imgs";
         string modelpath = "dcgan\\models";
