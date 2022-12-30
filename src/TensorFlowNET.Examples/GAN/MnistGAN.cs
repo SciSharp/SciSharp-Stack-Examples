@@ -160,11 +160,11 @@ namespace TensorFlowNET.Examples.GAN
 
                     g_loss = BinaryCrossentropy(d_logits, tf.ones_like(d_logits));
                     d_loss = d_loss_real + d_loss_fake;
-                    var grad = tape.gradient(d_loss, D.trainable_variables);
-                    d_optimizer.apply_gradients(zip(grad, D.trainable_variables.Select(x => x as ResourceVariable)));
+                    var grad = tape.gradient(d_loss, D.TrainableVariables);
+                    d_optimizer.apply_gradients(zip(grad, D.TrainableVariables.Select(x => x as ResourceVariable)));
 
-                    grad = tape.gradient(g_loss, G.trainable_variables);
-                    g_optimizer.apply_gradients(zip(grad, G.trainable_variables.Select(x => x as ResourceVariable)));
+                    grad = tape.gradient(g_loss, G.TrainableVariables);
+                    g_optimizer.apply_gradients(zip(grad, G.TrainableVariables.Select(x => x as ResourceVariable)));
                 }
                 if (i % 5 == 0 && i != 0)
                 {

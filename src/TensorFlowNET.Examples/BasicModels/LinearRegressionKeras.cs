@@ -55,7 +55,7 @@ namespace TensorFlowNET.Examples
                 metrics: new[] { "acc" });
             model.fit(train_X, train_Y, epochs: 100);
 
-            var weights = model.trainable_variables;
+            var weights = model.TrainableVariables;
             print($"weight: {weights[0].numpy()}, bias: {weights[1].numpy()}");
         }
 

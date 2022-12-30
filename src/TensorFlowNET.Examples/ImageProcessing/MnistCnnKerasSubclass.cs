@@ -134,10 +134,10 @@ namespace TensorFlowNET.Examples
             var loss = cross_entropy_loss(pred, y);
 
             // Compute gradients.
-            var gradients = g.gradient(loss, conv_net.trainable_variables);
+            var gradients = g.gradient(loss, conv_net.TrainableVariables);
 
             // Update W and b following gradients.
-            optimizer.apply_gradients(zip(gradients, conv_net.trainable_variables.Select(x => x as ResourceVariable)));
+            optimizer.apply_gradients(zip(gradients, conv_net.TrainableVariables.Select(x => x as ResourceVariable)));
         }
 
         Tensor cross_entropy_loss(Tensor x, Tensor y)
