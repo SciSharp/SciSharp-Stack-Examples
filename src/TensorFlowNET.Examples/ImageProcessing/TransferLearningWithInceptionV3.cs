@@ -43,6 +43,7 @@ namespace TensorFlowNET.Examples
 
         public bool Run()
         {
+            PrepareData();
             Train();
             Test();
             Predict();
@@ -50,7 +51,7 @@ namespace TensorFlowNET.Examples
             return accuracy > 0.75f;
         }
 
-        public override void Train()
+        public override void PrepareData()
         {
             // get a set of images to teach the network about the new classes
             string fileName = "flower_photos.tgz";
@@ -58,7 +59,10 @@ namespace TensorFlowNET.Examples
             string url = $"http://download.tensorflow.org/example_images/{fileName}";
             Web.Download(url, dataDir, fileName);
             Compress.ExtractTGZ(Path.Join(dataDir, fileName), dataDir);
+        }
 
+        public override void Train()
+        {
             // using wizard to train model
             var wizard = new ModelWizard();
             var task = wizard.AddImageClassificationTask<TransferLearning>(new TaskOptions

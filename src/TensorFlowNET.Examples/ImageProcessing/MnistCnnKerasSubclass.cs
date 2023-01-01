@@ -62,7 +62,7 @@ namespace TensorFlowNET.Examples
             PrepareData();
 
             Train();
-
+            
             // Test();
 
             return accuracy_test > 0.85;
@@ -230,7 +230,7 @@ namespace TensorFlowNET.Examples
                 inputs = maxpool2.Apply(inputs);
                 inputs = flatten.Apply(inputs);
                 inputs = fc1.Apply(inputs);
-                inputs = dropout.Apply(inputs, is_training: training.Value);
+                inputs = dropout.Apply(inputs);
                 inputs = output.Apply(inputs);
 
                 if (!training.Value)
