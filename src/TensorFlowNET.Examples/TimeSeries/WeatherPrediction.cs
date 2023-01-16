@@ -37,8 +37,8 @@ namespace TensorFlowNET.Examples
             (training_ds, val_ds, test_ds) = task.GenerateDataset(PrepareData);
 
             Train();
-            Test();
-            Predict();
+            //Test();
+            //Predict();
 
             return true;
         }

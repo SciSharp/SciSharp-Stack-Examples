@@ -118,12 +118,12 @@ namespace TensorFlowNET.Examples
                 x_test = x_test["::100"];
                 y_test = y_test["::100"];
 
-                conv_net.build(x_test.shape);
+                /*conv_net.build(x_test.shape);
                 conv_net.load_weights("weights.h5");
 
                 var pred = conv_net.Apply(x_test);
                 accuracy_test = (float)accuracy(pred, y_test);
-                print($"Test Accuracy: {accuracy_test}");
+                print($"Test Accuracy: {accuracy_test}");*/
             }
         }
 
