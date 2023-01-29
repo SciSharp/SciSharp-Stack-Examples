@@ -21,39 +21,38 @@ using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
-namespace TensorFlowNET.Examples
+namespace TensorFlowNET.Examples;
+
+/// <summary>
+/// Simple vanilla neural net solving the famous XOR problem
+/// https://github.com/amygdala/tensorflow-workshop/blob/master/workshop_sections/getting_started/xor/README.md
+/// </summary>
+public class NeuralNetXorKeras : SciSharpExample, IExample
 {
-    /// <summary>
-    /// Simple vanilla neural net solving the famous XOR problem
-    /// https://github.com/amygdala/tensorflow-workshop/blob/master/workshop_sections/getting_started/xor/README.md
-    /// </summary>
-    public class NeuralNetXorKeras : SciSharpExample, IExample
-    {
-        public ExampleConfig InitConfig()
-            => Config = new ExampleConfig
-            {
-                Name = "NN XOR in Keras",
-                Enabled = true
-            };
-
-        public bool Run()
+    public ExampleConfig InitConfig()
+        => Config = new ExampleConfig
         {
-            tf.enable_eager_execution();
+            Name = "NN XOR in Keras",
+            Enabled = true
+        };
 
-            var x = np.array(new float[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } });
-            var y = np.array(new float[,] { { 0 }, { 1 }, { 1 }, { 0 } });
+    public bool Run()
+    {
+        tf.enable_eager_execution();
 
-            var model = keras.Sequential();
-            model.add(keras.Input(2));
-            model.add(keras.layers.Dense(32, keras.activations.Relu));
-            model.add(keras.layers.Dense(1, keras.activations.Sigmoid));
-            model.compile(optimizer: keras.optimizers.Adam(),
-                loss: keras.losses.MeanSquaredError(),
-                new[] { "accuracy" });
-            model.fit(x, y, 1, 100);
-            model.evaluate(x, y);
-            Tensor result = model.predict(x, 4);
-            return result.ToArray<float>() is [< 0.5f, > 0.5f, > 0.5f, < 0.5f];
-        }
+        var x = np.array(new float[,] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } });
+        var y = np.array(new float[,] { { 0 }, { 1 }, { 1 }, { 0 } });
+
+        var model = keras.Sequential();
+        model.add(keras.Input(2));
+        model.add(keras.layers.Dense(32, keras.activations.Relu));
+        model.add(keras.layers.Dense(1, keras.activations.Sigmoid));
+        model.compile(optimizer: keras.optimizers.Adam(),
+            loss: keras.losses.MeanSquaredError(),
+            new[] { "accuracy" });
+        model.fit(x, y, 1, 100);
+        model.evaluate(x, y);
+        Tensor result = model.predict(x, 4);
+        return result.ToArray<float>() is [< 0.5f, > 0.5f, > 0.5f, < 0.5f];
     }
 }

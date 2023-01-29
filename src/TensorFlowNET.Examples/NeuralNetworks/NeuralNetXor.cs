@@ -21,163 +21,162 @@ using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
-namespace TensorFlowNET.Examples
+namespace TensorFlowNET.Examples;
+
+/// <summary>
+/// Simple vanilla neural net solving the famous XOR problem
+/// https://github.com/amygdala/tensorflow-workshop/blob/master/workshop_sections/getting_started/xor/README.md
+/// </summary>
+public class NeuralNetXor : SciSharpExample, IExample
 {
-    /// <summary>
-    /// Simple vanilla neural net solving the famous XOR problem
-    /// https://github.com/amygdala/tensorflow-workshop/blob/master/workshop_sections/getting_started/xor/README.md
-    /// </summary>
-    public class NeuralNetXor : SciSharpExample, IExample
+    public int num_steps = 10000;
+
+    private NDArray data;
+    private NDArray label;
+
+    public ExampleConfig InitConfig()
+        => Config = new ExampleConfig
+        {
+            Name = "NN XOR in Graph Mode",
+            Enabled = true,
+            IsImportingGraph = false
+        };
+
+    public bool Run()
     {
-        public int num_steps = 10000;
+        tf.compat.v1.disable_eager_execution();
 
-        private NDArray data;
-        private NDArray label;
+        PrepareData();
+        float loss_value = 0;
 
-        public ExampleConfig InitConfig()
-            => Config = new ExampleConfig
-            {
-                Name = "NN XOR in Graph Mode",
-                Enabled = true,
-                IsImportingGraph = false
-            };
+        if (Config.IsImportingGraph)
+            loss_value = RunWithImportedGraph();
+        else
+            loss_value = RunWithBuiltGraph();
 
-        public bool Run()
+        return loss_value < 0.0628;
+    }
+
+    private float RunWithImportedGraph()
+    {
+        var graph = tf.Graph().as_default();
+
+        tf.train.import_meta_graph("graph/xor.meta");
+
+        Tensor features = graph.get_operation_by_name("Placeholder");
+        Tensor labels = graph.get_operation_by_name("Placeholder_1");
+        Tensor loss = graph.get_operation_by_name("loss");
+        Tensor train_op = graph.get_operation_by_name("train_op");
+        Tensor global_step = graph.get_operation_by_name("global_step");
+
+        var init = tf.global_variables_initializer();
+        float loss_value = 0;
+        // Start tf session
+        using (var sess = tf.Session(graph))
         {
-            tf.compat.v1.disable_eager_execution();
+            sess.run(init);
+            var step = 0;
 
-            PrepareData();
-            float loss_value = 0;
-
-            if (Config.IsImportingGraph)
-                loss_value = RunWithImportedGraph();
-            else
-                loss_value = RunWithBuiltGraph();
-
-            return loss_value < 0.0628;
-        }
-
-        private float RunWithImportedGraph()
-        {
-            var graph = tf.Graph().as_default();
-
-            tf.train.import_meta_graph("graph/xor.meta");
-
-            Tensor features = graph.get_operation_by_name("Placeholder");
-            Tensor labels = graph.get_operation_by_name("Placeholder_1");
-            Tensor loss = graph.get_operation_by_name("loss");
-            Tensor train_op = graph.get_operation_by_name("train_op");
-            Tensor global_step = graph.get_operation_by_name("global_step");
-
-            var init = tf.global_variables_initializer();
-            float loss_value = 0;
-            // Start tf session
-            using (var sess = tf.Session(graph))
+            var y_ = np.array(new int[] { 1, 0, 0, 1 });
+            while (step < num_steps)
             {
-                sess.run(init);
-                var step = 0;
-
-                var y_ = np.array(new int[] { 1, 0, 0, 1 });
-                while (step < num_steps)
-                {
-                    // original python:
-                    //_, step, loss_value = sess.run(
-                    //          [train_op, gs, loss],
-                    //          feed_dict={features: xy, labels: y_}
-                    //      )
-                    (_, step, loss_value) = sess.run((train_op, global_step, loss), (features, data), (labels, y_));
-                    if (step == 1 || step % 1000 == 0)
-                        Console.WriteLine($"Step {step} loss: {loss_value}");
-                }
-                Console.WriteLine($"Final loss: {loss_value}");
+                // original python:
+                //_, step, loss_value = sess.run(
+                //          [train_op, gs, loss],
+                //          feed_dict={features: xy, labels: y_}
+                //      )
+                (_, step, loss_value) = sess.run((train_op, global_step, loss), (features, data), (labels, y_));
+                if (step == 1 || step % 1000 == 0)
+                    Console.WriteLine($"Step {step} loss: {loss_value}");
             }
-
-            return loss_value;
+            Console.WriteLine($"Final loss: {loss_value}");
         }
 
-        private float RunWithBuiltGraph()
+        return loss_value;
+    }
+
+    private float RunWithBuiltGraph()
+    {
+        var graph = tf.Graph().as_default();
+
+        var features = tf.placeholder(tf.float32, (4, 2));
+        var labels = tf.placeholder(tf.int32, 4);
+
+        var (train_op, loss, gs) = make_graph(features, labels);
+
+        var init = tf.global_variables_initializer();
+
+        float loss_value = 0;
+        // Start tf session
+        using (var sess = tf.Session(graph))
         {
-            var graph = tf.Graph().as_default();
+            sess.run(init);
+            var step = 0;
 
-            var features = tf.placeholder(tf.float32, (4, 2));
-            var labels = tf.placeholder(tf.int32, 4);
-
-            var (train_op, loss, gs) = make_graph(features, labels);
-
-            var init = tf.global_variables_initializer();
-
-            float loss_value = 0;
-            // Start tf session
-            using (var sess = tf.Session(graph))
+            var y_ = np.array(new int[] { 1, 0, 0, 1 });
+            while (step < num_steps)
             {
-                sess.run(init);
-                var step = 0;
-
-                var y_ = np.array(new int[] { 1, 0, 0, 1 });
-                while (step < num_steps)
-                {
-                    (_, step, loss_value) = sess.run((train_op, gs, loss), (features, data), (labels, y_));
-                    if (step == 1 || step % 1000 == 0)
-                        Console.WriteLine($"Step {step} loss: {loss_value}");
-                }
-                Console.WriteLine($"Final loss: {loss_value}");
+                (_, step, loss_value) = sess.run((train_op, gs, loss), (features, data), (labels, y_));
+                if (step == 1 || step % 1000 == 0)
+                    Console.WriteLine($"Step {step} loss: {loss_value}");
             }
-
-            return loss_value;
+            Console.WriteLine($"Final loss: {loss_value}");
         }
 
-        private (Operation, Tensor, Tensor) make_graph(Tensor features, Tensor labels, int num_hidden = 8)
+        return loss_value;
+    }
+
+    private (Operation, Tensor, Tensor) make_graph(Tensor features, Tensor labels, int num_hidden = 8)
+    {
+        var stddev = 1 / Math.Sqrt(2);
+        var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));
+
+        // Shape [4, num_hidden]
+        var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
+
+        var output_weights = tf.Variable(tf.truncated_normal(
+            new[] { num_hidden, 1 },
+            seed: 17,
+            stddev: (float)(1 / Math.Sqrt(num_hidden))
+        ));
+
+        // Shape [4, 1]
+        var logits = tf.matmul(hidden_activations, output_weights);
+
+        // Shape [4]
+        var predictions = tf.tanh(tf.squeeze(logits));
+        var loss = tf.reduce_mean(tf.square(predictions - tf.cast(labels, tf.float32)), name: "loss");
+
+        var gs = tf.Variable(0, trainable: false, name: "global_step");
+        var optimizer = tf.train.GradientDescentOptimizer(0.2f);
+        var train_op = optimizer.minimize(loss, global_step: gs);
+
+        return (train_op, loss, gs);
+    }
+
+    public override void PrepareData()
+    {
+        data = new float[,]
         {
-            var stddev = 1 / Math.Sqrt(2);
-            var hidden_weights = tf.Variable(tf.truncated_normal(new int[] { 2, num_hidden }, seed: 1, stddev: (float)stddev));
+            {1, 0 },
+            {1, 1 },
+            {0, 0 },
+            {0, 1 }
+        };
 
-            // Shape [4, num_hidden]
-            var hidden_activations = tf.nn.relu(tf.matmul(features, hidden_weights));
-
-            var output_weights = tf.Variable(tf.truncated_normal(
-                new[] { num_hidden, 1 },
-                seed: 17,
-                stddev: (float)(1 / Math.Sqrt(num_hidden))
-            ));
-
-            // Shape [4, 1]
-            var logits = tf.matmul(hidden_activations, output_weights);
-
-            // Shape [4]
-            var predictions = tf.tanh(tf.squeeze(logits));
-            var loss = tf.reduce_mean(tf.square(predictions - tf.cast(labels, tf.float32)), name: "loss");
-
-            var gs = tf.Variable(0, trainable: false, name: "global_step");
-            var optimizer = tf.train.GradientDescentOptimizer(0.2f);
-            var train_op = optimizer.minimize(loss, global_step: gs);
-
-            return (train_op, loss, gs);
-        }
-
-        public override void PrepareData()
+        label = new float[,]
         {
-            data = new float[,]
-            {
-                {1, 0 },
-                {1, 1 },
-                {0, 0 },
-                {0, 1 }
-            };
+            {1 },
+            {0 },
+            {0 },
+            {1 }
+        };
 
-            label = new float[,]
-            {
-                {1 },
-                {0 },
-                {0 },
-                {1 }
-            };
-
-            if (Config.IsImportingGraph)
-            {
-                // download graph meta data
-                string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
-                Web.Download(url, "graph", "xor.meta");
-            }
+        if (Config.IsImportingGraph)
+        {
+            // download graph meta data
+            string url = "https://raw.githubusercontent.com/SciSharp/TensorFlow.NET/master/graph/xor.meta";
+            Web.Download(url, "graph", "xor.meta");
         }
     }
 }

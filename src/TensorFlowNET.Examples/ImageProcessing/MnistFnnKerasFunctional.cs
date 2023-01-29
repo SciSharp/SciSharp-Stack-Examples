@@ -19,81 +19,80 @@ using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
 
-namespace TensorFlowNET.Examples
+namespace TensorFlowNET.Examples;
+
+/// <summary>
+/// The Keras functional API is a way to create models that are more flexible than the tf.keras.Sequential API. 
+/// The functional API can handle models with non-linear topology, shared layers, and even multiple inputs or outputs.
+/// https://keras.io/guides/functional_api/
+/// </summary>
+public class MnistFnnKerasFunctional : SciSharpExample, IExample
 {
-    /// <summary>
-    /// The Keras functional API is a way to create models that are more flexible than the tf.keras.Sequential API. 
-    /// The functional API can handle models with non-linear topology, shared layers, and even multiple inputs or outputs.
-    /// https://keras.io/guides/functional_api/
-    /// </summary>
-    public class MnistFnnKerasFunctional : SciSharpExample, IExample
+    Model model;
+    NDArray x_train, y_train, x_test, y_test;
+
+    public ExampleConfig InitConfig()
+        => Config = new ExampleConfig
+        {
+            Name = "MNIST FNN (Keras Functional)",
+            Enabled = true
+        };
+
+    public bool Run()
     {
-        Model model;
-        NDArray x_train, y_train, x_test, y_test;
+        tf.enable_eager_execution();
 
-        public ExampleConfig InitConfig()
-            => Config = new ExampleConfig
-            {
-                Name = "MNIST FNN (Keras Functional)",
-                Enabled = true
-            };
+        PrepareData();
+        BuildModel();
+        Train();
 
-        public bool Run()
-        {
-            tf.enable_eager_execution();
+        return true;
+    }
 
-            PrepareData();
-            BuildModel();
-            Train();
+    public override void PrepareData()
+    {
+        (x_train, y_train, x_test, y_test) = keras.datasets.mnist.load_data();
+        x_train = x_train.reshape((60000, 784)) / 255f;
+        x_test = x_test.reshape((10000, 784)) / 255f;
+    }
 
-            return true;
-        }
+    public override void BuildModel()
+    {
+        // input layer
+        var inputs = keras.Input(shape: 784);
 
-        public override void PrepareData()
-        {
-            (x_train, y_train, x_test, y_test) = keras.datasets.mnist.load_data();
-            x_train = x_train.reshape((60000, 784)) / 255f;
-            x_test = x_test.reshape((10000, 784)) / 255f;
-        }
+        // 1st dense layer
+        var outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(inputs);
 
-        public override void BuildModel()
-        {
-            // input layer
-            var inputs = keras.Input(shape: 784);
+        // 2nd dense layer
+        outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(outputs);
 
-            // 1st dense layer
-            var outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(inputs);
+        // output layer
+        outputs = layers.Dense(10).Apply(outputs);
 
-            // 2nd dense layer
-            outputs = layers.Dense(64, activation: keras.activations.Relu).Apply(outputs);
+        // build keras model
+        model = keras.Model(inputs, outputs, name: "mnist_model");
+        // show model summary
+        model.summary();
 
-            // output layer
-            outputs = layers.Dense(10).Apply(outputs);
+        // compile keras model into tensorflow's static graph
+        model.compile(loss: keras.losses.SparseCategoricalCrossentropy(from_logits: true),
+            optimizer: keras.optimizers.RMSprop(),
+            metrics: new[] { "accuracy" });
+    }
 
-            // build keras model
-            model = keras.Model(inputs, outputs, name: "mnist_model");
-            // show model summary
-            model.summary();
+    public override void Train()
+    {
+        // train model by feeding data and labels.
+        model.fit(x_train, y_train, batch_size: 64, epochs: 2, validation_split: 0.2f);
 
-            // compile keras model into tensorflow's static graph
-            model.compile(loss: keras.losses.SparseCategoricalCrossentropy(from_logits: true),
-                optimizer: keras.optimizers.RMSprop(),
-                metrics: new[] { "accuracy" });
-        }
+        // evluate the model
+        model.evaluate(x_test, y_test, verbose: 2);
 
-        public override void Train()
-        {
-            // train model by feeding data and labels.
-            model.fit(x_train, y_train, batch_size: 64, epochs: 2, validation_split: 0.2f);
+        // save and serialize model
+        model.save("mnist_model");
 
-            // evluate the model
-            model.evaluate(x_test, y_test, verbose: 2);
-
-            // save and serialize model
-            model.save("mnist_model");
-
-            // recreate the exact same model purely from the file:
-            // model = keras.models.load_model("path_to_my_model");
-        }
+        // recreate the exact same model purely from the file:
+        // model = keras.models.load_model("path_to_my_model");
     }
 }
