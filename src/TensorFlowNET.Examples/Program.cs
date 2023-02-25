@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 using Tensorflow;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
@@ -62,37 +63,52 @@ namespace TensorFlowNET.Examples
                 sw.Stop();
 
                 if (isSuccess)
+                {
                     success.Add($"Example: {name} in {sw.Elapsed.TotalSeconds}s");
+                    // only successfully run examples could be sorted as finished
+                    finished++;
+                }
                 else
                     errors.Add($"Example: {name} in {sw.Elapsed.TotalSeconds}s");
 
-                finished++;
+
                 keras.backend.clear_session();
+            }
+
+            if (parsedArgs.ContainsKey("ex"))
+            {
+                printRunInfo(finished, examples.Length);
+                return;
             }
 
             success.ForEach(x => Console.WriteLine($"{x} is OK!", Color.White));
             errors.ForEach(x => Console.WriteLine($"{x} is Failed!", Color.Red));
 
+            printRunInfo(finished, examples.Length);
+        }
+        private static void printRunInfo(int finished, int examplesLength)
+        {
             Console.WriteLine(Environment.OSVersion, Color.Yellow);
             Console.WriteLine($"64Bit Operating System: {Environment.Is64BitOperatingSystem}", Color.Yellow);
             Console.WriteLine($".NET CLR: {Environment.Version}", Color.Yellow);
             Console.WriteLine($"TensorFlow Binary v{tf.VERSION}");
             Console.WriteLine($"TensorFlow.NET v{Assembly.GetAssembly(typeof(TF_DataType)).GetName().Version}");
             Console.WriteLine($"TensorFlow.Keras v{Assembly.GetAssembly(typeof(KerasApi)).GetName().Version}");
-            Console.WriteLine($"{finished} of {examples.Length} example(s) are completed.");
+            Console.WriteLine($"{finished} of {examplesLength} example(s) are completed.");
             Console.ReadLine();
         }
-
         private static (bool, string) RunExamples(Type example, Dictionary<string, string> args)
         {
             var instance = (IExample)Activator.CreateInstance(example);
             instance.InitConfig();
+
             var name = instance.Config.Name;
 
-            Console.WriteLine($"{DateTime.UtcNow} Starting {name}", Color.White);
+            // args has "ex" means run specific example
+            if (args.ContainsKey("ex") && name != args["ex"])
+                return (false, "");
 
-            // if (args.ContainsKey("ex") && name != args["ex"])
-                // return (false, "");
+            Console.WriteLine($"{DateTime.UtcNow} Starting {name}", Color.White);
 
             if (!instance.Config.Enabled)
                 return (true, name);
@@ -106,7 +122,7 @@ namespace TensorFlowNET.Examples
             {
                 Console.WriteLine(ex);
             }
-            
+
             Console.WriteLine($"{DateTime.UtcNow} Completed {name}", Color.White);
             return (ret, name);
         }
