@@ -72,25 +72,23 @@ public class NeuralNetXor : SciSharpExample, IExample
         var init = tf.global_variables_initializer();
         float loss_value = 0;
         // Start tf session
-        using (var sess = tf.Session(graph))
-        {
-            sess.run(init);
-            var step = 0;
+        var sess = tf.Session(graph);
+        sess.run(init);
+        var step = 0;
 
-            var y_ = np.array(new int[] { 1, 0, 0, 1 });
-            while (step < num_steps)
-            {
-                // original python:
-                //_, step, loss_value = sess.run(
-                //          [train_op, gs, loss],
-                //          feed_dict={features: xy, labels: y_}
-                //      )
-                (_, step, loss_value) = sess.run((train_op, global_step, loss), (features, data), (labels, y_));
-                if (step == 1 || step % 1000 == 0)
-                    Console.WriteLine($"Step {step} loss: {loss_value}");
-            }
-            Console.WriteLine($"Final loss: {loss_value}");
+        var y_ = np.array(new int[] { 1, 0, 0, 1 });
+        while (step < num_steps)
+        {
+            // original python:
+            //_, step, loss_value = sess.run(
+            //          [train_op, gs, loss],
+            //          feed_dict={features: xy, labels: y_}
+            //      )
+            (_, step, loss_value) = sess.run((train_op, global_step, loss), (features, data), (labels, y_));
+            if (step == 1 || step % 1000 == 0)
+                Console.WriteLine($"Step {step} loss: {loss_value}");
         }
+        Console.WriteLine($"Final loss: {loss_value}");
 
         return loss_value;
     }
@@ -108,20 +106,18 @@ public class NeuralNetXor : SciSharpExample, IExample
 
         float loss_value = 0;
         // Start tf session
-        using (var sess = tf.Session(graph))
-        {
-            sess.run(init);
-            var step = 0;
+        var sess = tf.Session(graph);
+        sess.run(init);
+        var step = 0;
 
-            var y_ = np.array(new int[] { 1, 0, 0, 1 });
-            while (step < num_steps)
-            {
-                (_, step, loss_value) = sess.run((train_op, gs, loss), (features, data), (labels, y_));
-                if (step == 1 || step % 1000 == 0)
-                    Console.WriteLine($"Step {step} loss: {loss_value}");
-            }
-            Console.WriteLine($"Final loss: {loss_value}");
+        var y_ = np.array(new int[] { 1, 0, 0, 1 });
+        while (step < num_steps)
+        {
+            (_, step, loss_value) = sess.run((train_op, gs, loss), (features, data), (labels, y_));
+            if (step == 1 || step % 1000 == 0)
+                Console.WriteLine($"Step {step} loss: {loss_value}");
         }
+        Console.WriteLine($"Final loss: {loss_value}");
 
         return loss_value;
     }

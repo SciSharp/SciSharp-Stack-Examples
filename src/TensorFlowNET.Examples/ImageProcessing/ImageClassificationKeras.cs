@@ -44,8 +44,9 @@ public class ImageClassificationKeras : SciSharpExample, IExample
         int num_classes = 5;
         // var normalization_layer = tf.keras.layers.Rescaling(1.0f / 255);
         var layers = keras.layers;
-        model = keras.Sequential(new List<ILayer>
+        var myLayers = new List<ILayer>
         {
+            
             layers.Rescaling(1.0f / 255, input_shape: (img_dim.dims[0], img_dim.dims[1], 3)),
             layers.Conv2D(16, 3, padding: "same", activation: keras.activations.Relu),
             layers.MaxPooling2D(),
@@ -56,7 +57,8 @@ public class ImageClassificationKeras : SciSharpExample, IExample
             layers.Flatten(),
             layers.Dense(128, activation: keras.activations.Relu),
             layers.Dense(num_classes)
-        });
+        };
+        model = keras.Sequential(myLayers);
 
         model.compile(optimizer: keras.optimizers.Adam(),
             loss: keras.losses.SparseCategoricalCrossentropy(from_logits: true),

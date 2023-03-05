@@ -28,7 +28,7 @@ namespace TensorFlowNET.Examples;
 /// </summary>
 public class MnistFnnKerasFunctional : SciSharpExample, IExample
 {
-    Model model;
+    IModel model;
     NDArray x_train, y_train, x_test, y_test;
 
     public ExampleConfig InitConfig()

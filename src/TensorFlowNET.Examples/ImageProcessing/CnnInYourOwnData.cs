@@ -128,13 +128,13 @@ class CnnInYourOwnData : SciSharpExample, IExample
 
     public void LoadAndPredict()
     {
-        using var graph = tf.Graph().as_default();
+        var graph = tf.Graph().as_default();
         graph.Import(Path.Combine(Config.Name, "model.pb"));
         Tensor x = graph.OperationByName("Input/X");
         Tensor prediction = graph.OperationByName("Train/Prediction/predictions");
         Tensor probility = graph.OperationByName("Train/Prediction/prob");
 
-        using var sess = tf.Session(graph);
+        var sess = tf.Session(graph);
         var (prediction_result, probility_result) = sess.run((prediction, probility), (x, x_test));
         print($"Prediction result: {prediction_result}");
     }
@@ -193,7 +193,7 @@ class CnnInYourOwnData : SciSharpExample, IExample
     }
     private void LoadImage(string[] a, NDArray b, string c)
     {
-        using var graph = tf.Graph().as_default();
+        var graph = tf.Graph().as_default();
         
         for (int i = 0; i < a.Length; i++)
         {
@@ -217,10 +217,8 @@ class CnnInYourOwnData : SciSharpExample, IExample
         var sub = tf.subtract(bilinear, new float[] { img_mean });
         var normalized = tf.divide(sub, new float[] { img_std });
 
-        using (var sess = tf.Session(graph))
-        {
-            return sess.run(normalized);
-        }
+        var sess = tf.Session(graph);
+        return sess.run(normalized);
     }
 
     /// <summary>
@@ -626,13 +624,16 @@ class CnnInYourOwnData : SciSharpExample, IExample
             long real = ArrayLabel_Test[i];
             int predict = Test_Cls[i];
             var probability = Test_Data[i, predict];
-            string result = (real == predict) ? "OK" : "NG";
+            string result = (real == predict) ? "OK" : "FAILED";
             string fileName = ArrayFileName_Test[i];
             string real_str = Dict_Label[real];
             string predict_str = Dict_Label[predict];
-            print((i + 1).ToString() + "|" + "result:" + result + "|" + "real_str:" + real_str + "|"
-                + "predict_str:" + predict_str + "|" + "probability:" + (float)probability + "|"
-                + "fileName:" + fileName);
+            if (result != "OK")
+            {
+                print((i + 1).ToString() + "|" + "result:" + result + "|" + "real_str:" + real_str + "|"
+                    + "predict_str:" + predict_str + "|" + "probability:" + (float)probability + "|"
+                    + "fileName:" + fileName);
+            }
         }
     }
 }

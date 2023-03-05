@@ -68,8 +68,7 @@ public class Word2Vec : SciSharpExample, IExample
         // Initialize the variables (i.e. assign their default value)
         var init = tf.global_variables_initializer();
 
-        using (var sess = tf.Session(graph))
-        {
+        var sess = tf.Session(graph);
             // Run the initializer
             sess.run(init);
 
@@ -78,40 +77,39 @@ public class Word2Vec : SciSharpExample, IExample
                           from wi2 in wi.DefaultIfEmpty()
                           select wi2 == null ? 0 : wi2.Id).ToArray();
 
-            foreach (var step in range(1, num_steps + 1))
+        foreach (var step in range(1, num_steps + 1))
+        {
+            // Get a new batch of data
+            var (batch_x, batch_y) = next_batch(batch_size, num_skips, skip_window);
+
+            (_, float loss) = sess.run((train_op, loss_op), (X, batch_x), (Y, batch_y));
+            average_loss += loss;
+
+            if (step % display_step == 0 || step == 1)
             {
-                // Get a new batch of data
-                var (batch_x, batch_y) = next_batch(batch_size, num_skips, skip_window);
+                if (step > 1)
+                    average_loss /= display_step;
 
-                (_, float loss) = sess.run((train_op, loss_op), (X, batch_x), (Y, batch_y));
-                average_loss += loss;
+                print($"Step {step}, Average Loss= {average_loss.ToString("F4")}");
+                average_loss = 0;
+            }
 
-                if (step % display_step == 0 || step == 1)
+            // Evaluation
+            if (step % eval_step == 0 || step == 1)
+            {
+                print("Evaluation...");
+                var sim = sess.run(cosine_sim_op, (X, x_test));
+                foreach (var i in range(len(eval_words)))
                 {
-                    if (step > 1)
-                        average_loss /= display_step;
-
-                    print($"Step {step}, Average Loss= {average_loss.ToString("F4")}");
-                    average_loss = 0;
-                }
-
-                // Evaluation
-                if (step % eval_step == 0 || step == 1)
-                {
-                    print("Evaluation...");
-                    var sim = sess.run(cosine_sim_op, (X, x_test));
-                    foreach (var i in range(len(eval_words)))
-                    {
-                        var nearest = np.argsort(0f - sim[i])
-                            .ToArray<int>()
-                            .Skip(1)
-                            .Take(top_k)
-                            .ToArray();
-                        string log_str = $"\"{eval_words[i]}\" nearest neighbors:";
-                        foreach (var k in range(top_k))
-                            log_str = $"{log_str} {word2id.First(x => x.Id == nearest[k]).Word},";
-                        print(log_str);
-                    }
+                    var nearest = np.argsort(0f - sim[i])
+                        .ToArray<int>()
+                        .Skip(1)
+                        .Take(top_k)
+                        .ToArray();
+                    string log_str = $"\"{eval_words[i]}\" nearest neighbors:";
+                    foreach (var k in range(top_k))
+                        log_str = $"{log_str} {word2id.First(x => x.Id == nearest[k]).Word},";
+                    print(log_str);
                 }
             }
         }

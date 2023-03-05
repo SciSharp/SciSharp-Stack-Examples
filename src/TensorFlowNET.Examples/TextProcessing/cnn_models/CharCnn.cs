@@ -33,7 +33,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: new[] { filter_sizes[0], alphabet_size },
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(x_expanded);
+                    activation: tf.keras.activations.Relu).Apply(x_expanded);
 
                 pool1 = tf.keras.layers.MaxPooling2D(
                     pool_size: (3, 1 ),
@@ -47,7 +47,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: (filter_sizes[1], num_filters),
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(pool1);
+                    activation: tf.keras.activations.Relu).Apply(pool1);
 
                 pool2 = tf.keras.layers.MaxPooling2D(
                     pool_size: (3, 1),
@@ -61,7 +61,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: (filter_sizes[2], num_filters),
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(pool2);
+                    activation: tf.keras.activations.Relu).Apply(pool2);
                 conv3 = tf.transpose(conv3, new[] { 0, 1, 3, 2 });
             });
 
@@ -71,7 +71,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: (filter_sizes[3], num_filters),
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(conv3);
+                    activation: tf.keras.activations.Relu).Apply(conv3);
                 conv4 = tf.transpose(conv4, new[] { 0, 1, 3, 2 });
             });
 
@@ -81,7 +81,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: (filter_sizes[4], num_filters),
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(conv4);
+                    activation: tf.keras.activations.Relu).Apply(conv4);
                 conv5 = tf.transpose(conv5, new[] { 0, 1, 3, 2 });
             });
 
@@ -91,7 +91,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters,
                     kernel_size: (filter_sizes[5], num_filters),
                     kernel_initializer: kernel_initializer,
-                    activation: tf.nn.relu).Apply(conv5);
+                    activation: tf.keras.activations.Relu).Apply(conv5);
 
                 var pool6 = keras.layers.MaxPooling2D(
                     pool_size: (3, 1),

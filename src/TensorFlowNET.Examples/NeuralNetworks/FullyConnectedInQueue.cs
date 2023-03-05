@@ -82,31 +82,29 @@ public class FullyConnectedInQueue : SciSharpExample, IExample
         var sw = new Stopwatch();
         sw.Start();
 
-        using (var sess = tf.Session())
+        var sess = tf.Session();
+        // init variables
+        sess.run(tf.global_variables_initializer());
+
+        // check the accuracy before training
+        var (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
+        sess.run(accuracy, (input, x_input), (y_true, y_input));
+
+        // training
+        foreach (var i in range(5000))
         {
-            // init variables
-            sess.run(tf.global_variables_initializer());
-
-            // check the accuracy before training
-            var (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-            sess.run(accuracy, (input, x_input), (y_true, y_input));
-
-            // training
-            foreach (var i in range(5000))
-            {
-                // by sampling some input data (fetching)
-                (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-                var (_, loss) = sess.run((train_op, loss_op), (input, x_input), (y_true, y_input));
-
-                // We regularly check the loss
-                if (i % 500 == 0)
-                    print($"iter:{i} - loss:{loss}");
-            }
-
-            // Finally, we check our final accuracy
+            // by sampling some input data (fetching)
             (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
-            sess.run(accuracy, (input, x_input), (y_true, y_input));
+            var (_, loss) = sess.run((train_op, loss_op), (input, x_input), (y_true, y_input));
+
+            // We regularly check the loss
+            if (i % 500 == 0)
+                print($"iter:{i} - loss:{loss}");
         }
+
+        // Finally, we check our final accuracy
+        (x_input, y_input) = sess.run((x_inputs_data, y_inputs_data));
+        sess.run(accuracy, (input, x_input), (y_true, y_input));
 
         print($"Time taken: {sw.Elapsed.TotalSeconds}s");
     }

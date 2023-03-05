@@ -51,11 +51,9 @@ public class InceptionArchGoogLeNet : SciSharpExample, IExample
         var output_operation = graph.get_operation_by_name(output_name);
 
         NDArray results;
-        using (var sess = tf.Session(graph))
-        {
-            results = sess.run(output_operation.outputs[0],
-                new FeedItem(input_operation.outputs[0], nd));
-        }
+        var sess = tf.Session(graph);
+        results = sess.run(output_operation.outputs[0],
+            new FeedItem(input_operation.outputs[0], nd));
 
         results = np.squeeze(results);
 
@@ -88,8 +86,8 @@ public class InceptionArchGoogLeNet : SciSharpExample, IExample
         var sub = tf.subtract(bilinear, new float[] { input_mean });
         var normalized = tf.divide(sub, new float[] { input_std });
 
-        using (var sess = tf.Session(graph))
-            return sess.run(normalized);
+        var sess = tf.Session(graph);
+        return sess.run(normalized);
     }
 
     public override void PrepareData()

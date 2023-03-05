@@ -114,7 +114,7 @@ namespace TensorFlowNET.Examples
             var train_op = graph.get_operation_by_name("group_deps");
             Tensor avg_distance = graph.get_operation_by_name("Mean");
             Tensor cluster_idx = graph.get_operation_by_name("Squeeze_1");
-            NDArray result = null;
+            NDArray[] result = null;
 
             sess.run(init_vars, new FeedItem(X, full_data_x));
             sess.run(init_op, new FeedItem(X, full_data_x));
@@ -165,8 +165,8 @@ namespace TensorFlowNET.Examples
 
             // Test Model
             var (test_x, test_y) = (mnist.Test.Data, mnist.Test.Labels);
-            result = sess.run(accuracy_op, new FeedItem(X, test_x), new FeedItem(Y, test_y));
-            accuray_test = result;
+            // result = sess.run(accuracy_op, new FeedItem(X, test_x), new FeedItem(Y, test_y));
+            // accuray_test = result;
             print($"Test Accuracy: {accuray_test}");
         }
     }

@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************************/
 
+using Tensorflow.Keras.Engine;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
 using static Tensorflow.KerasApi;
@@ -23,6 +24,7 @@ namespace TensorFlowNET.Examples
     public class LinearRegressionKeras : SciSharpExample, IExample
     {
         NDArray train_X, train_Y;
+        ICallback result;
 
         public ExampleConfig InitConfig()
             => Config = new ExampleConfig
@@ -53,7 +55,7 @@ namespace TensorFlowNET.Examples
             model.compile(loss: keras.losses.MeanSquaredError(),
                 optimizer: keras.optimizers.SGD(0.005f),
                 metrics: new[] { "acc" });
-            model.fit(train_X, train_Y, epochs: 100);
+            result= model.fit(train_X, train_Y, epochs: 10);
 
             var weights = model.TrainableVariables;
             print($"weight: {weights[0].numpy()}, bias: {weights[1].numpy()}");

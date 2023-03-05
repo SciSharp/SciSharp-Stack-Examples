@@ -50,19 +50,17 @@ public class ImageRecognitionInception : SciSharpExample, IExample
         var result_labels = new List<string>();
         var sw = new Stopwatch();
 
-        using (var sess = tf.Session(graph))
+        var sess = tf.Session(graph);
+        foreach (var nd in file_ndarrays)
         {
-            foreach (var nd in file_ndarrays)
-            {
-                sw.Restart();
+            sw.Restart();
 
-                var results = sess.run(output_operation.outputs[0], (input_operation.outputs[0], nd));
-                results = np.squeeze(results);
-                int idx = np.argmax(results);
+            var results = sess.run(output_operation.outputs[0], (input_operation.outputs[0], nd));
+            results = np.squeeze(results);
+            int idx = np.argmax(results);
 
-                Console.WriteLine($"{labels[idx]} {results[idx]} in {sw.ElapsedMilliseconds}ms", Color.Tan);
-                result_labels.Add(labels[idx]);
-            }
+            Console.WriteLine($"{labels[idx]} {results[idx]} in {sw.ElapsedMilliseconds}ms", Color.Tan);
+            result_labels.Add(labels[idx]);
         }
 
         return result_labels.Contains("military uniform");
@@ -85,8 +83,8 @@ public class ImageRecognitionInception : SciSharpExample, IExample
         var sub = tf.subtract(bilinear, new float[] { input_mean });
         var normalized = tf.divide(sub, new float[] { input_std });
 
-        using (var sess = tf.Session(graph))
-            return sess.run(normalized);
+        var sess = tf.Session(graph);
+        return sess.run(normalized);
     }
 
     public override void PrepareData()

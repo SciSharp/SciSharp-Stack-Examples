@@ -69,19 +69,17 @@ public class DetectInMobilenet : SciSharpExample, IExample
 
         var graph = Config.IsImportingGraph ? ImportGraph() : BuildGraph();
 
-        using (var sess = tf.Session(graph))
-        {
-            Tensor tensorNum = graph.OperationByName("num_detections");
-            Tensor tensorBoxes = graph.OperationByName("detection_boxes");
-            Tensor tensorScores = graph.OperationByName("detection_scores");
-            Tensor tensorClasses = graph.OperationByName("detection_classes");
-            Tensor imgTensor = graph.OperationByName("image_tensor");
-            Tensor[] outTensorArr = new Tensor[] { tensorNum, tensorBoxes, tensorScores, tensorClasses };
+        var sess = tf.Session(graph);
+        Tensor tensorNum = graph.OperationByName("num_detections");
+        Tensor tensorBoxes = graph.OperationByName("detection_boxes");
+        Tensor tensorScores = graph.OperationByName("detection_scores");
+        Tensor tensorClasses = graph.OperationByName("detection_classes");
+        Tensor imgTensor = graph.OperationByName("image_tensor");
+        Tensor[] outTensorArr = new Tensor[] { tensorNum, tensorBoxes, tensorScores, tensorClasses };
 
-            var results = sess.run(outTensorArr, new FeedItem(imgTensor, imgArr));
+        var results = sess.run(outTensorArr, new FeedItem(imgTensor, imgArr));
 
-            buildOutputImage(results);
-        }
+        buildOutputImage(results);
     }
 
     public override void PrepareData()
@@ -110,8 +108,8 @@ public class DetectInMobilenet : SciSharpExample, IExample
         var casted = tf.cast(decodeJpeg, TF_DataType.TF_UINT8);
         var dims_expander = tf.expand_dims(casted, 0);
 
-        using (var sess = tf.Session(graph))
-            return sess.run(dims_expander);
+        var sess = tf.Session(graph);
+        return sess.run(dims_expander);
     }
 
     private void buildOutputImage(NDArray[] resultArr)

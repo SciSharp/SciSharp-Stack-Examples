@@ -115,7 +115,7 @@ public class DigitRecognitionRnnKeras : SciSharpExample, IExample
 
 internal class LSTMModel : Model
 {
-    OptimizerV2 optimizer;
+    IOptimizer optimizer;
     ILayer lstm;
     ILayer output;
 

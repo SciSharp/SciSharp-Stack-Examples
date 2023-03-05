@@ -127,7 +127,7 @@ public class MnistCnnKerasSubclass : SciSharpExample, IExample
         }
     }
 
-    void run_optimization(ConvNet conv_net, OptimizerV2 optimizer, Tensor x, Tensor y)
+    void run_optimization(ConvNet conv_net, IOptimizer optimizer, Tensor x, Tensor y)
     {
         using var g = tf.GradientTape();
         var pred = conv_net.Apply(x, training: true);

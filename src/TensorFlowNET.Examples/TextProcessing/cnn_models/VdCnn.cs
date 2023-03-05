@@ -64,7 +64,7 @@ namespace TensorFlowNET.Examples.Text
                     filters: num_filters[0],
                     kernel_size: new int[] { filter_sizes[0], embedding_size },
                     kernel_initializer: cnn_initializer,
-                    activation: tf.nn.relu).Apply(x_expanded);
+                    activation: tf.keras.activations.Relu).Apply(x_expanded);
 
                 conv0 = tf.transpose(conv0, new int[] { 0, 1, 3, 2 });
             });

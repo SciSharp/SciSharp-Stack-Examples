@@ -54,7 +54,7 @@ namespace TensorFlowNET.Examples.Text
                     kernel_size: new int[] { filter_size, embedding_size },
                     strides: new int[] { 1, 1 },
                     padding: "VALID",
-                    activation: tf.nn.relu).Apply(x_emb);
+                    activation: tf.keras.activations.Relu).Apply(x_emb);
 
                 var pool = tf.keras.layers.MaxPooling2D(
                     pool_size: new[] { document_max_len - filter_size + 1, 1 },

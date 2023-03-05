@@ -132,8 +132,8 @@ namespace TensorFlowNET.Examples
 
             var positive_labels = positive_examples.Select(x => new int[2] { 0, 1 }).ToArray();
             var negative_labels = negative_examples.Select(x => new int[2] { 1, 0 }).ToArray();
-            var y = np.concatenate(new NDArray[] { new int[][][] { positive_labels, negative_labels } });
-            return (x_text.ToArray(), y);
+            // var y = np.concatenate(new NDArray[] { new int[][][] { positive_labels, negative_labels } });
+            return (x_text.ToArray(), null);
         }
 
         private static string clean_str(string str)

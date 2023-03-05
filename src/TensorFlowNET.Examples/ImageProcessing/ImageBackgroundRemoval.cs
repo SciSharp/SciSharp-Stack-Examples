@@ -34,11 +34,9 @@ public class ImageBackgroundRemoval : SciSharpExample, IExample
 
         Tensor output = graph.OperationByName("SemanticPredictions");
 
-        using (var sess = tf.Session(graph))
-        {
-            // Runs inference on a single image.
-            sess.run(output, new FeedItem(output, "[np.asarray(resized_image)]"));
-        }
+        var sess = tf.Session(graph);
+        // Runs inference on a single image.
+        sess.run(output, new FeedItem(output, "[np.asarray(resized_image)]"));
 
         return false;
     }

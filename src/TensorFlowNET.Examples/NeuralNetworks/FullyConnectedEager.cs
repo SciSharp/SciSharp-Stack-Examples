@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
@@ -101,7 +102,7 @@ public class FullyConnectedEager : SciSharpExample, IExample
         return accuracy_test > 0.85;
     }
 
-    void run_optimization(OptimizerV2 optimizer, Tensor x, Tensor y, IVariableV1[] trainable_variables)
+    void run_optimization(IOptimizer optimizer, Tensor x, Tensor y, IVariableV1[] trainable_variables)
     {
         using var g = tf.GradientTape();
         var pred = neural_net(x);

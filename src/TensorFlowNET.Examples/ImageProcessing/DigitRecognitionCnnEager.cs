@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Optimizers;
 using Tensorflow.NumPy;
 using static Tensorflow.Binding;
@@ -118,7 +119,7 @@ public class DigitRecognitionCnnEager : SciSharpExample, IExample
         print($"Test Accuracy: {accuracy_test}");
     }
 
-    void run_optimization(OptimizerV2 optimizer, Tensor x, Tensor y)
+    void run_optimization(IOptimizer optimizer, Tensor x, Tensor y)
     {
         using var g = tf.GradientTape();
         var pred = conv_net(x);

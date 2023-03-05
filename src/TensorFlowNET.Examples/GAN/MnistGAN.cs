@@ -106,7 +106,7 @@ public class MnistGAN : SciSharpExample, IExample
         //return model;
     }
 
-    private Model Make_Discriminator_model()
+    private IModel Make_Discriminator_model()
     {
         Tensorflow.Keras.Activation activation = null;
         var image = keras.Input(img_shape);

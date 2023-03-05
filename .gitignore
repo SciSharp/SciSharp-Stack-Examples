@@ -349,3 +349,5 @@ ASALocalRun/
 /ssd_mobilenet_v1_coco_2018_01_28
 /tfhub_modules
 /word2vec
+/src/tensorflow2.x-python-tutorial/aclImdb_v1.tar.gz
+/src/tensorflow2.x-python-tutorial/aclImdb

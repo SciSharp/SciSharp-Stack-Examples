@@ -14,7 +14,9 @@
    limitations under the License.
 ******************************************************************************/
 
+using System.Linq;
 using Tensorflow;
+using Tensorflow.Keras.Callbacks;
 using Tensorflow.Keras.Engine;
 using Tensorflow.Keras.Utils;
 using Tensorflow.NumPy;
@@ -29,9 +31,10 @@ namespace TensorFlowNET.Examples;
 /// </summary>
 public class ToyResNet : SciSharpExample, IExample
 {
-    Model model;
+    IModel model;
     NDArray x_train, y_train;
     NDArray x_test, y_test;
+    ICallback result;
 
     public ExampleConfig InitConfig()
         => Config = new ExampleConfig
@@ -48,7 +51,7 @@ public class ToyResNet : SciSharpExample, IExample
         PrepareData();
         Train();
 
-        return true;
+        return result.history["accuracy"].Last() > 0.22;
     }
 
     public override void BuildModel()
@@ -79,7 +82,7 @@ public class ToyResNet : SciSharpExample, IExample
 
         model.compile(optimizer: keras.optimizers.RMSprop(1e-3f),
             loss: keras.losses.CategoricalCrossentropy(from_logits: true),
-            metrics: new[] { "acc" });
+            metrics: new[] { "accuracy" });
     }
 
     public override void PrepareData()
@@ -95,7 +98,7 @@ public class ToyResNet : SciSharpExample, IExample
 
     public override void Train()
     {
-        model.fit(x_train[new Slice(0, 2000)], y_train[new Slice(0, 2000)], 
+        result = model.fit(x_train[new Slice(0, 2000)], y_train[new Slice(0, 2000)], 
             batch_size: 64, 
             epochs: 3, 
             validation_split: 0.2f);
