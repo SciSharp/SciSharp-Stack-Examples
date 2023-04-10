@@ -16,7 +16,7 @@ namespace TensorFlowNET.Examples;
 public class ImageClassificationKeras : SciSharpExample, IExample
 {
     int batch_size = 32;
-    int epochs = 3;
+    int epochs = 10;
     Shape img_dim = (64, 64);
     IDatasetV2 train_ds, val_ds;
     Model model;

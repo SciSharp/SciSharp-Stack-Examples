@@ -100,7 +100,7 @@ public class ToyResNet : SciSharpExample, IExample
     {
         result = model.fit(x_train[new Slice(0, 2000)], y_train[new Slice(0, 2000)], 
             batch_size: 64, 
-            epochs: 3, 
+            epochs: 5, 
             validation_split: 0.2f);
     }
 }

@@ -39,7 +39,7 @@ public class NeuralNetXor : SciSharpExample, IExample
         {
             Name = "NN XOR in Graph Mode",
             Enabled = true,
-            IsImportingGraph = false
+            IsImportingGraph = true
         };
 
     public bool Run()
