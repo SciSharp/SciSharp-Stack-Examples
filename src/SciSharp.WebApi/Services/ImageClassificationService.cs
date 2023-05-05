@@ -109,7 +109,7 @@ namespace WebApi.Services
                 predictionModel = keras.Sequential();
                 predictionModel.add(baseModel);
                 predictionModel.add(keras.layers.Softmax(-1));
-                predictionModel.compile();
+                // predictionModel.compile();
             }
 
             Tensors predictions = predictionModel.predict(array);

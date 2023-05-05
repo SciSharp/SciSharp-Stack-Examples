@@ -49,19 +49,16 @@
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.4.0.20200915" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.11.0" Condition="'$(Configuration)'!='GPU'" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist-Windows-GPU" Version="2.10.0" Condition="'$(Configuration)'=='GPU'" />
+    <PackageReference Include="SciSharp.Models.ImageClassification" Version="0.5.0" />
+    <PackageReference Include="SciSharp.Models.ObjectDetection" Version="0.2.0" />
+    <PackageReference Include="SciSharp.Models.TimeSeries" Version="0.3.0" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.11.3" Condition="'$(Configuration)'!='GPU'" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist-Windows-GPU" Version="2.10.1" Condition="'$(Configuration)'=='GPU'" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="TensorFlow.Keras" Version="0.10.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="TextProcessing\NER\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.ImageClassification\SciSharp.Models.ImageClassification.csproj" />
-    <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.ObjectDetection\SciSharp.Models.ObjectDetection.csproj" />
-    <ProjectReference Include="..\..\..\SciSharp.Models\SciSharp.Models.TimeSeries\SciSharp.Models.TimeSeries.csproj" />
-    <ProjectReference Include="..\..\..\SharpCV\src\SharpCV\SharpCV.csproj" />
   </ItemGroup>
 </Project>
