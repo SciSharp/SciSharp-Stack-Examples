@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Common.Types;
 using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
@@ -176,7 +177,7 @@ public class FullyConnectedKeras : SciSharpExample, IExample
         }
 
         // Set forward pass.
-        protected override Tensors Call(Tensors inputs, Tensor state = null, bool? training = null)
+        protected override Tensors Call(Tensors inputs, Tensors state = null, bool? training = null, IOptionalArgs? optional_args = null)
         {
             inputs = fc1.Apply(inputs);
             inputs = fc2.Apply(inputs);

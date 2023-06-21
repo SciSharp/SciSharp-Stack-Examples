@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Tensorflow;
+using Tensorflow.Common.Types;
 using Tensorflow.Keras;
 using Tensorflow.Keras.ArgsDefinition;
 using Tensorflow.Keras.Engine;
@@ -221,7 +222,7 @@ public class MnistCnnKerasSubclass : SciSharpExample, IExample
         /// <param name="is_training"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        protected override Tensors Call(Tensors inputs, Tensor state = null, bool? training = null)
+        protected override Tensors Call(Tensors inputs, Tensors state = null, bool? training = null, IOptionalArgs? optional_args = null)
         {
             inputs = tf.reshape(inputs, (-1, 28, 28, 1));
             inputs = conv1.Apply(inputs);
