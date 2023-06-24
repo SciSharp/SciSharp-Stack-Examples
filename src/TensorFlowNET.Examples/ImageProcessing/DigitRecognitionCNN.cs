@@ -141,7 +141,7 @@ public class DigitRecognitionCNN : SciSharpExample, IExample
     private (NDArray, NDArray) Reformat(NDArray x, NDArray y)
     {
         var (unique_y, _) = np.unique(np.argmax(y, 1));
-        var (img_size, num_ch, num_class) = ((int)np.sqrt(x.shape[1]).astype(np.int32), 1, len(unique_y));
+        var (img_size, num_ch, num_class) = ((int)np.sqrt((float)x.shape[1]).astype(np.int32), 1, len(unique_y));
         var dataset = x.reshape((x.shape[0], img_size, img_size, num_ch)).astype(np.float32);
         //y[0] = np.arange(num_class) == y[0];
         //var labels = (np.arange(num_class) == y.reshape(y.shape[0], 1, y.shape[1])).astype(np.float32);
