@@ -32,6 +32,7 @@ public class WeatherPrediction : SciSharpExample, IExample
         task.SetModelArgs(new TimeSeriesModelArgs
         {
             InputWidth = 3,
+            LabelWidth = 1,
             LabelColumns = new[] { "T (degC)" }
         });
         (training_ds, val_ds, test_ds) = task.GenerateDataset(PrepareData);

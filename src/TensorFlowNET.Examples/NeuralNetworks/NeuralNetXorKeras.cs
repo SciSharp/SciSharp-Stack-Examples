@@ -50,8 +50,8 @@ public class NeuralNetXorKeras : SciSharpExample, IExample
         model.compile(optimizer: keras.optimizers.Adam(),
             loss: keras.losses.MeanSquaredError(),
             new[] { "accuracy" });
-        model.fit(x, y, batch_size: 4, epochs: 50);
-        model.evaluate(tf.constant(x), tf.constant(y));
+        model.fit(x, y, batch_size: 4, epochs: 200);
+        model.evaluate(x, y);
         Tensor result = model.predict(x, 4);
         return result.ToArray<float>() is [< 0.5f, > 0.5f, > 0.5f, < 0.5f];
     }
