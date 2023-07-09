@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.4.0.20200915" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.11.4" />
-    <PackageReference Include="SharpCV" Version="0.13.1" />
+    <PackageReference Include="SharpCV" Version="0.13.2" />
   </ItemGroup>
 
 </Project>
