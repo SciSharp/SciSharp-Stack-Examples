@@ -79,7 +79,7 @@ Example runner will download all the required files like training data and model
 
 #### Time Series
 
-* Weather Prediction [C#](src/TensorFlowNET.Examples/TimeSeries/WeatherPrediction.cs)
+* Weather Prediction (CNN, RNN) [C#](src/TensorFlowNET.Examples/TimeSeries/WeatherPrediction.cs)
 
 #### Welcome to PR your example to us.
 
