@@ -15,10 +15,10 @@ namespace TensorFlowNET.Examples
 {
     class BertClassification : SciSharpExample, IExample
     {
-        int max_seq_len = 180;
-        int batch_size = 4;
+        int max_seq_len = 512;
+        int batch_size = 32;
         int num_classes = 2;
-        int epoch = 3;
+        int epoch = 10;
         float learning_rate = (float)2e-5;
         string pretrained_weight_path = "./tf_model.h5";
         BertConfig config = new BertConfig();
