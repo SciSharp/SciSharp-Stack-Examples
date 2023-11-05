@@ -1,0 +1,6 @@
+<Project>
+ <PropertyGroup>
+   <LangVersion>10.0</LangVersion>
+   <IncludeSourceCode>True</IncludeSourceCode>
+ </PropertyGroup>
+</Project>

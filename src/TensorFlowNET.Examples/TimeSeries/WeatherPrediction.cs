@@ -26,7 +26,7 @@ public class WeatherPrediction : SciSharpExample, IExample
     {
         var wizard = new ModelWizard();
         // Change to RnnModel for RNN
-        task = wizard.AddTimeSeriesTask<ConvolutionalModel>(new TaskOptions
+        task = wizard.AddTimeSeriesTask<RnnModel>(new TaskOptions
         {
             WeightsPath = @"timeseries_linear_v1\saved_weights.h5"
         });

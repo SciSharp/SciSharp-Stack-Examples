@@ -31,14 +31,14 @@ public class MnistInYOLOv3 : SciSharpExample, IExample
         => Config = new ExampleConfig
         {
             Name = "MNIST in YOLOv3",
-            Enabled = false
+            Enabled = true
         };
 
     public bool Run()
     {
         cfg = new YoloConfig("YOLOv3");
         (trainingData, testingData) = PrepareData();
-        Train();
+        // Train();
         Test();
         return true;
     }

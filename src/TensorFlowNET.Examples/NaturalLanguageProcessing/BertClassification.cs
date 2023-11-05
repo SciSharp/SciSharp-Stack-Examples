@@ -28,7 +28,7 @@ namespace TensorFlowNET.Examples
         => Config = new ExampleConfig
         {
             Name = "Bert for Classification",
-            Enabled = true
+            Enabled = false
         };
 
         public override void PrepareData()
